@@ -1,0 +1,29 @@
+flowchart TB
+    %% 定义节点
+    A[复合人才目标<br/>软件技术+制造流程+协同创新]
+    B[能力结构<br/>单一技能→跨域协同]
+    C[培养导向<br/>理论灌输→实战赋能]
+    D[职业素质<br/>岗位适配度→持续迭代]
+    E[人才需求变化]
+    F[新质生产力变革环境—数字技术与实体经济深度融合]
+    
+    %% 定义连接
+    %% 原图：复合人才目标 --> 能力结构（需要反向）
+    B --> A
+    
+    %% 其他连接保持不变
+    A --> C
+    A --> D
+    C --> A
+    E --> B
+    E --> C
+    E --> D
+    F --> E
+    
+    %% 样式定义
+    style A fill:#c8f7c5,stroke:#333,stroke-width:2px
+    style B fill:#b3e5fc,stroke:#333,stroke-width:2px
+    style C fill:#b3e5fc,stroke:#333,stroke-width:2px
+    style D fill:#b3e5fc,stroke:#333,stroke-width:2px
+    style E fill:#c8f7c5,stroke:#333,stroke-width:2px
+    style F fill:#e1bee7,stroke:#333,stroke-width:2px
