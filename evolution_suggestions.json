@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-03-10T16:58:15.665962",
+  "from_evolution_analyzer": true,
+  "patterns": [
+    {
+      "type": "data_sync",
+      "frequency": 4,
+      "description": "检测到 'data_sync' 模式，本周出现 4 次",
+      "suggestion": "配置 auto-git-sync trigger，文件变更自动推送",
+      "priority": "medium",
+      "estimated_benefit": "10分钟/天",
+      "action": "install_skill",
+      "skill_name": "data_sync"
+    },
+    {
+      "type": "meeting_assistant",
+      "frequency": 3,
+      "description": "检测到 'meeting_assistant' 模式，本周出现 3 次",
+      "suggestion": "安装 meeting-minutes skill，自动提取会议要点和待办",
+      "priority": "medium",
+      "estimated_benefit": "15分钟/会议",
+      "action": "install_skill",
+      "skill_name": "meeting_assistant"
+    }
+  ],
+  "errors": [],
+  "new_skills": [
+    {
+      "type": "skill_combination",
+      "description": "BMAD框架 + Knowledge Studio 可以组合为项目知识管理工作流",
+      "suggestion": "创建 project-knowledge-bridge，自动将项目文档同步到知识库",
+      "priority": "low",
+      "action": "create_workflow",
+      "workflow_name": "project-knowledge-bridge"
+    }
+  ],
+  "workflow_optimizations": []
+}
