@@ -328,6 +328,45 @@ def get_session_content_in_window(start_time, end_time):
     log(f"处理了 {processed_count} 个文件，跳过了 {skipped_count} 个超大文件")
     return all_content
 
+
+# 系统消息过滤模式
+SKIP_PATTERNS = [
+    r'scheduled\s+reminder',
+    r'compaction\s+memory',
+    r'pre[-_]?compaction',
+    r'replied\s+message.*untrusted',
+    r'HEARTBEAT_OK',
+    r'NO_REPLY',
+    r'conversation\s+info.*untrusted',
+    r'system:\s*\[',
+]
+
+def is_system_message(text):
+    """检查是否是系统消息"""
+    text_lower = text.lower()
+    for pattern in SKIP_PATTERNS:
+        if re.search(pattern, text_lower):
+            return True
+    return False
+
+def extract_topic_key(text):
+    """提取主题关键词，用于合并相似对话"""
+    keywords = []
+    text_lower = text.lower()
+    
+    # 艺术相关主题
+    if any(k in text_lower for k in ['艺术', '美术', '展览', '鉴赏', '启蒙', '策展', '博物馆', '美术馆']):
+        keywords.append('艺术启蒙')
+    
+    # 系统相关主题  
+    if any(k in text_lower for k in ['系统', 'skill', 'github', '推送', '整理']):
+        keywords.append('系统优化')
+    
+    if not keywords:
+        keywords.append(text[:10])
+    
+    return tuple(sorted(keywords))
+
 def categorize_content(sessions_data, since_time):
     """
     将内容分类 - 修复版：修复循环逻辑bug
@@ -336,6 +375,7 @@ def categorize_content(sessions_data, since_time):
     standalone_chats = []
     pending_links = []
     link_auto_process = []
+    temp_chats = []  # 用于收集和合并主题
     
     for session in sessions_data:
         messages = parse_session_messages_safe(session['content'])
@@ -367,10 +407,11 @@ def categorize_content(sessions_data, since_time):
                         flags=re.DOTALL
                     )
                     
-                    # 过滤 HEARTBEAT 和太短的文本
+                    # 过滤 HEARTBEAT、系统消息和太短的文本
                     if ('HEARTBEAT' not in next_msg['text'] and 
                         actual_text.strip() and 
-                        len(actual_text.strip()) > 10):
+                        len(actual_text.strip()) > 10 and
+                        not is_system_message(actual_text)):
                         discussion.append({
                             'text': actual_text.strip(),
                             'timestamp': next_msg['timestamp']
@@ -416,10 +457,12 @@ def categorize_content(sessions_data, since_time):
                 
                 if ('HEARTBEAT' not in msg['text'] and 
                     actual_text.strip() and 
-                    len(actual_text.strip()) > 20):
-                    standalone_chats.append({
-                        'text': actual_text.strip()[:1000],  # 限制长度
-                        'timestamp': msg['timestamp']
+                    len(actual_text.strip()) > 20 and
+                    not is_system_message(actual_text)):
+                    temp_chats.append({
+                        'text': actual_text.strip()[:1000],
+                        'timestamp': msg['timestamp'],
+                        'topic_key': extract_topic_key(actual_text)
                     })
                 
                 i += 1
