@@ -47,6 +47,40 @@ class AIGapAnalyzer:
         # 使用阿里云DashScope API（KimiCode套餐）
         self.base_url = os.environ.get('ALICLOUD_BASE_URL', 'https://coding.dashscope.aliyuncs.com/v1')
         
+        # 加载已安装的skills
+        self.installed_skills = self._load_installed_skills()
+        
+    def _load_installed_skills(self) -> List[str]:
+        """加载已安装的skills列表"""
+        skills_dir = Path("/root/.openclaw/skills")
+        if not skills_dir.exists():
+            return []
+        return [d.name for d in skills_dir.iterdir() if d.is_dir()]
+    
+    def _is_skill_installed(self, skill_name: str) -> bool:
+        """检查某个skill是否已安装（支持模糊匹配）"""
+        if not skill_name:
+            return False
+        
+        skill_name_lower = skill_name.lower()
+        for installed in self.installed_skills:
+            installed_lower = installed.lower()
+            # 完全匹配或包含关系
+            if skill_name_lower == installed_lower or skill_name_lower in installed_lower or installed_lower in skill_name_lower:
+                return True
+        return False
+    
+    def _filter_installed_skills(self, gaps: List[Dict]) -> List[Dict]:
+        """过滤掉已安装skill的建议"""
+        filtered = []
+        for gap in gaps:
+            suggested_skill = gap.get('suggested_skill', '')
+            if suggested_skill and self._is_skill_installed(suggested_skill):
+                print(f"[INFO] 跳过已安装skill的建议: {suggested_skill}")
+                continue
+            filtered.append(gap)
+        return filtered
+        
     def _call_llm(self, prompt: str, temperature: float = 0.3) -> str:
         """调用LLM进行分析"""
         try:
@@ -196,11 +230,20 @@ class AIGapAnalyzer:
         print("📝 解析分析结果...")
         gaps = self._parse_analysis_response(response)
         
+        # 过滤已安装的skill
+        original_count = len(gaps)
+        gaps = self._filter_installed_skills(gaps)
+        filtered_count = original_count - len(gaps)
+        if filtered_count > 0:
+            print(f"[INFO] 过滤了 {filtered_count} 个已安装skill的建议")
+        
+        # 添加已安装skill信息到结果
         result = {
             "timestamp": datetime.now().isoformat(),
             "model": self.model,
             "analysis_days": days,
             "gaps": gaps,
+            "installed_skills": self.installed_skills,  # 记录已安装skill供参考
             "raw_response": response[:2000] if len(response) > 2000 else response  # 保留原始响应供调试
         }
         
@@ -211,14 +254,20 @@ class AIGapAnalyzer:
     
     def _build_analysis_prompt(self, memory_content: str, days: int) -> str:
         """构建分析提示"""
+        # 获取已安装skill列表，供AI参考
+        installed_skills_text = "\n".join([f"- {skill}" for skill in self.installed_skills]) if self.installed_skills else "无"
+        
         prompt = f"""请分析以下用户最近{days}天的对话和工作记录，识别出用户的**能力缺口**和**效率瓶颈**。
+
+## 已安装的Skills（请不要推荐这些）
+{installed_skills_text}
 
 ## 分析要求
 
 1. **识别重复性工作**：哪些任务是用户反复手动执行的？
 2. **发现工具缺口**：哪些功能用户经常需要但没有自动化工具？
 3. **检测流程断点**：用户的工作流中哪些环节效率低下？
-4. **评估Skill需求**：基于OpenClaw生态，推荐哪些Skills可以填补缺口？
+4. **评估Skill需求**：基于OpenClaw生态，推荐哪些Skills可以填补缺口？**重要：不要推荐已安装列表中的Skill**
 
 ## 输出格式
 
@@ -432,16 +481,16 @@ class AIGapAnalyzer:
             print(f"[WARN] 保存结果失败: {e}")
     
     def format_report(self, result: Dict) -> str:
-        """格式化分析报告"""
+        """格式化分析报告（带来源标记）"""
         gaps = result.get("gaps", [])
         
         if not gaps:
-            return "🎯 **AI自主进化分析**：经过深度分析，未发现明显的能力缺口，系统运行高效！"
+            return "🧠 **AI自主进化分析**：经过深度分析，未发现明显的能力缺口，系统运行高效！"
         
         lines = ["\n🧠 **AI自主进化分析**（Kimi K2.5 深度分析）\n"]
-        lines.append(f"分析时间: {result.get('timestamp', '未知')[:19]}")
-        lines.append(f"分析天数: {result.get('analysis_days', 7)} 天")
-        lines.append(f"发现缺口: {len(gaps)} 个\n")
+        lines.append(f"📅 分析时间: {result.get('timestamp', '未知')[:19]}")
+        lines.append(f"📊 分析天数: {result.get('analysis_days', 7)} 天")
+        lines.append(f"🔍 发现缺口: {len(gaps)} 个\n")
         lines.append("---\n")
         
         for i, gap in enumerate(gaps[:5], 1):
@@ -450,19 +499,39 @@ class AIGapAnalyzer:
             
             lines.append(f"{i}. {emoji} **{gap.get('title', '未命名')}**")
             lines.append(f"   📋 缺口类型: {gap.get('type', 'unknown')}")
-            lines.append(f"   📝 详细描述: {gap.get('description', '无')[:100]}...")
             
-            if gap.get('evidence'):
-                lines.append(f"   📊 行为证据: {gap['evidence'][:80]}...")
+            # 描述可能较长，限制显示
+            description = gap.get('description', '')
+            if len(description) > 100:
+                description = description[:100] + "..."
+            lines.append(f"   📝 描述: {description}")
             
-            if gap.get('suggested_skill'):
-                lines.append(f"   💡 推荐Skill: {gap['suggested_skill']}")
-                if gap.get('skill_description'):
-                    lines.append(f"      {gap['skill_description'][:80]}...")
+            # 行为证据
+            evidence = gap.get('evidence', '')
+            if evidence:
+                if len(evidence) > 80:
+                    evidence = evidence[:80] + "..."
+                lines.append(f"   📊 行为证据: {evidence}")
             
-            if gap.get('estimated_benefit'):
-                lines.append(f"   ⏱️ 预计收益: {gap['estimated_benefit']}")
+            # 推荐Skill及来源标记
+            skill = gap.get('suggested_skill', '')
+            if skill:
+                # 判断skill来源
+                source_tag = self._get_skill_source_tag(skill)
+                lines.append(f"   💡 推荐Skill: {skill} {source_tag}")
+                
+                skill_desc = gap.get('skill_description', '')
+                if skill_desc:
+                    if len(skill_desc) > 80:
+                        skill_desc = skill_desc[:80] + "..."
+                    lines.append(f"      {skill_desc}")
             
+            # 预计收益
+            benefit = gap.get('estimated_benefit', '')
+            if benefit:
+                lines.append(f"   ⏱️ 预计收益: {benefit}")
+            
+            # 操作指令
             action = gap.get('action', 'install_skill')
             if action == 'install_skill':
                 lines.append(f"   👉 回复 `安装{i}` 执行安装")
@@ -479,7 +548,48 @@ class AIGapAnalyzer:
         lines.append("• `忽略` - 今日不处理，明日再评估")
         lines.append("• `详细{i}` - 查看第i条详细说明\n")
         
+        # 添加来源图例
+        lines.append("🏷️ **Skill来源说明**：")
+        lines.append("• 📦 ClawHub - 已在ClawHub市场发布")
+        lines.append("• 🐙 GitHub - 开源社区项目")
+        lines.append("• 🛠️ 自建 - 需本地创建实现\n")
+        
         return "\n".join(lines)
+    
+    def _get_skill_source_tag(self, skill_name: str) -> str:
+        """获取skill的来源标记"""
+        if not skill_name:
+            return ""
+        
+        # 检查是否已在本地安装
+        if self._is_skill_installed(skill_name):
+            return "[✅已安装]"
+        
+        # 检查常见skill的来源（硬编码映射表）
+        clawhub_skills = [
+            "feishu-automation", "knowledge-studio", "bmad-evo", "bmad-method",
+            "channels-setup", "nano-pdf", "github", "weather", "healthcheck",
+            "tmux", "clawhub"
+        ]
+        
+        github_skills = [
+            "self-improving-agent", "openclaw-skills", "skill-creator"
+        ]
+        
+        skill_lower = skill_name.lower()
+        
+        # 检查ClawHub
+        for cs in clawhub_skills:
+            if cs in skill_lower or skill_lower in cs:
+                return "[📦ClawHub]"
+        
+        # 检查GitHub
+        for gs in github_skills:
+            if gs in skill_lower or skill_lower in gs:
+                return "[🐙GitHub]"
+        
+        # 默认标记为自建
+        return "[🛠️自建]"
 
 
 def main():
