@@ -323,7 +323,14 @@ def send_feishu_report(report: str) -> bool:
     try:
         # 导入守护进程
         sys.path.insert(0, str(SCRIPT_DIR))
-        from feishu_guardian import send_feishu_safe
+        from feishu_guardian import send_feishu_safe, check_duplicate_by_date
+        
+        # 先检查今天是否已经发送过
+        today = datetime.now().strftime('%Y-%m-%d')
+        is_sent_today = check_duplicate_by_date("daily_report", today)
+        if is_sent_today:
+            print(f"[INFO] 今日({today})复盘报告已发送过，跳过")
+            return True  # 返回True表示已处理（跳过）
         
         result = send_feishu_safe(
             report, 
@@ -400,5 +407,23 @@ def run_with_progress():
 
 
 if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='每日复盘报告生成器')
+    parser.add_argument('--dry-run', action='store_true', 
+                       help='预览报告但不发送')
+    args = parser.parse_args()
+    
+    if args.dry_run:
+        # 仅生成并打印报告，不发送
+        report = generate_report()
+        print("=" * 50)
+        print("【DRY RUN】报告内容预览：")
+        print("=" * 50)
+        print(report)
+        print("=" * 50)
+        print("【DRY RUN】模式：未发送消息")
+        sys.exit(0)
+    
     success = run_with_progress()
     sys.exit(0 if success else 1)

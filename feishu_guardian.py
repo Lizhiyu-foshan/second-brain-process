@@ -23,10 +23,10 @@ LEARNINGS_DIR = WORKSPACE / ".learnings"
 DUPLICATE_LOG = LEARNINGS_DIR / "duplicate_prevention_log.json"
 SEND_RECORDS = LEARNINGS_DIR / "send_records.json"
 
-# 严格去重窗口 - 30分钟
-DEDUP_WINDOW_MINUTES = 30
-# 发送冷却时间 - 同一类型的消息间隔至少5分钟
-COOLDOWN_SECONDS = 300
+# 严格去重窗口 - 8小时（覆盖完整工作日周期）
+DEDUP_WINDOW_MINUTES = 480
+# 发送冷却时间 - 同类型消息间隔至少10分钟
+COOLDOWN_SECONDS = 600
 
 _lock = threading.Lock()
 
@@ -113,6 +113,24 @@ def check_duplicate(content: str, msg_type: str = "default") -> Tuple[bool, str]
                     return True, f"COOLDOWN: 同类型消息需要间隔 {COOLDOWN_SECONDS} 秒"
         
         return False, "OK"
+
+
+def check_duplicate_by_date(msg_type: str, date_str: str) -> bool:
+    """
+    检查特定日期是否已经发送过某类型消息
+    用于复盘报告等按日去重的场景
+    """
+    with _lock:
+        records = _load_records()
+        
+        for record in records.get("records", []):
+            if record.get("type") == msg_type:
+                record_time = record.get("time", "")
+                # 检查是否是指定日期
+                if date_str in record_time:
+                    return True
+        
+        return False
 
 
 def record_send(content: str, msg_type: str = "default", target: str = "", 
