@@ -17,6 +17,7 @@ from pathlib import Path
 WORKSPACE = Path("/root/.openclaw/workspace")
 SCRIPT_DIR = WORKSPACE / "second-brain-processor"
 VAULT_DIR = WORKSPACE / "obsidian-vault"
+LEARNINGS_DIR = WORKSPACE / ".learnings"  # 修正：使用workspace级别的.learnings
 FEISHU_USER = "ou_363105a68ee112f714ed44e12c802051"
 
 
@@ -92,6 +93,56 @@ def get_vault_stats():
     return stats
 
 
+def get_health_status() -> str:
+    """获取文章剪藏链路健康状态"""
+    try:
+        # 检查健康检查报告
+        health_file = LEARNINGS_DIR / "health_check_report.json"
+        if health_file.exists():
+            with open(health_file, 'r', encoding='utf-8') as f:
+                health = json.load(f)
+            
+            overall = health.get('overall_status', 'unknown')
+            checks = health.get('checks', {})
+            issues = health.get('issues', [])
+            
+            lines = ["\n🏥 **系统健康状态**"]
+            
+            # 总体状态
+            if overall == 'healthy':
+                lines.append("✅ 所有系统运行正常")
+            else:
+                lines.append(f"⚠️ 发现 {len(issues)} 个问题")
+            
+            # 详细检查项
+            for name, check in checks.items():
+                emoji = "✅" if check.get('healthy') else "⚠️"
+                msg = check.get('message', '')
+                lines.append(f"   {emoji} {name}: {msg}")
+            
+            # 如果有建议，显示第一条
+            recommendations = health.get('recommendations', [])
+            if recommendations:
+                rec = recommendations[0]
+                lines.append(f"\n   💡 建议: {rec.get('action', '')}")
+            
+            return "\n".join(lines)
+        
+        # 如果没有健康报告，检查队列状态
+        queue_file = SCRIPT_DIR / "message_queue.json"
+        if queue_file.exists():
+            with open(queue_file, 'r', encoding='utf-8') as f:
+                queue = json.load(f)
+            pending = len(queue.get('messages', []))
+            if pending > 0:
+                return f"\n🏥 **系统健康状态**\n   📝 待处理队列: {pending} 条消息"
+        
+        return "\n🏥 **系统健康状态**\n   ✅ 文章剪藏链路运行正常"
+        
+    except Exception as e:
+        return f"\n🏥 **系统健康状态**\n   ⚠️ 检查失败: {str(e)[:50]}"
+
+
 def generate_report():
     """生成复盘报告（包含进化建议）"""
     stats = get_vault_stats()
@@ -101,6 +152,9 @@ def generate_report():
     # 获取进化建议
     evolution_section = _get_evolution_suggestions()
     
+    # 获取健康状态
+    health_section = get_health_status()
+    
     report = f"""📊 每日复盘报告（{today}）
 
 📅 昨日概况（{yesterday}）
@@ -108,6 +162,7 @@ def generate_report():
 • 知识库总篇数：{stats['total']} 篇
   - 对话记录：{stats['conversations']} 篇
   - 文章剪藏：{stats['articles']} 篇
+{health_section}
 
 {evolution_section}
 
