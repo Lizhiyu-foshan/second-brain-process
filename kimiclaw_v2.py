@@ -136,22 +136,22 @@ def get_last_process_time():
 
 def get_fixed_daily_window(target_date=None):
     """
-    获取固定的每日处理窗口（前一天5:00到今天5:00）
-    这是用户要求的核心逻辑：每天处理前24小时的内容
+    获取固定的每日处理窗口（只处理完整的"昨天"，前天5:00到昨天5:00）
+    修改：不再包含今天凌晨的内容，避免话题未聊完就被整理
     """
     if target_date is None:
         target_date = datetime.now()
     
-    # 今天5:00
-    today_5am = target_date.replace(hour=5, minute=0, second=0, microsecond=0)
+    # 昨天5:00（作为结束时间）
+    yesterday_5am = target_date.replace(hour=5, minute=0, second=0, microsecond=0) - timedelta(days=1)
     if target_date.hour < 5:
-        # 如果当前时间早于5:00，则今天5:00是昨天的5:00
-        today_5am = today_5am - timedelta(days=1)
+        # 如果当前时间早于5:00，则昨天5:00是前天的5:00
+        yesterday_5am = yesterday_5am - timedelta(days=1)
     
-    # 昨天5:00
-    yesterday_5am = today_5am - timedelta(days=1)
+    # 前天5:00（作为开始时间）
+    day_before_yesterday_5am = yesterday_5am - timedelta(days=1)
     
-    return yesterday_5am, today_5am
+    return day_before_yesterday_5am, yesterday_5am
 
 def save_last_process_time(dt=None):
     """保存本次整理时间"""
@@ -572,28 +572,27 @@ if __name__ == '__main__':
             if args.days_ago is not None:
                 # 使用 --days-ago 参数：处理N天前的数据
                 target_date = datetime.now() - timedelta(days=args.days_ago)
-                yesterday_5am, today_5am = get_fixed_daily_window(target_date)
-                log(f"【步骤2】整理 {yesterday_5am} 至 {today_5am} 的内容（{args.days_ago}天前）...")
+                start_time, end_time = get_fixed_daily_window(target_date)
+                log(f"【步骤2】整理 {start_time} 至 {end_time} 的内容（{args.days_ago}天前）...")
             elif args.from_date or args.to_date:
                 # 使用 --from-date 和/或 --to-date 参数
                 if args.from_date:
-                    start = datetime.strptime(args.from_date, '%Y-%m-%d').replace(hour=5, minute=0, second=0)
+                    start_time = datetime.strptime(args.from_date, '%Y-%m-%d').replace(hour=5, minute=0, second=0)
                 else:
-                    start = datetime.now() - timedelta(days=7)  # 默认7天前
+                    start_time = datetime.now() - timedelta(days=7)  # 默认7天前
                 if args.to_date:
-                    end = datetime.strptime(args.to_date, '%Y-%m-%d').replace(hour=5, minute=0, second=0) + timedelta(days=1)
+                    end_time = datetime.strptime(args.to_date, '%Y-%m-%d').replace(hour=5, minute=0, second=0) + timedelta(days=1)
                 else:
-                    end = datetime.now()
-                yesterday_5am, today_5am = start, end
-                log(f"【步骤2】整理 {yesterday_5am} 至 {today_5am} 的内容（自定义日期范围）...")
+                    end_time = datetime.now()
+                log(f"【步骤2】整理 {start_time} 至 {end_time} 的内容（自定义日期范围）...")
             else:
-                # 默认：使用固定24小时窗口（昨天5:00到今天5:00）
-                yesterday_5am, today_5am = get_fixed_daily_window()
-                log(f"【步骤2】整理 {yesterday_5am} 至 {today_5am} 的内容（固定24小时窗口）...")
+                # 默认：只处理完整的"昨天"（前天5:00到昨天5:00），不包含今天
+                start_time, end_time = get_fixed_daily_window()
+                log(f"【步骤2】整理 {start_time} 至 {end_time} 的内容（只处理昨天，不包含今天）...")
             
-            # 使用固定窗口获取内容，而不是从上一次处理时间
-            sessions = get_session_content_in_window(yesterday_5am, today_5am)
-            categorized = categorize_content(sessions, yesterday_5am)
+            # 使用固定窗口获取内容
+            sessions = get_session_content_in_window(start_time, end_time)
+            categorized = categorize_content(sessions, start_time)
             
             log(f"  - 独立对话：{len(categorized['standalone_chats'])} 条")
             log(f"  - 链接+讨论：{len(categorized['links_with_discussion'])} 个")
