@@ -642,8 +642,9 @@ if __name__ == '__main__':
             log(f"  - 链接+AI整理：{len(categorized['link_auto_process'])} 个")
             log(f"  - 待处理链接：{len(categorized['pending_links'])} 个")
             
-            # 保存独立对话到 vault
+            # 保存独立对话到 vault - 带AI深度分析
             saved_count = 0
+            ai_processed_count = 0
             for chat in categorized['standalone_chats']:
                 try:
                     # 生成文件名
@@ -652,19 +653,65 @@ if __name__ == '__main__':
                     safe_title = re.sub(r'[^\w\u4e00-\u9fa5]', '_', chat_title)[:30]
                     filename = f"{chat_date}_{safe_title}.md"
                     
+                    # 调用AI深度分析（耗时较长，但凌晨运行可接受）
+                    ai_content = ""
+                    try:
+                        sys.path.insert(0, str(PROCESSOR_DIR))
+                        from ai_deep_processor import process_conversation_with_ai
+                        
+                        log(f"  正在AI分析对话: {chat_title[:20]}...")
+                        ai_result = process_conversation_with_ai(
+                            content=chat['text'],
+                            title=chat_title
+                        )
+                        
+                        if ai_result and ai_result.get('key_takeaway'):
+                            ai_content = f"""## AI深度分析
+
+### 核心观点
+{ai_result.get('key_takeaway', '')}
+
+### 详细观点
+"""
+                            for point in ai_result.get('core_points', []):
+                                ai_content += f"- {point}\n"
+                            
+                            if ai_result.get('valuable_thoughts'):
+                                ai_content += "\n### 引发的思考\n"
+                                for thought in ai_result.get('valuable_thoughts', []):
+                                    ai_content += f"- {thought}\n"
+                            
+                            if ai_result.get('themes'):
+                                ai_content += f"\n### 主题标签\n{', '.join(ai_result.get('themes', []))}\n"
+                            
+                            if ai_result.get('connections'):
+                                ai_content += "\n### 知识关联\n"
+                                for conn in ai_result.get('connections', []):
+                                    ai_content += f"- {conn}\n"
+                            
+                            ai_processed_count += 1
+                            log(f"  ✅ AI分析完成")
+                    except Exception as e:
+                        log(f"  ⚠️ AI分析失败，使用基础模式: {e}")
+                    
                     # 构建内容
                     content = f"""---
 date: {chat_date}
 type: 聊天记录
-tags: [对话, 自动归档]
+tags: [对话, 自动归档, AI分析]
 ---
 
 # {chat['text'][:50]}
 
 ## 统计
 - 生成时间：{datetime.now().strftime('%Y-%m-%d %H:%M')}
+- AI分析: {'✅ 已完成' if ai_content else '⚠️ 基础模式'}
 
 ---
+{ai_content}
+---
+
+## 原始对话
 
 {chat['text']}
 """
@@ -683,9 +730,9 @@ tags: [对话, 自动归档]
                     log_error("chat_save_failed", str(e), area="chat_processing", priority="medium")
             
             if saved_count > 0:
-                log(f"  共保存 {saved_count} 条独立对话")
+                log(f"  共保存 {saved_count} 条独立对话（AI分析: {ai_processed_count} 条）")
                 # 提交到 GitHub
-                commit_and_push(f"auto: 凌晨整理 - 保存 {saved_count} 条对话记录")
+                commit_and_push(f"auto: 凌晨AI深度整理 - {saved_count}条对话({ai_processed_count}条AI分析)")
             
             # 第3步：删除已处理的文章截图
             log("【步骤3】清理已处理的文章截图...")
