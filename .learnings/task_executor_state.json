@@ -1,0 +1,75 @@
+{
+  "task_history": {
+    "test_task": [
+      {
+        "start_time": "2026-03-08T00:12:49.469826",
+        "status": "success",
+        "pid": 48648,
+        "end_time": "2026-03-08T00:12:49.470067",
+        "error": "",
+        "duration": 0.000244
+      }
+    ],
+    "daily_report": [
+      {
+        "start_time": "2026-03-08T08:30:43.135411",
+        "status": "success",
+        "pid": 62185,
+        "end_time": "2026-03-08T08:30:47.897675",
+        "error": "",
+        "duration": 4.762292
+      },
+      {
+        "start_time": "2026-03-09T08:30:53.324314",
+        "status": "success",
+        "pid": 38822,
+        "end_time": "2026-03-09T08:30:58.148584",
+        "error": "",
+        "duration": 4.824282
+      },
+      {
+        "start_time": "2026-03-10T08:30:05.719762",
+        "status": "success",
+        "pid": 38216,
+        "end_time": "2026-03-10T08:30:10.593072",
+        "error": "",
+        "duration": 4.873322
+      },
+      {
+        "start_time": "2026-03-12T08:30:03.596678",
+        "status": "success",
+        "pid": 118332,
+        "end_time": "2026-03-12T08:30:08.449817",
+        "error": "",
+        "duration": 4.853151
+      }
+    ],
+    "morning_process": [
+      {
+        "start_time": "2026-03-09T05:00:03.392094",
+        "status": "success",
+        "pid": 32855,
+        "end_time": "2026-03-09T05:00:11.238768",
+        "error": "",
+        "duration": 7.846685
+      },
+      {
+        "start_time": "2026-03-10T05:00:03.676790",
+        "status": "success",
+        "pid": 32511,
+        "end_time": "2026-03-10T05:01:09.871458",
+        "error": "",
+        "duration": 66.194679
+      },
+      {
+        "start_time": "2026-03-12T05:00:03.469570",
+        "status": "success",
+        "pid": 112328,
+        "end_time": "2026-03-12T05:01:39.875335",
+        "error": "",
+        "duration": 96.405777
+      }
+    ]
+  },
+  "last_cleanup": "2026-03-08T00:12:49.469823"
+}

@@ -1,0 +1,23 @@
+{
+  "ERR-20260307-1000": {
+    "error_pattern": "git_push_timeout",
+    "timestamp": "2026-03-07T16:34:31.071739",
+    "result": {
+      "reasoning": "git_push_timeout 错误根因是 GitHub 网络连接不稳定或超时时间过短。当前代码缺少 Git 操作的超时配置和重试机制。需要：1) 添加 Git 全局超时配置；2) 实现带重试和指数退避的 Git push 包装函数；3) 增加 http.postBuffer 配置以提升大文件传输稳定性。",
+      "improvements": [
+        {
+          "file": "kimiclaw_v2.py",
+          "description": "在文件开头添加 Git 超时配置和重试机制常量定义",
+          "old_code": "# 性能限制\nMAX_FILE_SIZE = 2 * 1024 * 1024   # 2MB - 覆盖截图文章场景",
+          "new_code": "# 性能限制\nMAX_FILE_SIZE = 2 * 1024 * 1024   # 2MB - 覆盖截图文章场景\n\n# Git 超时和重试配置\nGIT_PUSH_TIMEOUT = 300          # Git push 超时时间（秒）\nGIT_PUSH_RETRY = 3              # Git push 重试次数\nGIT_PUSH_RETRY_DELAY = 10       # 重试基础延迟（秒）\nGIT_HTTP_TIMEOUT = 120          # Git HTTP 操作超时（秒）\n\ndef configure_git_timeout():\n    \"\"\"配置 Git 全局超时参数，提升网络不稳定环境下的稳定性\"\"\"\n    try:\n        # 设置 HTTP 超时\n        subprocess.run(\n            ['git', 'config', '--global', 'http.postBuffer', '524288000'],\n            capture_output=True, timeout=30\n        )\n        subprocess.run(\n            ['git', 'config', '--global', 'http.lowSpeedLimit', '1000'],\n            capture_output=True, timeout=30\n        )\n        subprocess.run(\n            ['git', 'config', '--global', 'http.lowSpeedTime', '60'],\n            capture_output=True, timeout=30\n        )\n        # 设置超时（秒）\n        subprocess.run(\n            ['git', 'config', '--global', 'http.timeout', str(GIT_HTTP_TIMEOUT)],\n            capture_output=True, timeout=30\n        )\n        log(\"[Git] 超时配置已优化\")\n    except Exception as e:\n        log(f\"[Git] 配置超时失败: {e}\")"
+        },
+        {
+          "file": "kimiclaw_v2.py",
+          "description": "添加带重试和指数退避的 Git push 包装函数，在文件适当位置添加",
+          "old_code": "def log_error(error_type: str, details: str, area: str = \"general\", priority: str = \"medium\"):",
+          "new_code": "def git_push_with_retry(repo_path: str, remote: str = \"origin\", branch: str = \"main\") -> bool:\n    \"\"\"\n    带重试机制的 Git push 操作\n    \n    Args:\n        repo_path: 仓库路径\n        remote: 远程仓库名\n        branch: 分支名\n        \n    Returns:\n        bool: push 是否成功\n    \"\"\"\n    import signal\n    \n    def timeout_handler(signum, frame):\n        raise TimeoutError(f\"Git push 超时 ({GIT_PUSH_TIMEOUT}s)\")\n    \n    for attempt in range(GIT_PUSH_RETRY):\n        try:\n            # 设置超时信号\n            signal.signal(signal.SIGALRM, timeout_handler)\n            signal.alarm(GIT_PUSH_TIMEOUT)\n            \n            log(f\"[Git] 开始 push (尝试 {attempt + 1}/{GIT_PUSH_RETRY})...\")\n            \n            result = subprocess.run(\n                ['git', '-C', repo_path, 'push', remote, branch, '--verbose'],\n                capture_output=True,\n                text=True,\n                timeout=GIT_PUSH_TIMEOUT\n            )\n            \n            # 取消超时\n            signal.alarm(0)\n            \n            if result.returncode == 0:\n                log(f\"[Git] Push 成功\")\n                return True\n            else:\n                log(f\"[Git] Push 失败: {result.stderr}\")\n                \n        except TimeoutError as e:\n            log(f\"[Git] Push 超时: {e}\")\n            signal.alarm(0)\n        except Exception as e:\n            log(f\"[Git] Push 异常: {e}\")\n            signal.alarm(0)\n        \n        # 指数退避等待\n        if attempt < GIT_PUSH_RETRY - 1:\n            wait_time = GIT_PUSH_RETRY_DELAY * (2 ** attempt)\n            log(f\"[Git] {wait_time}秒后重试...\")\n            time.sleep(wait_time)\n    \n    log_error(\"git_push_timeout\", f\"Git push 在 {GIT_PUSH_RETRY} 次尝试后失败\", \"git_operations\", \"high\")\n    return False\n\n\ndef log_error(error_type: str, details: str, area: str = \"general\", priority: str = \"medium\"):"
+        }
+      ]
+    }
+  }
+}

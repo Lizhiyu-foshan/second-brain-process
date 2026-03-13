@@ -1,0 +1,67 @@
+[
+  {
+    "id": "test_001",
+    "text": "测试：验证action-item-closer正常运行",
+    "source": "manual_test",
+    "created_date": "2026-03-13",
+    "due_date": "2026-03-14",
+    "status": "pending",
+    "completed": true,
+    "completed_date": "2026-03-13T12:05:26.655399"
+  },
+  {
+    "id": "test_002",
+    "text": "安装 context-threshold-adaptive",
+    "source": "daily_report",
+    "created_date": "2026-03-13",
+    "due_date": "2026-03-14",
+    "status": "pending",
+    "completed": false
+  },
+  {
+    "id": "2026-03-13_1",
+    "text": "1",
+    "source": "daily_report",
+    "created_date": "2026-03-13",
+    "due_date": "2026-03-14",
+    "status": "pending",
+    "completed": false
+  },
+  {
+    "id": "2026-03-13_2",
+    "text": "2",
+    "source": "daily_report",
+    "created_date": "2026-03-13",
+    "due_date": "2026-03-14",
+    "status": "pending",
+    "completed": true,
+    "completed_date": "2026-03-13T13:10:18.382111"
+  },
+  {
+    "id": "2026-03-13_1",
+    "text": "动态上下文压缩阈值管理 - 配置 auto-git-sync trigger，文件变更自动推送",
+    "source": "daily_report",
+    "created_date": "2026-03-13",
+    "due_date": "2026-03-14",
+    "status": "pending",
+    "completed": false
+  },
+  {
+    "id": "2026-03-13_2",
+    "text": "讨论准备与知识预加载自动化 - 启用 auto-content-processor，自动分析剪藏文章",
+    "source": "daily_report",
+    "created_date": "2026-03-13",
+    "due_date": "2026-03-14",
+    "status": "pending",
+    "completed": false
+  },
+  {
+    "id": "2026-03-13_3",
+    "text": "复盘报告行动项闭环追踪 - 自动提取行动项、创建追踪任务、到期提醒",
+    "source": "daily_report",
+    "created_date": "2026-03-13",
+    "due_date": "2026-03-14",
+    "status": "pending",
+    "completed": false
+  }
+]

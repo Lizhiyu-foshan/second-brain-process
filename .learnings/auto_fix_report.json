@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-03-12T11:46:21.866379",
+  "dry_run": true,
+  "fixes": [
+    {
+      "action": "session_compact",
+      "status": "dry_run",
+      "message": "模拟执行：/compact"
+    }
+  ],
+  "failures": [],
+  "skipped": [],
+  "overall_status": "completed"
+}

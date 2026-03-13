@@ -1,0 +1,78 @@
+{
+  "course_name": "艺术史漫游·双轨版",
+  "version": "2.0",
+  "current_module": 2,
+  "total_modules": 12,
+  "current_week": 2,
+  "start_date": "2026-03-14",
+  "narrative": "从古到今，中西交融",
+  "verified_resources": {
+    "met_timeline_gothic": "https://www.metmuseum.org/toah/hd/mgot/hd_mgot.htm",
+    "caa_james_cahill": "http://210.33.124.155:8088/JamesCahill/",
+    "npm_opendata": "https://theme.npm.edu.tw/opendata/"
+  },
+  "modules": [
+    {
+      "id": 1,
+      "century": "12世纪",
+      "status": "delivered",
+      "delivered_at": "2026-03-11",
+      "western": {
+        "title": "信仰的高度",
+        "subtitle": "哥特式艺术的诞生",
+        "key_works": ["圣丹尼大教堂", "巴黎圣母院", "沙特尔大教堂"],
+        "artists": ["叙热院长"],
+        "concepts": ["尖拱", "飞扶壁", "彩色玻璃", "光的神秘主义"],
+        "resources": [
+          {
+            "name": "Met Museum: Gothic Art",
+            "url": "https://www.metmuseum.org/toah/hd/mgot/hd_mgot.htm",
+            "verified": true
+          }
+        ]
+      },
+      "eastern": {
+        "title": "山水觉醒",
+        "subtitle": "北宋山水画的黄金时代",
+        "key_works": ["《溪山行旅图》", "《早春图》", "《千里江山图》"],
+        "artists": ["范宽", "郭熙", "王希孟"],
+        "concepts": ["三远法", "可游可居", "气韵生动", "格物致知"],
+        "resources": [
+          {
+            "name": "高居翰数字图书馆",
+            "url": "http://210.33.124.155:8088/JamesCahill/",
+            "verified": true
+          },
+          {
+            "name": "台北故宫Open Data",
+            "url": "https://theme.npm.edu.tw/opendata/",
+            "verified": true
+          }
+        ]
+      },
+      "connection": "两种文明都在追求'超越'——哥特式向上帝，山水画向自然"
+    },
+    {
+      "id": 2,
+      "century": "13-14世纪",
+      "status": "pending",
+      "western": {
+        "title": "人文的微光",
+        "subtitle": "乔托与文艺复兴萌芽",
+        "key_works": ["《哀悼基督》", "《犹大之吻》", "阿雷纳礼拜堂壁画"],
+        "artists": ["乔托", "杜乔", "契马布埃"],
+        "concepts": ["情感表现", "空间深度", "自然主义萌芽"],
+        "resources": []
+      },
+      "eastern": {
+        "title": "文人画的确立",
+        "subtitle": "南宋的简约美学",
+        "key_works": ["《踏歌图》", "《寒江独钓图》", "《泼墨仙人图》"],
+        "artists": ["马远", "夏圭", "梁楷"],
+        "concepts": ["边角构图", "留白", "写意", "诗书画一体"],
+        "resources": []
+      },
+      "connection": "都在突破程式——乔托打破中世纪僵硬，南宋画家打破全景山水"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "sent_messages": [
+    {
+      "id": "4b4d69eeefdc6265",
+      "time": "2026-03-08T00:12:34.246735",
+      "target": "test_user",
+      "success": true,
+      "content_preview": "测试消息 12345"
+    }
+  ],
+  "last_cleanup": "2026-03-08T00:12:34.246729"
+}

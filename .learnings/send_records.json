@@ -1,0 +1,212 @@
+{
+  "records": [
+    {
+      "fingerprint": "8a1833ab0a283475",
+      "time": "2026-03-09T08:30:58.142121",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📊 每日复盘报告（2026-03-09）  📅 昨日概况（2026-03-08） • 新增对话记录：已自动归档 • 知识库总篇数：161 篇   - 对话记录：149 篇   - 文章剪藏：12 篇 "
+    },
+    {
+      "fingerprint": "09c2c068b36bd7c6",
+      "time": "2026-03-09T16:50:10.299600",
+      "type": "test",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "🧪 测试消息：周一美术馆推送修复验证\\n\\n此消息用于验证防重发机制是否正常工作。\\n\\n⏰ 测试时间：2026-03-09 16:50:05\\n\\n如果30分钟内重复发送，应被拦截。"
+    },
+    {
+      "fingerprint": "b4c97d81ed979af3",
+      "time": "2026-03-09T16:50:45.244561",
+      "type": "test",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "🧪 测试消息：周一美术馆推送修复验证\\n\\n此消息用于验证防重发机制是否正常工作。\\n\\n⏰ 测试时间：2026-03-09 16:50:40\\n\\n如果30分钟内重复发送，应被拦截。"
+    },
+    {
+      "fingerprint": "521dcede1369c941",
+      "time": "2026-03-09T16:53:39.975305",
+      "type": "museum_push",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "🧪 测试消息 - 周一美术馆推送"
+    },
+    {
+      "fingerprint": "b31d43482db43441",
+      "time": "2026-03-10T08:30:10.586539",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📊 每日复盘报告（2026-03-10）  📅 昨日概况（2026-03-09） • 新增对话记录：已自动归档 • 知识库总篇数：21 篇   - 对话记录：7 篇   - 文章剪藏：14 篇  💡 "
+    },
+    {
+      "fingerprint": "bcd4a993188b3a39",
+      "time": "2026-03-11T08:33:55.862987",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📊 每日复盘报告（2026-03-11）  📅 昨日概况（2026-03-10） • 新增对话记录：已自动归档 • 知识库总篇数：22 篇   - 对话记录：8 篇   - 文章剪藏：14 篇  🎯 "
+    },
+    {
+      "fingerprint": "6474eaa7508d24bc",
+      "time": "2026-03-12T08:30:08.442887",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📊 每日复盘报告（2026-03-12）  📅 昨日概况（2026-03-11） • 新增对话记录：已自动归档 • 知识库总篇数：30 篇   - 对话记录：16 篇   - 文章剪藏：14 篇  🎯"
+    },
+    {
+      "fingerprint": "cd6b6b8772400d6b",
+      "time": "2026-03-12T08:54:58.313804",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📊 每日复盘报告（2026-03-12）  📅 昨日概况（2026-03-11） • 新增对话记录：已自动归档 • 知识库总篇数：30 篇   - 对话记录：16 篇   - 文章剪藏：14 篇   "
+    },
+    {
+      "fingerprint": "cd6b6b8772400d6b",
+      "time": "2026-03-12T09:29:37.721711",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📊 每日复盘报告（2026-03-12）  📅 昨日概况（2026-03-11） • 新增对话记录：已自动归档 • 知识库总篇数：30 篇   - 对话记录：16 篇   - 文章剪藏：14 篇   "
+    },
+    {
+      "fingerprint": "5d894b1284f0612e",
+      "time": "2026-03-12T09:38:10.803567",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📊 每日复盘报告（2026-03-12）  📅 昨日概况（2026-03-11） • 新增对话记录：已自动归档 • 知识库总篇数：30 篇   - 对话记录：16 篇   - 文章剪藏：14 篇   "
+    },
+    {
+      "fingerprint": "8b95c7464a1f4f32",
+      "time": "2026-03-12T10:09:12.957631",
+      "type": "system_alert",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **消息延迟告警**  检测时间：10:09  发现问题： • 会话 547 秒未更新，可能存在处理延迟\\n  建议操作： • 如延迟持续，可尝试 /compact 压缩会话 • 或重启 Ope"
+    },
+    {
+      "fingerprint": "0178e1e8c5d139a6",
+      "time": "2026-03-12T11:39:29.896543",
+      "type": "health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **文章剪藏链路健康检查 - 发现问题**  检测时间：11:39  **检查结果：**  ⚠️ kimi_fetch 模块: kimi_fetch 导入失败: Traceback (most "
+    },
+    {
+      "fingerprint": "4d7a02b7d7cfe0c4",
+      "time": "2026-03-12T11:40:31.730170",
+      "type": "health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **文章剪藏链路健康检查 - 发现问题**  检测时间：11:40  **检查结果：**  ⚠️ kimi_fetch 模块: kimi_fetch 导入失败: Traceback (most "
+    },
+    {
+      "fingerprint": "bd1225d7572da115",
+      "time": "2026-03-12T11:42:14.702121",
+      "type": "health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **文章剪藏链路健康检查 - 发现问题**  检测时间：11:42  **检查结果：**  ⚠️ kimi_fetch 模块: kimi_fetch 导入失败: Traceback (most "
+    },
+    {
+      "fingerprint": "18f07657cfe428c4",
+      "time": "2026-03-12T11:42:36.704418",
+      "type": "health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **文章剪藏链路健康检查 - 发现问题**  检测时间：11:42  **检查结果：**  ✅ 文章获取模块: fetcher 模块存在 ✅ sessions_spawn 环境: session"
+    },
+    {
+      "fingerprint": "04c26256ceaf2bd9",
+      "time": "2026-03-12T11:44:01.293625",
+      "type": "health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **文章剪藏链路健康检查 - 发现问题**  检测时间：11:43  **检查结果：**  ✅ 文章获取模块: fetcher 模块存在 ✅ sessions_spawn 环境: session"
+    },
+    {
+      "fingerprint": "241c443785daa0be",
+      "time": "2026-03-12T11:46:26.608756",
+      "type": "auto_fix",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📝 **自动修复报告（模拟模式）**  修复时间：11:46  ✅ 成功：1 ❌ 失败：0 ⏭️ 跳过：0  **修复详情：**  📝 session_compact "
+    },
+    {
+      "fingerprint": "616ae4f08c74a450",
+      "time": "2026-03-12T11:46:42.416598",
+      "type": "health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **文章剪藏链路健康检查 - 发现问题**  检测时间：11:46  **检查结果：**  ✅ 文章获取模块: fetcher 模块存在 ✅ sessions_spawn 环境: session"
+    },
+    {
+      "fingerprint": "59a9a2254c83b3a0",
+      "time": "2026-03-12T11:52:46.782842",
+      "type": "health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **文章剪藏链路健康检查 - 发现问题**  检测时间：11:52  **检查结果：**  ✅ 文章获取模块: fetcher 模块存在 ✅ sessions_spawn 环境: session"
+    },
+    {
+      "fingerprint": "5d894b1284f0612e",
+      "time": "2026-03-12T12:41:57.465134",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📊 每日复盘报告（2026-03-12）  📅 昨日概况（2026-03-11） • 新增对话记录：已自动归档 • 知识库总篇数：30 篇   - 对话记录：16 篇   - 文章剪藏：14 篇   "
+    },
+    {
+      "fingerprint": "c0f56ea474e278c5",
+      "time": "2026-03-12T12:51:15.305274",
+      "type": "auto_compact",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "🗜️ **上下文自动压缩**  时间：12:51  **触发条件：** • 消息数达到 100 条，或 • Token 数接近 200,000 / 250,000  **压缩结果：** ✅ 会话上下文"
+    },
+    {
+      "fingerprint": "e9ea77402d99da8f",
+      "time": "2026-03-13T09:18:28.896939",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": false,
+      "error": "Error: Channel is required when multiple channels are configured: feishu, kimi-claw\n",
+      "content_preview": "📊 每日复盘报告（2026-03-13）  📅 昨日概况（2026-03-12） • 新增对话记录：已自动归档 • 知识库总篇数：24 篇   - 对话记录：9 篇   - 文章剪藏：15 篇  🏥 "
+    },
+    {
+      "fingerprint": "11c25bcfc5c07fc3",
+      "time": "2026-03-13T11:53:01.551953",
+      "type": "meeting_prep",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": false,
+      "error": "Error: Channel is required when multiple channels are configured: feishu, kimi-claw\n",
+      "content_preview": "📋 讨论准备摘要：OpenClaw进化技能 ⏰ 会议时间：2026-03-14 09:00（30分钟后）  📚 相关背景： 1. [[2026-03-10.md]] - 2026-03-10  🎯 建"
+    }
+  ],
+  "last_cleanup": "2026-03-09T08:30:58.142073"
+}

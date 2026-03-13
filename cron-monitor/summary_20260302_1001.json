@@ -1,0 +1,25 @@
+{
+  "checked_at": "2026-03-02T10:01:03.154591",
+  "jobs": [
+    {
+      "id": "35ff007b-d995-4650-a90f-f3c973a386ca",
+      "name": "每日复盘报告推送",
+      "health": {
+        "status": "unknown",
+        "message": "无运行记录",
+        "needs_action": false
+      }
+    },
+    {
+      "id": "53918d8d-df68-49cc-bdf4-1fa6ca1c39ed",
+      "name": "每日待确认列表推送",
+      "health": {
+        "status": "unknown",
+        "message": "无运行记录",
+        "needs_action": false
+      }
+    }
+  ],
+  "actions_taken": [],
+  "alerts": []
+}

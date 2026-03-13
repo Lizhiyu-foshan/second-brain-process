@@ -1,0 +1,16 @@
+{
+  "jobs": {
+    "53918d8d-df68-49cc-bdf4-1fa6ca1c39ed": {
+      "lastSuccess": "2026-03-02T23:30:17.517785",
+      "name": "每日待确认列表",
+      "lastPreview": ""
+    },
+    "35ff007b-d995-4650-a90f-f3c973a386ca": {
+      "lastSuccess": "2026-03-04T08:30:44.061918",
+      "name": "每日复盘报告",
+      "lastPreview": ""
+    }
+  },
+  "lastCheck": null,
+  "alerts": []
+}
