@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-14T05:30:01.675202",
-  "action_taken": true,
-  "message": "已清理 3 个旧会话文件，释放 0.0MB"
+  "timestamp": "2026-03-14T06:50:01.568469",
+  "action_taken": false,
+  "message": "上次压缩在 9.0 分钟前，跳过"
 }
