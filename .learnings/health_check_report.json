@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-13T16:40:01.883049",
+  "timestamp": "2026-03-14T00:50:01.683908",
   "overall_status": "issues_found",
   "checks": {
     "文章获取模块": {
@@ -26,13 +26,13 @@
     },
     "会话文件大小": {
       "healthy": false,
-      "message": "会话文件偏大 (最大 12.8MB，建议 /compact)"
+      "message": "会话文件偏大 (最大 24.0MB，建议 /compact)"
     }
   },
   "issues": [
     {
       "component": "会话文件大小",
-      "message": "会话文件偏大 (最大 12.8MB，建议 /compact)"
+      "message": "会话文件偏大 (最大 24.0MB，建议 /compact)"
     }
   ],
   "recommendations": [
