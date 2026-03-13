@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Second Brain 定时任务 - 每晚 11:30
-检查两类任务：
-1. 待读笔记列表（为空时静默跳过）
-2. 聊天记录主题归纳（自动分类，只需确认是否保留）
+Second Brain 定时任务 - 每晚 11:30 / 凌晨 5:00
+全自动处理，无需人工确认：
+1. 待读笔记列表（自动处理）
+2. 聊天记录主题归纳（自动归档）
 
 免打扰逻辑：如果前一天无任何交互，第二天复盘报告也跳过
 """
@@ -177,13 +177,6 @@ def generate_chat_topics_message(topics: list) -> str:
         "📋 概况说明",
         "以上是根据今天聊天记录自动归纳的主题。",
         "如需查看详情，可在 Obsidian 中打开对应日期的笔记。",
-        "",
-        "是否保留这些聊天记录主题？",
-        "",
-        "【Y】保留并处理（进入待读笔记流程）⭐ 默认",
-        "【N】删除（不保留当天聊天记录）",
-        "",
-        "⏰ 5分钟内无回复，默认按【Y】保留处理",
         "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"
     ])
     
@@ -314,61 +307,26 @@ def extract_source(file_path: Path) -> str:
     return "未知"
 
 def generate_confirmation_message() -> str:
-    """生成待确认列表消息"""
+    """生成待读笔记列表消息（后台自动处理，无需确认）"""
     queue = get_queue_list()
     
     if not queue:
         return ""
     
-    # 生成会话标识符（用于识别回复）
-    session_id = datetime.now().strftime("%Y%m%d%H%M")
-    
     message_lines = [
         "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄",
         f"📌 待读笔记列表（{datetime.now().strftime('%Y-%m-%d')}）",
-        f"<!-- SESSION:{session_id} -->",
         "",
-        f"共 {len(queue)} 个文件待处理：",
-        ""
-    ]
-    
-    for i, item in enumerate(queue, 1):
-        message_lines.extend([
-            f"{i}. {item['title']}",
-            f"   作者：{item['author']} | 来源：{item['source']} | 时间：{item['created']}",
-            ""
-        ])
-    
-    message_lines.extend([
-        "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄",
-        "请选择处理方式：",
+        f"共 {len(queue)} 个文件待处理",
         "",
-        "【A - 批量处理】",
-        "  1. 原文保存",
-        "  2. 主体+核心观点（500-1000字）⭐ 默认",
-        "  3. 精简摘要（300字以内）",
-        "",
-        "【B - 差异化处理】",
-        "  逐条展示并确认处理方式",
-        "",
-        "回复格式：",
-        "  A1 / A2 / A3 - 批量处理",
-        "  B - 差异化处理",
-        "",
-        "⏰ 15分钟内无回复，默认按 A2 处理",
+        "系统将自动处理这些文件，无需手动确认。",
         "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"
-    ])
+    ]
     
     return "\n".join(message_lines)
 
 def generate_daily_summary() -> str:
-    """生成每日待确认汇总（包含两类任务）
-    
-    处理顺序：
-    1. 先自动整理今天的聊天记录（如果没有文件）
-    2. 处理聊天记录（选择保留的会进入待读队列）
-    3. 再处理待读笔记（包含原有的+聊天记录新增的）
-    """
+    """生成每日任务汇总（后台自动处理）"""
     # 1. 先自动整理今天的聊天记录
     chat_summary = auto_summarize_today_chats()
     
