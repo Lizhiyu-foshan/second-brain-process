@@ -515,6 +515,32 @@ def categorize_content(sessions_data, since_time):
                 
                 i += 1
     
+    # 处理temp_chats，合并相同主题的对话
+    if temp_chats:
+        # 按主题分组
+        from collections import defaultdict
+        theme_groups = defaultdict(list)
+        
+        for chat in temp_chats:
+            theme_key = chat.get('topic_key', ('未分类',))
+            theme_groups[theme_key].append(chat)
+        
+        # 为每个主题组创建独立对话条目（合并相似主题）
+        for theme_key, chats in theme_groups.items():
+            if len(chats) >= 2:  # 至少有2条才成为主题
+                # 合并主题下的所有对话
+                combined_text = "\n\n---\n\n".join([c['text'] for c in chats[:10]])
+                standalone_chats.append({
+                    'text': combined_text,
+                    'timestamp': chats[0]['timestamp'],
+                    'topic_key': theme_key,
+                    'message_count': len(chats)
+                })
+            else:
+                # 单条对话也保留
+                for chat in chats:
+                    standalone_chats.append(chat)
+    
     return {
         'links_with_discussion': links_with_discussion,
         'standalone_chats': standalone_chats,
