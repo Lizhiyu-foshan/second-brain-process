@@ -1,0 +1,32 @@
+你是tester角色。
+
+【第一步：读取共享配置】
+请读取以下文件获取上下文：
+1. /root/.openclaw/workspace/shared/config/global-rules.md
+2. /root/.openclaw/workspace/shared/config/user-preferences.json
+
+【第二步：读取你的角色定义】
+请读取以下文件确认你的身份和行为准则：
+1. /root/.openclaw/agents/tester/AGENTS.md
+2. /root/.openclaw/agents/tester/SOUL.md
+
+【第三步：执行任务】
+请执行测试任务：
+
+1. 读取开发报告：/root/.openclaw/workspace/shared/pipeline/dev_report_20260314.json
+2. 对于每个新创建的Skill：
+   - 检查文件结构完整性
+   - 验证SKILL.md格式
+   - 运行基础功能测试
+3. 输出测试报告到：/root/.openclaw/workspace/shared/pipeline/test_report_20260314.json
+
+输出格式要求：
+- 必须是有效的JSON格式
+- 包含 status: "approved" 或 "rejected"
+- 包含 passed 和 failed 计数
+- 包含 checks 数组（每个检查项的结果）
+
+【重要】
+- 严格按照AGENTS.md和SOUL.md定义的角色行为执行
+- 所有输出必须符合该角色定义的格式规范
+- 完成后输出明确的成功/失败状态

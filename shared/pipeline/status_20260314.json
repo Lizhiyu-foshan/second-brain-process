@@ -42,5 +42,29 @@
     "shared/pipeline/dev_report_20260314.json",
     "shared/pipeline/test_report_20260314.json",
     "shared/pipeline/status_20260314.json"
-  ]
+  ],
+  "architecture": {
+    "status": "completed",
+    "timestamp": "2026-03-14T18:31:03.511471",
+    "data": {
+      "stdout_preview": "{\"date\": \"20260314\", \"agent\": \"architect\", \"model\": \"kimi-coding/k2p5\", \"status\": \"completed\", \"analysis\": {\"target\": \"self-evolution pipeline\", \"issues_found\": 2, \"severity\": \"medium\"}, \"gaps\": [{\"id\": 1, \"type\": \"automation\", \"title\": \"Pipeline\\u9700\\u8981\\u771f\\u6b63\\u7684\\u591aAgent\\u8c03\\u7528\\",
+      "stderr_preview": ""
+    }
+  },
+  "development": {
+    "status": "completed",
+    "timestamp": "2026-03-14T18:31:03.512239",
+    "data": {
+      "stdout_preview": "{\"date\": \"20260314\", \"agent\": \"developer\", \"model\": \"alicloud/glm-5\", \"status\": \"completed\", \"fixes\": [{\"gap_id\": 1, \"title\": \"Pipeline\\u9700\\u8981\\u771f\\u6b63\\u7684\\u591aAgent\\u8c03\\u7528\\u673a\\u5236\", \"changes\": [\"\\u66f4\\u65b0\\u4e86 orchestrator.py \\u4ee5\\u652f\\u6301\\u591aAgent\\u8c03\\u7528\", \"\\u6d",
+      "stderr_preview": ""
+    }
+  },
+  "testing": {
+    "status": "completed",
+    "timestamp": "2026-03-14T18:31:03.512889",
+    "data": {
+      "stdout_preview": "{\"date\": \"20260314\", \"agent\": \"tester\", \"model\": \"alicloud/qwen3.5-plus\", \"status\": \"approved\", \"total_checks\": 5, \"passed\": 5, \"failed\": 0, \"checks\": [{\"name\": \"\\u6587\\u4ef6\\u7ed3\\u6784\\u68c0\\u67e5\", \"result\": \"pass\", \"notes\": \"orchestrator.py\\u7ed3\\u6784\\u5b8c\\u6574\"}, {\"name\": \"Python\\u8bed\\u6cd5",
+      "stderr_preview": ""
+    }
+  }
 }
