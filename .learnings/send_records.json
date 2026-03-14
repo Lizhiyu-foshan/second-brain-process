@@ -206,6 +206,24 @@
       "success": false,
       "error": "Error: Channel is required when multiple channels are configured: feishu, kimi-claw\n",
       "content_preview": "📋 讨论准备摘要：OpenClaw进化技能 ⏰ 会议时间：2026-03-14 09:00（30分钟后）  📚 相关背景： 1. [[2026-03-10.md]] - 2026-03-10  🎯 建"
+    },
+    {
+      "fingerprint": "686a314f8748168b",
+      "time": "2026-03-14T08:16:22.895706",
+      "type": "test",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "🧪 防重机制测试  这是修复后的防重发送测试。 如果5分钟内再次发送相同内容，应该被拦截。  ⏰ 测试时间：2026-03-14 08:16"
+    },
+    {
+      "fingerprint": "2c8433886b92f1bd",
+      "time": "2026-03-14T08:30:09.214525",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📊 每日复盘报告（2026-03-14）  📅 昨日概况（2026-03-13） • 新增对话记录：已自动归档 • 知识库总篇数：24 篇   - 对话记录：9 篇   - 文章剪藏：15 篇  🏥 "
     }
   ],
   "last_cleanup": "2026-03-09T08:30:58.142073"

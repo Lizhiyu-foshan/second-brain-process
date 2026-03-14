@@ -1,65 +1,65 @@
 {
-  "timestamp": "2026-03-13T10:46:45.178889",
+  "timestamp": "2026-03-14T08:28:39.323571",
   "model": "kimi-k2.5",
-  "analysis_days": 7,
+  "analysis_days": 1,
   "gaps": [
     {
       "type": "workflow_optimization",
-      "title": "定时任务可靠性监控与自动切换",
-      "description": "用户依赖OpenClaw内置定时任务系统，但版本更新导致isolated+agentTurn模式失效，造成7个核心任务全部停止。用户被迫手动迁移到Linux cron，但仍有4个isolated模式任务未迁移，存在持续风险。缺乏对定时任务实际执行状态的监控（任务显示'成功'但文件未更新）。",
-      "evidence": "2026-03-13事故：OpenClaw 2026.2.13更新后所有isolated模式定时任务失效；用户手动创建/tmp/new_crontab.txt迁移7个任务；仍有4个任务（周五美术馆推送、艺术史漫游推送等）未迁移；需要手动验证文件时间戳确认执行状态",
-      "frequency": "high",
-      "suggested_skill": "cron-failsafe-monitor",
-      "skill_description": "监控OpenClaw定时任务实际执行状态（通过文件时间戳、日志输出验证），在检测到任务失效时自动触发备用执行方案（系统cron或即时通知），并提供任务健康仪表板",
-      "estimated_benefit": "消除定时任务静默失效风险，节省每次版本更新后的手动验证和迁移工作（约2-4小时/次）",
-      "priority": "high",
-      "action": "install_skill"
-    },
-    {
-      "type": "content_processing",
-      "title": "文章剪藏链路智能验证与自愈",
-      "description": "用户有完整的文章剪藏处理流程（即时处理/凌晨定时/补处理），但缺乏对链路各环节的健康检查机制。2026-03-09检查时发现需要手动验证微信文章获取有效性、AI创作调用稳定性、超时机制等6个检查点。链路任何环节失效都无法自动感知。",
-      "evidence": "2026-03-09用户要求检查link_handler.py、daily_task.py、processor.py、queue_response_handler.py；列出6个关键检查点（微信文章获取、AI创作调用、15分钟超时、凌晨5点定时、补处理机制）；2026-03-10 AI分析识别出'文章剪藏处理链路验证'为高优先级缺口",
-      "frequency": "high",
-      "suggested_skill": "content-pipeline-healer",
-      "skill_description": "对文章剪藏处理链路进行端到端健康检查（链接获取→内容提取→AI处理→存储→推送），自动检测各环节失效并尝试自愈（重试、切换备用方案、降级处理），生成链路健康报告",
-      "estimated_benefit": "将链路故障发现时间从天级缩短到分钟级，减少手动排查时间（约30-60分钟/次故障）",
-      "priority": "high",
-      "action": "install_skill"
-    },
-    {
-      "type": "workflow_optimization",
-      "title": "上下文窗口动态适配管理",
-      "description": "用户使用多种模型（GLM-5 128k, Kimi K2.5等），但OpenClaw的softThresholdTokens固定为200000，导致GLM-5频繁超限触发消息延迟。需要手动调整配置或主动触发压缩，缺乏根据当前模型自动适配阈值的能力。",
-      "evidence": "2026-03-09验证：softThresholdTokens: 200000 > GLM-5(128k)导致超限；用户提出两种修复方案（固定适配100000或动态计算contextWindow*0.75）；2026-03-10 AI分析识别'上下文窗口管理策略未固化'为高优先级缺口",
+      "title": "Skill开发流程缺乏标准化",
+      "description": "用户需要手动创建skill目录结构、编写SKILL.md、实现脚本、打包安装，整个过程耗时5-10分钟且容易出错。从创建git-safety-guardian的过程可见，涉及多个文件操作、路径配置、权限设置等繁琐步骤。",
+      "evidence": "创建git-safety-guardian时执行了read/exec/write/edit等多达15+次工具调用，耗时约5分钟，包含手动创建目录结构、编写元数据、实现Python脚本、打包、安装、验证等步骤",
       "frequency": "medium",
-      "suggested_skill": "adaptive-context-guardian",
-      "skill_description": "实时监测当前会话使用的模型及其上下文窗口，动态计算并调整压缩阈值（contextWindow*0.75），在模型切换时自动更新配置，长内容发送后智能预触发压缩",
-      "estimated_benefit": "消除模型切换导致的上下文超限问题，减少手动干预和消息延迟（约5-10分钟/次处理延迟）",
+      "suggested_skill": "skill-creator",
+      "skill_description": "提供交互式skill脚手架生成器，通过对话式引导自动创建标准skill结构，包含模板填充、自动打包、一键安装功能，将skill开发时间从5-10分钟缩短到1-2分钟",
+      "estimated_benefit": "节省80%的skill创建时间，降低出错率，促进更多自动化工具的创建",
+      "priority": "high",
+      "action": "install_skill"
+    },
+    {
+      "type": "knowledge_query",
+      "title": "已安装Skill清单管理不透明",
+      "description": "用户和AI都需要通过exec命令读取目录才能确认已安装skill，缺乏实时、结构化的skill inventory查询能力。这导致复盘报告重复推荐已安装skill，用户也无法快速浏览可用能力。",
+      "evidence": "AI多次使用`ls -la /root/.openclaw/skills/`命令检查已安装skill；用户反馈'auto-git-sync昨天已经安装今天又再提示'；修复过程中需要手动比对目录列表和推荐列表",
+      "frequency": "high",
+      "suggested_skill": "skill-inventory",
+      "skill_description": "提供统一的skill资产管理界面，支持实时查询已安装skill、查看skill文档、检查更新状态、快速启用/禁用skill，并与AI分析器集成自动排除已安装项",
+      "estimated_benefit": "消除重复推荐问题，提升skill发现效率，减少人工目录检查操作",
+      "priority": "high",
+      "action": "install_skill"
+    },
+    {
+      "type": "messaging_automation",
+      "title": "飞书消息缺乏结构化模板与追踪",
+      "description": "用户通过飞书DM与系统交互，但消息缺乏结构化格式（如按钮、卡片、状态标识），且无法追踪消息送达、阅读、执行状态。从对话可见，用户需要主动追问'请执行，并反馈结果'，系统无法主动推送进度。",
+      "evidence": "用户发送'请把今天更新后的自我进化系统复盘再发一次给我'表明需要主动索取；安装skill后用户需要等待并询问结果；所有飞书消息均为纯文本，无交互元素",
+      "frequency": "high",
+      "suggested_skill": "feishu-interactive-cards",
+      "skill_description": "扩展feishu-automation，支持发送富文本卡片消息（包含按钮、进度条、状态标识），实现消息状态追踪（已发送/已读/处理中/已完成），并支持用户通过卡片按钮直接触发操作",
+      "estimated_benefit": "减少50%的往返确认消息，提升异步协作效率，增强操作可追溯性",
       "priority": "medium",
-      "action": "install_skill"
+      "action": "enable_feature"
     },
     {
-      "type": "meeting_assistant",
-      "title": "讨论准备与知识预加载自动化",
-      "description": "用户经常需要为特定主题讨论做准备（如2026-03-10上午9点的'OpenClaw进化技能'讨论），但缺乏自动化的讨论准备流程。当前需要手动整理相关文章、提取关键洞察、准备讨论要点，无法提前自动预加载相关知识。",
-      "evidence": "2026-03-10记录：'明天上午9点讨论'需要准备AI沃茨文章、4个核心洞察、3个趋势判断；2026-03-10 AI分析识别'讨论准备与知识预加载'为中等优先级缺口；用户手动创建准备内容并约定时间",
+      "type": "code_generation",
+      "title": "Git安全钩子缺乏自动部署机制",
+      "description": "git-safety-guardian创建后，pre-push钩子需要手动在每个仓库安装，用户有8个嵌套仓库但缺乏批量部署能力。当前需要逐个进入目录执行安装命令，容易遗漏。",
+      "evidence": "AI检测到8个嵌套仓库后询问'需要我现在在obsidian-vault仓库安装pre-push钩子吗'，暗示只能逐个处理；用户未回应其他7个仓库的处理方式",
       "frequency": "medium",
-      "suggested_skill": "discussion-prep-orchestrator",
-      "skill_description": "基于日历事件或用户指令，自动识别即将进行的讨论主题，从知识库检索相关文章/笔记，提取关键洞察和待讨论问题，生成结构化讨论提纲并预加载到会话上下文",
-      "estimated_benefit": "将讨论准备时间从30-45分钟缩短到5分钟，提升讨论质量和知识复用率",
+      "suggested_skill": "git-hook-manager",
+      "skill_description": "提供Git钩子集中管理平台，自动发现workspace下所有git仓库，支持批量安装/更新/卸载钩子，统一管理多仓库的Git安全策略，并与git-safety-guardian集成",
+      "estimated_benefit": "将8个仓库的钩子部署从手动8次操作减少到1次批量操作，确保策略全覆盖",
       "priority": "medium",
       "action": "install_skill"
     },
     {
       "type": "data_sync",
-      "title": "复盘报告行动项自动闭环追踪",
-      "description": "用户每日接收复盘报告（8:30自动发送），但报告中的行动项缺乏自动追踪机制。2026-03-10的复盘报告包含5个能力缺口和多个待办事项，但用户需要手动管理这些行动项的执行状态，无法自动追踪哪些已完成、哪些被忽略、哪些需要提醒。",
-      "evidence": "2026-03-10 AI分析输出5个能力缺口表格（含优先级和推荐Skill）；每日报告包含'待办事项更新'但需手动维护；2026-03-10 AI分析识别'复盘报告与行动项闭环'为高优先级缺口；存在'待验证定时任务运行结果'等未闭环事项",
+      "title": "AI分析结果与报告生成链路存在断点",
+      "description": "ai_gap_analyzer生成的分析结果因路径配置错误无法被报告生成器读取，导致回退到旧的keyword-based分析器。这暴露了配置管理、路径一致性、跨组件数据传递的脆弱性。",
+      "evidence": "run_daily_report_progress.py使用了错误的LEARNINGS_DIR路径（SCRIPT_DIR/.learnings而非WORKSPACE/.learnings），导致读取不到ai_gap_analysis.json；修复需要手动修改硬编码路径",
       "frequency": "high",
-      "suggested_skill": "action-loop-closer",
-      "skill_description": "自动提取复盘报告中的行动项，创建追踪清单，监控执行状态（通过文件变更、Skill安装记录、任务完成标记），对逾期未完成的行动项主动提醒，生成行动项完成率报告",
-      "estimated_benefit": "将行动项遗忘率从约30%降低到5%以下，减少手动维护待办清单的时间（约10-15分钟/天）",
+      "suggested_skill": "config-validator",
+      "skill_description": "提供配置一致性检查工具，自动验证跨组件的路径、变量、依赖关系，在部署前检测配置漂移和潜在断点，支持配置模板化和环境隔离",
+      "estimated_benefit": "预防类似路径错误导致的系统失效，减少调试时间，提升系统可靠性",
       "priority": "high",
       "action": "install_skill"
     }
@@ -74,5 +74,5 @@
     "bmad-method",
     "feishu-automation"
   ],
-  "raw_response": "```json\n{\n  \"gaps\": [\n    {\n      \"type\": \"workflow_optimization\",\n      \"title\": \"定时任务可靠性监控与自动切换\",\n      \"description\": \"用户依赖OpenClaw内置定时任务系统，但版本更新导致isolated+agentTurn模式失效，造成7个核心任务全部停止。用户被迫手动迁移到Linux cron，但仍有4个isolated模式任务未迁移，存在持续风险。缺乏对定时任务实际执行状态的监控（任务显示'成功'但文件未更新）。\",\n      \"evidence\": \"2026-03-13事故：OpenClaw 2026.2.13更新后所有isolated模式定时任务失效；用户手动创建/tmp/new_crontab.txt迁移7个任务；仍有4个任务（周五美术馆推送、艺术史漫游推送等）未迁移；需要手动验证文件时间戳确认执行状态\",\n      \"frequency\": \"high\",\n      \"suggested_skill\": \"cron-failsafe-monitor\",\n      \"skill_description\": \"监控OpenClaw定时任务实际执行状态（通过文件时间戳、日志输出验证），在检测到任务失效时自动触发备用执行方案（系统cron或即时通知），并提供任务健康仪表板\",\n      \"estimated_benefit\": \"消除定时任务静默失效风险，节省每次版本更新后的手动验证和迁移工作（约2-4小时/次）\",\n      \"priority\": \"high\",\n      \"action\": \"install_skill\"\n    },\n    {\n      \"type\": \"content_processing\",\n      \"title\": \"文章剪藏链路智能验证与自愈\",\n      \"description\": \"用户有完整的文章剪藏处理流程（即时处理/凌晨定时/补处理），但缺乏对链路各环节的健康检查机制。2026-03-09检查时发现需要手动验证微信文章获取有效性、AI创作调用稳定性、超时机制等6个检查点。链路任何环节失效都无法自动感知。\",\n      \"evidence\": \"2026-03-09用户要求检查link_handler.py、daily_task.py、processor.py、queue_response_handler.py；列出6个关键检查点（微信文章获取、AI创作调用、15分钟超时、凌晨5点定时、补处理机制）；2026-03-10 AI分析识别出'文章剪藏处理链路验证'为高优先级缺口\",\n      \"frequency\": \"high\",\n      \"suggested_skill\": \"content-pipeline-healer\",\n      \"skill_description\": \"对文章剪藏处理链路进行端到端健康检查（链接获取→内容提取→AI处理→存储→推送），自动检测各环节失效并尝试自愈（重试、切换备用方案、降级处理），生成链路健康报告\",\n      \"estimated_benefit\": \"将链路故障发现时间从天级缩短到分钟级，减少手动排查时间（约30-60分钟/次故障）\",\n      \"priority\": \"high\",\n      \"action\": \"install_skill\"\n    },\n    {\n      \"type\": \"workflow_optimization\",\n      \"title\": \"上下文窗口动态适配管理\",\n      \"description\": \"用户使用多种模型（GLM-5 128k, Kimi K2.5等），但OpenClaw的softThresholdTokens固定为200000，导致GLM-5频繁超限触发消息延迟。需要手动调整配置或主动触发压缩，缺乏根据当前模型自动适配阈值的能力。\",\n      \"evidence\": \"2026-03-09验证：softThresholdTokens: 200000 > GLM-5(128k)导致超限；用户提出两种修复方案（固定适配100000或动态计算contextWindow*0.75）；2026-03-10 AI分析识别'上下文窗口管理策略未固化'为高优先级缺口\",\n      \"frequency\": \"medium\",\n      \"suggested_skill\": \"adaptive-context-guardian\",\n      \"skill_description\": \"实时监测当前会话使用的模型及其上下文窗口，"
+  "raw_response": "```json\n{\n  \"gaps\": [\n    {\n      \"type\": \"workflow_optimization\",\n      \"title\": \"Skill开发流程缺乏标准化\",\n      \"description\": \"用户需要手动创建skill目录结构、编写SKILL.md、实现脚本、打包安装，整个过程耗时5-10分钟且容易出错。从创建git-safety-guardian的过程可见，涉及多个文件操作、路径配置、权限设置等繁琐步骤。\",\n      \"evidence\": \"创建git-safety-guardian时执行了read/exec/write/edit等多达15+次工具调用，耗时约5分钟，包含手动创建目录结构、编写元数据、实现Python脚本、打包、安装、验证等步骤\",\n      \"frequency\": \"medium\",\n      \"suggested_skill\": \"skill-creator\",\n      \"skill_description\": \"提供交互式skill脚手架生成器，通过对话式引导自动创建标准skill结构，包含模板填充、自动打包、一键安装功能，将skill开发时间从5-10分钟缩短到1-2分钟\",\n      \"estimated_benefit\": \"节省80%的skill创建时间，降低出错率，促进更多自动化工具的创建\",\n      \"priority\": \"high\",\n      \"action\": \"install_skill\"\n    },\n    {\n      \"type\": \"knowledge_query\",\n      \"title\": \"已安装Skill清单管理不透明\",\n      \"description\": \"用户和AI都需要通过exec命令读取目录才能确认已安装skill，缺乏实时、结构化的skill inventory查询能力。这导致复盘报告重复推荐已安装skill，用户也无法快速浏览可用能力。\",\n      \"evidence\": \"AI多次使用`ls -la /root/.openclaw/skills/`命令检查已安装skill；用户反馈'auto-git-sync昨天已经安装今天又再提示'；修复过程中需要手动比对目录列表和推荐列表\",\n      \"frequency\": \"high\",\n      \"suggested_skill\": \"skill-inventory\",\n      \"skill_description\": \"提供统一的skill资产管理界面，支持实时查询已安装skill、查看skill文档、检查更新状态、快速启用/禁用skill，并与AI分析器集成自动排除已安装项\",\n      \"estimated_benefit\": \"消除重复推荐问题，提升skill发现效率，减少人工目录检查操作\",\n      \"priority\": \"high\",\n      \"action\": \"install_skill\"\n    },\n    {\n      \"type\": \"messaging_automation\",\n      \"title\": \"飞书消息缺乏结构化模板与追踪\",\n      \"description\": \"用户通过飞书DM与系统交互，但消息缺乏结构化格式（如按钮、卡片、状态标识），且无法追踪消息送达、阅读、执行状态。从对话可见，用户需要主动追问'请执行，并反馈结果'，系统无法主动推送进度。\",\n      \"evidence\": \"用户发送'请把今天更新后的自我进化系统复盘再发一次给我'表明需要主动索取；安装skill后用户需要等待并询问结果；所有飞书消息均为纯文本，无交互元素\",\n      \"frequency\": \"high\",\n      \"suggested_skill\": \"feishu-interactive-cards\",\n      \"skill_description\": \"扩展feishu-automation，支持发送富文本卡片消息（包含按钮、进度条、状态标识），实现消息状态追踪（已发送/已读/处理中/已完成），并支持用户通过卡片按钮直接触发操作\",\n      \"estimated_benefit\": \"减少50%的往返确认消息，提升异步协作效率，增强操作可追溯性\",\n      \"priority\": \"medium\",\n      \"action\": \"enable_feature\"\n    },\n    {\n      \"type\": \"code_generation\",\n      \"title\": \"Git安全钩子缺乏自动部署机制\",\n      \""
 }
