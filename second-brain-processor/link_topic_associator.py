@@ -27,7 +27,7 @@ LEARNINGS_DIR = WORKSPACE / ".learnings"
 # API配置 - 阿里云百炼 Kimi K2.5 API
 API_KEY = os.environ.get('ALICLOUD_API_KEY', '')
 BASE_URL = "https://coding.dashscope.aliyuncs.com/v1"
-MODEL = "kimi-2.5"
+MODEL = "kimi-k2.5"
 
 
 def log(message: str):

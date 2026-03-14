@@ -97,7 +97,7 @@ def call_ai_for_deep_processing(content: str, title: str, related_notes: List[Di
         import openclaw
         result = openclaw.sessions_spawn(
             task=prompt,
-            model="kimi-2.5",
+            model="kimi-k2.5",
             thinking="high",
             timeout_seconds=120
         )
@@ -198,7 +198,7 @@ def process_chat_record(content: str, title: str, date_str: str) -> Dict:
         import openclaw
         themes_result = openclaw.sessions_spawn(
             task=themes_prompt,
-            model="kimi-2.5",
+            model="kimi-k2.5",
             thinking="high",
             timeout_seconds=120
         )

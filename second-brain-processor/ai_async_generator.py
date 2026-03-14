@@ -35,8 +35,8 @@ except ImportError:
     ALICLOUD_API_KEY = os.environ.get('ALICLOUD_API_KEY', '')
     ALICLOUD_BASE_URL = os.environ.get('ALICLOUD_BASE_URL', 'https://coding.dashscope.aliyuncs.com/v1')
     # 统一使用Kimi K2.5模型
-    ALICLOUD_MODEL_FAST = 'kimi-2.5'
-    ALICLOUD_MODEL_COMPLEX = 'kimi-2.5'
+    ALICLOUD_MODEL_FAST = 'kimi-k2.5'
+    ALICLOUD_MODEL_COMPLEX = 'kimi-k2.5'
     WORKSPACE = Path("/root/.openclaw/workspace")
     ERRORS_FILE = WORKSPACE / ".learnings" / "ERRORS.md"
     AI_PENDING_FILE = WORKSPACE / ".learnings" / "AI_PENDING.json"
