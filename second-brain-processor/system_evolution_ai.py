@@ -37,7 +37,7 @@ except ImportError:
     ALICLOUD_MODEL_FAST = os.environ.get('ALICLOUD_MODEL_FAST', 'MiniMax-M2.5')
     ALICLOUD_MODEL_COMPLEX = os.environ.get('ALICLOUD_MODEL_COMPLEX', 'glm-5')
     ALICLOUD_MODEL_CHAT_FAST = os.environ.get('ALICLOUD_MODEL_CHAT_FAST', 'qwen3.5-plus')
-    ALICLOUD_MODEL_CHAT_COMPLEX = os.environ.get('ALICLOUD_MODEL_CHAT_COMPLEX', 'kimi-2.5')
+    ALICLOUD_MODEL_CHAT_COMPLEX = os.environ.get('ALICLOUD_MODEL_CHAT_COMPLEX', 'kimi-k2.5')
     WORKSPACE = Path("/root/.openclaw/workspace")
     ERRORS_FILE = WORKSPACE / ".learnings" / "ERRORS.md"
     EVOLUTION_LOG = WORKSPACE / ".learnings" / "EVOLUTION_LOG.md"

@@ -30,7 +30,7 @@ except ImportError:
     ALICLOUD_MODEL_FAST = os.environ.get('ALICLOUD_MODEL_FAST', 'MiniMax-M2.5')
     ALICLOUD_MODEL_COMPLEX = os.environ.get('ALICLOUD_MODEL_COMPLEX', 'glm-5')
     ALICLOUD_MODEL_CHAT_FAST = os.environ.get('ALICLOUD_MODEL_CHAT_FAST', 'qwen3.5-plus')
-    ALICLOUD_MODEL_CHAT_COMPLEX = os.environ.get('ALICLOUD_MODEL_CHAT_COMPLEX', 'kimi-2.5')
+    ALICLOUD_MODEL_CHAT_COMPLEX = os.environ.get('ALICLOUD_MODEL_CHAT_COMPLEX', 'kimi-k2.5')
 
 
 class TaskType(Enum):
@@ -83,7 +83,7 @@ MODELS = {
         context_window=32000,
         speed="快"
     ),
-    "kimi-2.5": ModelConfig(
+    "kimi-k2.5": ModelConfig(
         name="Kimi 2.5",
         model_id=ALICLOUD_MODEL_CHAT_COMPLEX,
         role="深度思考专家",
@@ -169,7 +169,7 @@ class ModelRouter:
             (['使用minimax', '用minimax', '切换minimax', '/model minimax'], 'MiniMax-M2.5', '手动指定: MiniMax M2.5'),
             (['使用glm', '用glm', '切换glm', '/model glm', '使用glm-5', '用glm-5'], 'glm-5', '手动指定: GLM-5'),
             (['使用qwen', '用qwen', '切换qwen', '/model qwen', '使用通义', '用通义'], 'qwen3.5-plus', '手动指定: Qwen 3.5 Plus'),
-            (['使用kimi', '用kimi', '切换kimi', '/model kimi'], 'kimi-2.5', '手动指定: Kimi 2.5'),
+            (['使用kimi', '用kimi', '切换kimi', '/model kimi'], 'kimi-k2.5', '手动指定: Kimi 2.5'),
         ]
         
         for keywords, model_key, reasoning in manual_patterns:
@@ -264,7 +264,7 @@ class ModelRouter:
         if has_link:
             task_type, complexity, link_reasoning = self.detect_link_intent(prompt)
             if complexity == TaskComplexity.COMPLEX:
-                model_key = "kimi-2.5"
+                model_key = "kimi-k2.5"
             else:
                 model_key = "qwen3.5-plus"
             config = MODELS[model_key]
@@ -290,7 +290,7 @@ class ModelRouter:
                 model_key = "qwen3.5-plus"
                 reasoning = f"对话任务+快速 -> Qwen 3.5 Plus"
             else:
-                model_key = "kimi-2.5"
+                model_key = "kimi-k2.5"
                 reasoning = f"对话任务+复杂 -> Kimi 2.5"
         
         config = MODELS[model_key]
@@ -302,7 +302,7 @@ class ModelRouter:
             "MiniMax-M2.5": "你是资深代码修复专家，专注快速定位问题、高效生成修复代码。",
             "glm-5": "你是资深软件架构师，专注复杂代码设计、架构优化、边界条件处理。",
             "qwen3.5-plus": "你是智能对话助手，擅长快速理解问题、简洁回答。",
-            "kimi-2.5": "你是深度思考专家，擅长复杂逻辑分析、哲学思辨、深度洞察。"
+            "kimi-k2.5": "你是深度思考专家，擅长复杂逻辑分析、哲学思辨、深度洞察。"
         }
         return prompts.get(model_key, "你是一个AI助手。")
 
