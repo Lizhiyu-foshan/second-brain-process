@@ -56,7 +56,8 @@ def release_lock():
 
 # 路径配置
 WORKSPACE = Path("/root/.openclaw/workspace")
-QUEUE_DIR = WORKSPACE / "second-brain-processor" / "queue"
+PROCESSOR_DIR = WORKSPACE / "second-brain-processor"
+QUEUE_DIR = PROCESSOR_DIR / "queue"
 VAULT_DIR = WORKSPACE / "obsidian-vault"
 MEMORY_DIR = WORKSPACE / "memory"
 SESSION_DIR = Path("/root/.openclaw/agents/main/sessions")

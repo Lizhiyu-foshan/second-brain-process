@@ -1,0 +1,85 @@
+{
+  "user": {
+    "name": "",
+    "timezone": "Asia/Shanghai",
+    "mbti": "INTP",
+    "communication_style": "简洁直接",
+    "safety_preference": "保守",
+    "git_preference": "四确认检查"
+  },
+  "agents": {
+    "architect": {
+      "model": "kimi-coding/k2p5",
+      "thinking": "high",
+      "role": "系统架构师",
+      "responsibilities": [
+        "分析系统能力缺口",
+        "制定改进方案",
+        "评估优先级"
+      ]
+    },
+    "developer": {
+      "model": "alicloud/glm-5",
+      "thinking": "medium",
+      "role": "Skill开发工程师",
+      "responsibilities": [
+        "根据计划创建Skills",
+        "编写核心代码",
+        "生成SKILL.md"
+      ]
+    },
+    "tester": {
+      "model": "alicloud/qwen3.5-plus",
+      "thinking": "low",
+      "role": "质量保障工程师",
+      "responsibilities": [
+        "验证文件结构完整性",
+        "运行基础功能测试",
+        "输出测试报告"
+      ]
+    }
+  },
+  "pipeline": {
+    "schedule": "0 4 * * *",
+    "timezone": "Asia/Shanghai",
+    "stages": [
+      {
+        "name": "architecture",
+        "agent": "architect",
+        "timeout_minutes": 30,
+        "output": "shared/pipeline/plan_YYYYMMDD.json"
+      },
+      {
+        "name": "development",
+        "agent": "developer",
+        "timeout_minutes": 45,
+        "input": "shared/pipeline/plan_YYYYMMDD.json",
+        "output": "shared/pipeline/dev_report_YYYYMMDD.json"
+      },
+      {
+        "name": "testing",
+        "agent": "tester",
+        "timeout_minutes": 20,
+        "input": "shared/pipeline/dev_report_YYYYMMDD.json",
+        "output": "shared/pipeline/test_report_YYYYMMDD.json"
+      }
+    ]
+  },
+  "global_features": {
+    "context_compression": {
+      "enabled": true,
+      "trigger_tokens": 200000,
+      "target_tokens": 50000
+    },
+    "message_dedup": {
+      "enabled": true,
+      "window_hours": 12,
+      "channels": ["feishu", "kimi-claw"]
+    },
+    "auto_backup": {
+      "enabled": true,
+      "max_backups": 10,
+      "backup_dir": ".backup"
+    }
+  }
+}
