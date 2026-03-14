@@ -22,8 +22,8 @@ WORKSPACE = Path("/root/.openclaw/workspace")
 LEARNINGS_DIR = WORKSPACE / ".learnings"
 RECEIVED_MSG_FILE = LEARNINGS_DIR / "received_messages.json"
 
-# 去重窗口 - 2小时（覆盖 Feishu 重试周期和小时边界）
-DEDUP_WINDOW_SECONDS = 7200
+# 去重窗口 - 12小时（覆盖 Feishu 重试周期和小时边界）
+DEDUP_WINDOW_SECONDS = 43200
 
 _lock = threading.Lock()
 

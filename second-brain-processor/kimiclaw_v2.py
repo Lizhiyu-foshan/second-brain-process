@@ -550,6 +550,21 @@ def commit_and_push(message):
             
             if result.returncode == 0:
                 log("✅ Git推送成功")
+                # 发送推送成功通知（带防重保护）
+                try:
+                    sys.path.insert(0, str(PROCESSOR_DIR))
+                    from feishu_guardian import send_feishu_safe
+                    commit_hash = subprocess.run(
+                        ['git', 'rev-parse', '--short', 'HEAD'],
+                        cwd=VAULT_DIR, capture_output=True, text=True, timeout=10
+                    ).stdout.strip()
+                    send_feishu_safe(
+                        content=f"✅ Git推送成功\n\n提交: {message[:50]}...\n哈希: {commit_hash}",
+                        target="ou_363105a68ee112f714ed44e12c802051",
+                        msg_type="git_push"
+                    )
+                except Exception as e:
+                    log(f"[WARN] 推送通知发送失败: {e}")
                 return {'success': True, 'round': 1, 'attempt': i+1}
             
         except subprocess.TimeoutExpired:
@@ -584,6 +599,21 @@ def commit_and_push(message):
             
             if result.returncode == 0:
                 log("✅ Git推送成功（第二轮）")
+                # 发送推送成功通知（带防重保护）
+                try:
+                    sys.path.insert(0, str(PROCESSOR_DIR))
+                    from feishu_guardian import send_feishu_safe
+                    commit_hash = subprocess.run(
+                        ['git', 'rev-parse', '--short', 'HEAD'],
+                        cwd=VAULT_DIR, capture_output=True, text=True, timeout=10
+                    ).stdout.strip()
+                    send_feishu_safe(
+                        content=f"✅ Git推送成功（第二轮重试）\n\n提交: {message[:50]}...\n哈希: {commit_hash}",
+                        target="ou_363105a68ee112f714ed44e12c802051",
+                        msg_type="git_push"
+                    )
+                except Exception as e:
+                    log(f"[WARN] 推送通知发送失败: {e}")
                 return {'success': True, 'round': 2, 'attempt': i+1}
             
         except subprocess.TimeoutExpired:
