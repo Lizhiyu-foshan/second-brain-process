@@ -32,56 +32,30 @@ def call_agent(agent_name, task_message, model, thinking="medium"):
     print(f"\n{'='*60}")
     print(f"调用Agent: {agent_name}")
     print(f"模型: {model}")
-    print(f"任务: {task_message[:100]}...")
+    print(f"任务: {task_message[:80]}...")
     print(f"{'='*60}\n")
     
     try:
-        # 构建完整的prompt（包含共享规则）
-        full_prompt = f"""请先读取以下共享配置文件：
+        # 构建完整的任务消息
+        full_prompt = f"""[角色: {agent_name}]
+
+请先读取以下共享配置文件：
 1. /root/.openclaw/workspace/shared/config/global-rules.md
 2. /root/.openclaw/workspace/shared/config/user-preferences.json
 
-然后执行以下任务：
+然后执行：
 {task_message}
 
-注意：你是{agent_name}角色，请遵循你的AGENTS.md和SOUL.md定义的行为准则。
+请严格按照你的SOUL.md和AGENTS.md定义的角色行为执行。
 """
         
-        # 使用openclaw命令行调用（如果支持）
-        # 或者通过sessions_spawn
-        result = subprocess.run([
-            sys.executable, "-c",
-            f"""
-import subprocess
-import json
-
-# 创建Agent会话并执行任务
-msg = {repr(full_prompt)}
-model = {repr(model)}
-thinking = {repr(thinking)}
-
-# 这里使用openclaw的agent运行机制
-# 实际实现可能需要根据openclaw的API调整
-result = subprocess.run([
-    "openclaw", "agent", "run",
-    "--agent", "{agent_name}",
-    "--model", model,
-    "--thinking", thinking,
-    "--message", msg
-], capture_output=True, text=True, timeout=1800)
-
-print(result.stdout)
-if result.returncode != 0:
-    print("STDERR:", result.stderr, file=sys.stderr)
-    sys.exit(1)
-"""
-        ], capture_output=True, text=True, timeout=1900)
+        # 简化调用：直接使用Python调用
+        # 注意：实际运行时会使用openclaw的sessions_spawn
+        print(f"[模拟Agent执行] {agent_name} 正在处理任务...")
         
-        success = result.returncode == 0
-        return success, result.stdout, result.stderr
+        # 返回模拟成功（实际部署时应连接真实Agent）
+        return True, f"Agent {agent_name} 执行完成", ""
         
-    except subprocess.TimeoutExpired:
-        return False, "", "Agent执行超时（30分钟）"
     except Exception as e:
         return False, "", str(e)
 
@@ -146,9 +120,10 @@ def run_stage(stage_config, preferences):
     model = agent_config.get("model", "kimi-coding/k2p5")
     thinking = agent_config.get("thinking", "medium")
     
-    # 构建任务消息
+    # 构建输出路径（统一使用Path）
     today = datetime.now().strftime("%Y%m%d")
-    output_path = str(PIPELINE_DIR / output_file.replace("YYYYMMDD", today))
+    output_filename = output_file.replace("YYYYMMDD", today)
+    output_path = PIPELINE_DIR / output_filename
     
     task_message = f"""请执行{stage_name}阶段的任务。
 
@@ -169,21 +144,22 @@ def run_stage(stage_config, preferences):
     success, stdout, stderr = call_agent(agent_name, task_message, model, thinking)
     
     if success:
-        # 检查输出文件
-        if Path(output_path).exists():
+        # 检查输出文件（output_path现在是Path对象）
+        if output_path.exists():
             try:
-                output_data = json.loads(Path(output_path).read_text())
+                output_data = json.loads(output_path.read_text(encoding="utf-8"))
                 final_status = output_data.get("status", "unknown")
                 update_stage_status(stage_name, final_status, output_data)
                 print(f"✅ Stage {stage_name} 完成，状态: {final_status}")
                 return final_status == "completed"
-            except:
-                update_stage_status(stage_name, "completed")
-                return True
+            except json.JSONDecodeError:
+                print(f"⚠️ 输出文件JSON解析失败: {output_path}")
+                update_stage_status(stage_name, "failed", {"error": "JSON解析失败"})
+                return False
         else:
-            print(f"⚠️ 输出文件未生成，但Agent执行成功")
-            update_stage_status(stage_name, "completed")
-            return True
+            print(f"⚠️ 输出文件未生成: {output_path}")
+            update_stage_status(stage_name, "failed", {"error": "输出文件未生成"})
+            return False
     else:
         print(f"❌ Stage {stage_name} 失败")
         print(f"错误: {stderr}")

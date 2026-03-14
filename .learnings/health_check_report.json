@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-14T17:50:01.618408",
+  "timestamp": "2026-03-14T18:00:01.108917",
   "overall_status": "issues_found",
   "checks": {
     "文章获取模块": {
@@ -16,8 +16,8 @@
       "pending_count": 0
     },
     "定时任务状态": {
-      "healthy": true,
-      "message": "定时任务列表可获取",
+      "healthy": false,
+      "message": "定时任务检查超时",
       "failed_jobs": []
     },
     "磁盘空间": {
@@ -26,13 +26,17 @@
     },
     "会话文件大小": {
       "healthy": false,
-      "message": "会话文件偏大 (最大 33.0MB，建议 /compact)"
+      "message": "会话文件偏大 (最大 33.3MB，建议 /compact)"
     }
   },
   "issues": [
     {
+      "component": "定时任务状态",
+      "message": "定时任务检查超时"
+    },
+    {
       "component": "会话文件大小",
-      "message": "会话文件偏大 (最大 33.0MB，建议 /compact)"
+      "message": "会话文件偏大 (最大 33.3MB，建议 /compact)"
     }
   ],
   "recommendations": [
