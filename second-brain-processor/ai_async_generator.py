@@ -98,7 +98,7 @@ def call_ai_async(prompt: str, task_type: str = 'complex', timeout: int = 300) -
     
     # 选择模型
     model = select_model_by_task(task_type)
-    model_name = "MiniMax M2.5" if task_type == 'fast' else "GLM-5"
+    model_name = "Kimi K2.5"  # 统一使用Kimi K2.5
     
     try:
         url = f"{ALICLOUD_BASE_URL}/chat/completions"
@@ -362,7 +362,7 @@ def process_pending_ai_tasks():
     analysis = analyze_error(latest_error)
     task_type = analysis.get('task_type', 'complex')
     
-    model_name = "MiniMax M2.5" if task_type == 'fast' else "GLM-5"
+    model_name = "Kimi K2.5"  # 统一使用Kimi K2.5
     log(f"错误模式: {analysis['pattern']}")
     log(f"任务类型: {task_type} -> 使用{model_name}")
     

@@ -6,6 +6,7 @@
 - 记录已处理的用户输入指纹
 - 检测到重复输入时返回 NO_REPLY
 - 独立于系统级去重，作为兜底机制
+- 包含Git推送回复去重（1小时窗口）
 """
 
 import sys
@@ -15,6 +16,7 @@ from pathlib import Path
 
 sys.path.insert(0, '/root/.openclaw/workspace/second-brain-processor')
 from feishu_receive_dedup import check_and_record_message, generate_message_fingerprint
+from git_push_dedup import should_reply_git_push
 
 WORKSPACE = Path("/root/.openclaw/workspace")
 REPLIED_FILE = WORKSPACE / ".learnings" / "replied_messages.json"
@@ -27,7 +29,13 @@ def check_and_record_reply(content: str, sender: str = "") -> bool:
         True: 新消息（应该回复）
         False: 已回复过（返回 NO_REPLY）
     """
-    # 使用接收去重系统记录
+    # 第1层：Git推送去重（防止重复报告推送状态）
+    should_reply_git, git_reason = should_reply_git_push(content, sender)
+    if not should_reply_git:
+        print(f"[DEDUP] Git推送去重拦截: {git_reason}")
+        return False
+    
+    # 第2层：常规接收去重
     is_new = check_and_record_message(content, sender)
     return is_new
 

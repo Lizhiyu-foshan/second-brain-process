@@ -2,10 +2,7 @@
 """
 智能模型路由器
 
-根据任务类型和复杂度自动选择最优模型：
-- 编码任务: MiniMax M2.5 (快速) / GLM-5 (复杂)
-- 对话任务: Qwen 3.5 Plus (快速) / Kimi 2.5 (复杂)
-
+统一使用阿里云百炼Kimi K2.5模型处理所有任务。
 支持手动声明切换模型。
 """
 
@@ -26,10 +23,10 @@ try:
         MODEL_MAPPING
     )
 except ImportError:
-    # 降级处理
-    ALICLOUD_MODEL_FAST = os.environ.get('ALICLOUD_MODEL_FAST', 'MiniMax-M2.5')
-    ALICLOUD_MODEL_COMPLEX = os.environ.get('ALICLOUD_MODEL_COMPLEX', 'glm-5')
-    ALICLOUD_MODEL_CHAT_FAST = os.environ.get('ALICLOUD_MODEL_CHAT_FAST', 'qwen3.5-plus')
+    # 降级处理 - 统一使用Kimi K2.5
+    ALICLOUD_MODEL_FAST = os.environ.get('ALICLOUD_MODEL_FAST', 'kimi-k2.5')
+    ALICLOUD_MODEL_COMPLEX = os.environ.get('ALICLOUD_MODEL_COMPLEX', 'kimi-k2.5')
+    ALICLOUD_MODEL_CHAT_FAST = os.environ.get('ALICLOUD_MODEL_CHAT_FAST', 'kimi-k2.5')
     ALICLOUD_MODEL_CHAT_COMPLEX = os.environ.get('ALICLOUD_MODEL_CHAT_COMPLEX', 'kimi-k2.5')
 
 

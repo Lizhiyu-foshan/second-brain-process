@@ -1,0 +1,38 @@
+# 主题讨论激发器 - 触发器配置
+# 位置: /root/.openclaw/workspace/skills/meeting-prep-orchestrator/triggers.yaml
+
+# 触发器配置
+# 这些配置需要由主会话处理逻辑读取并执行
+
+triggers:
+  # 方式A: 关键词触发 "主题讨论"
+  - name: "主题讨论-关键词触发"
+    type: keyword
+    patterns:
+      - "主题讨论"
+      - "今天有什么值得讨论的主题"
+      - "有什么可以讨论的"
+      - "启动主题讨论"
+    action:
+      type: exec
+      command: |
+        cd /root/.openclaw/workspace/skills/meeting-prep-orchestrator/scripts && 
+        python3 topic_igniter_openclaw.py --discover
+    description: "用户主动触发主题讨论，从近期笔记中发现讨论主题"
+
+  # 方式B: 文章链接触发
+  - name: "主题讨论-文章关联触发"
+    type: regex
+    patterns:
+      - "https?://[^\\s]+"  # 匹配任何URL
+    action:
+      type: exec
+      command: |
+        cd /root/.openclaw/workspace/skills/meeting-prep-orchestrator/scripts && 
+        python3 topic_link_trigger.py "{matched_url}"
+    description: "检测到文章链接，分析与知识库关联度，如相关则触发讨论"
+    condition: "only_if_related"  # 仅在有关联时触发
+
+# 说明：
+# 这些触发器需要主会话逻辑（SOUL.md / AGENTS.md）在收到消息时主动检查
+# OpenClaw目前没有内置的自动触发器机制，需要在消息处理流程中集成

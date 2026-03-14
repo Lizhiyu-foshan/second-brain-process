@@ -106,28 +106,29 @@ def analyze_with_openclaw(topic_title: str, topic_preview: str) -> str:
 3. 要激发用户自己的思考
 4. 不要一次性抛出所有内容"""
 
-    # 使用openclaw命令调用AI
+    # 使用阿里云API直接调用AI
     try:
-        result = subprocess.run(
-            [
-                "openclaw", "sessions", "spawn",
-                "--task", prompt,
-                "--model", "k2p5",
-                "--timeout", "60"
-            ],
-            capture_output=True,
-            text=True,
-            timeout=90
+        import openai
+        
+        client = openai.OpenAI(
+            api_key=os.environ.get("ALICLOUD_API_KEY"),
+            base_url="https://coding.dashscope.aliyuncs.com/v1"
         )
         
-        if result.returncode == 0:
-            return result.stdout.strip()
-        else:
-            log(f"OpenClaw调用失败: {result.stderr}")
-            return generate_fallback_message(topic_title)
-            
+        response = client.chat.completions.create(
+            model="kimi-k2.5",
+            messages=[
+                {"role": "system", "content": "你是主题讨论引导者，善于从材料中发现值得深入探讨的角度，设计能激发用户思考的问题。"},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=800
+        )
+        
+        return response.choices[0].message.content
+        
     except Exception as e:
-        log(f"调用失败: {e}")
+        log(f"API调用失败: {e}")
         return generate_fallback_message(topic_title)
 
 
@@ -150,6 +151,7 @@ def send_discussion_to_user(message: str) -> bool:
         result = subprocess.run(
             [
                 "openclaw", "message", "send",
+                "--channel", "feishu",
                 "--target", FEISHU_USER,
                 "--message", message
             ],
@@ -157,6 +159,8 @@ def send_discussion_to_user(message: str) -> bool:
             text=True,
             timeout=30
         )
+        if result.returncode != 0:
+            log(f"发送失败: {result.stderr}")
         return result.returncode == 0
     except Exception as e:
         log(f"发送失败: {e}")

@@ -1,41 +1,65 @@
 {
-  "timestamp": "2026-03-14T09:19:20.106699",
+  "timestamp": "2026-03-14T11:24:46.802832",
   "model": "kimi-k2.5",
-  "analysis_days": 7,
+  "analysis_days": 1,
   "gaps": [
     {
       "type": "workflow_optimization",
       "title": "Skill创建流程高度手动化",
-      "description": "创建新Skill需要12+次工具调用，耗时10分钟，涉及框架创建、脚本编写、打包、安装等多个手动步骤。用户已多次创建Skill（git-safety-guardian、feishu-deduplication、auto-compact-dynamic等），每次都需要重复相同流程。",
-      "evidence": "2026-03-12创建git-safety-guardian时，AI明确说明'使用skill-creator创建新skill'，实际执行了read→exec→write→write→exec→exec→read→edit→read→edit→edit→edit等12+步骤，耗时约10分钟",
+      "description": "用户创建单个Skill需要执行12+次工具调用（read/exec/write/edit等），耗时5-10分钟。从对话可见，创建git-safety-guardian时涉及：读取模板、执行创建命令、编写核心脚本、编写钩子脚本、打包安装、更新分析器等多个手动步骤。",
+      "evidence": "对话显示创建git-safety-guardian耗时从01:15:50到01:20:29，涉及6次工具调用序列；用户明确反馈'创建Skill需12+次工具调用，耗时10分钟'",
       "frequency": "high",
-      "suggested_skill": "skill-forge-automation",
-      "skill_description": "一键式Skill创建与部署工具，通过自然语言描述自动生成完整Skill框架、核心脚本、打包并安装，将12步流程压缩为1个指令",
-      "estimated_benefit": "单次节省8-10分钟，按每月创建3-5个Skill计算，月节省30-50分钟",
+      "suggested_skill": "skill-factory",
+      "skill_description": "通过自然语言描述自动生成完整Skill，包括：需求解析→代码生成→测试用例→打包安装→文档生成，将创建时间从10分钟降至30秒",
+      "estimated_benefit": "单次节省8-10分钟，按每月创建2-3个Skill计算，月节省30-50分钟",
+      "priority": "high",
+      "action": "install_skill"
+    },
+    {
+      "type": "messaging_automation",
+      "title": "飞书消息上下文断裂与重复响应",
+      "description": "用户消息被标记为'untrusted'，导致AI无法自动关联历史对话上下文。同一问题（复盘报告重复发送）在08:54、09:29、09:38被多次触发，AI每次都需要重新理解问题。此外，用户需要手动触发'重新发送'，系统无法自动检测修复后的重发需求。",
+      "evidence": "多次出现'Conversation info (untrusted metadata)'；用户08:54首次反馈问题，09:29再次发送相同内容，09:38第三次触发；修复后用户需手动要求'请把今天更新后的自我进化系统复盘再发一次'",
+      "frequency": "high",
+      "suggested_skill": "context-bridge",
+      "skill_description": "建立飞书消息线程的持久化上下文，实现：消息指纹关联、对话状态机管理、自动重发触发、跨会话记忆继承，消除'untrusted'导致的上下文断裂",
+      "estimated_benefit": "减少30%的重复解释成本，消除手动重发操作，提升响应一致性",
       "priority": "high",
       "action": "install_skill"
     },
     {
       "type": "data_sync",
-      "title": "跨系统定时任务可靠性监控缺失",
-      "description": "OpenClaw版本更新导致isolated+agentTurn模式失效，所有定时任务停止执行但系统显示'成功'。缺乏对定时任务实际执行效果的监控，依赖用户主动发现。已发生2026.2.13版本事故导致全部7个核心任务失效。",
-      "evidence": "2026-03-13事故记录：'OpenClaw 2026.2.13版本更新导致isolated+agentTurn模式失效'，'任务显示执行成功但实际未执行，需要文件时间戳验证'，用户反馈'我只要不说，就不主动想'",
-      "frequency": "high",
-      "suggested_skill": "cron-watchdog-validator",
-      "skill_description": "定时任务执行效果验证系统，通过检查输出文件时间戳、日志完整性、预期产出存在性，主动发现'伪成功'任务，无需等待用户反馈",
-      "estimated_benefit": "避免重大事故，减少用户主动发现问题的次数，提升系统可信度",
+      "title": "系统配置路径一致性缺乏自动校验",
+      "description": "run_daily_report_progress.py使用了错误的LEARNINGS_DIR路径（SCRIPT_DIR/.learnings而非WORKSPACE/.learnings），导致AI分析结果无法被读取，系统静默回退到旧数据。此类路径/配置错误需要人工排查才能发现，缺乏自动检测机制。",
+      "evidence": "路径错误导致'每日报告读取不到AI分析结果，只能回退到旧的evolution_analyzer.py结果'；用户需手动核查才发现'自我进化系统复盘推送的内容与昨天是一模一样的'",
+      "frequency": "medium",
+      "suggested_skill": "config-validator",
+      "skill_description": "自动扫描所有系统配置，检测：路径一致性、环境变量完整性、跨模块引用有效性、默认值覆盖情况，在配置错误导致功能异常前主动告警",
+      "estimated_benefit": "消除配置类故障的排查时间（本次案例耗时约20分钟），预防静默失败模式",
       "priority": "high",
       "action": "install_skill"
     },
     {
       "type": "knowledge_query",
-      "title": "Skill名称语义匹配与去重能力不足",
-      "description": "AI分析器推荐的Skill名称与实际安装的Skill名称存在语义差异，导致重复推荐。已发生'article-clip-pipeline-validator'≠'pipeline-health-monitor'、'auto-git-sync'实际未安装但被误认为已安装等匹配失败案例。",
-      "evidence": "2026-03-13记录：'建议名article-clip-pipeline-validator ≠ 安装名pipeline-health-monitor'，'Skill名称字符串不匹配导致过滤失败'；2026-03-12记录：'auto-git-sync确实没有安装'但之前被误认为已安装",
+      "title": "Skill市场元数据与来源标注缺失",
+      "description": "AI分析器推荐的Skill无法自动区分是'市场中已存在'还是'需要自建'，导致用户误解（如git-safety-guardian被当作已存在Skill请求安装）。用户明确反馈要求'标注清楚是自建还是已有市场中搜索到的skill'。",
+      "evidence": "用户01:09请求安装'gti-safety-guardian'（打错字），纠正后01:15明确要求'以后再复盘中描述的推荐skill，请标注清楚是自建还是已有市场中搜索到的skill'；AI确认该Skill'不存在于ClawHub或GitHub上'",
       "frequency": "medium",
-      "suggested_skill": "skill-semantic-matcher",
-      "skill_description": "基于语义理解的Skill去重系统，通过关键词映射、模糊匹配、功能描述相似度计算，识别'同功能不同名'的Skill，避免重复推荐和漏检",
-      "estimated_benefit": "消除复盘报告中的重复推荐错误，提升AI分析结果的可信度和用户决策效率",
+      "suggested_skill": "skill-market-connector",
+      "skill_description": "实时连接ClawHub、GitHub、本地Skill目录，为每个推荐提供：来源标记（market/self-hosted/community）、安装状态、版本信息、替代方案对比，避免推荐误解",
+      "estimated_benefit": "消除Skill来源混淆导致的误操作，减少沟通往返次数（本次案例2轮澄清）",
+      "priority": "medium",
+      "action": "install_skill"
+    },
+    {
+      "type": "workflow_optimization",
+      "title": "系统健康状态缺乏实时监控面板",
+      "description": "用户需要通过多次手动检查（查看截图状态、验证实际功能、对比代码）才能确认系统各模块的真实运行状态。待读队列功能闲置、自我进化改进失败等问题无法自动暴露，依赖人工发现。",
+      "evidence": "用户手动验证表格显示'笔记整理-待读队列：确实为空，功能闲置'、'自我进化-改进实施：确实失败，JSON错误导致回滚'；AI需执行多次exec/read才能确认系统状态",
+      "frequency": "medium",
+      "suggested_skill": "system-health-dashboard",
+      "skill_description": "自动生成实时系统健康看板，监控：各功能模块运行状态、队列积压情况、最近失败任务、配置漂移检测，支持一键深度诊断和自动修复建议",
+      "estimated_benefit": "将系统状态确认时间从15-20分钟降至30秒，提前发现功能闲置和静默失败",
       "priority": "medium",
       "action": "install_skill"
     }
@@ -50,5 +74,5 @@
     "bmad-method",
     "feishu-automation"
   ],
-  "raw_response": "```json\n{\n  \"gaps\": [\n    {\n      \"type\": \"workflow_optimization\",\n      \"title\": \"Skill创建流程高度手动化\",\n      \"description\": \"创建新Skill需要12+次工具调用，耗时10分钟，涉及框架创建、脚本编写、打包、安装等多个手动步骤。用户已多次创建Skill（git-safety-guardian、feishu-deduplication、auto-compact-dynamic等），每次都需要重复相同流程。\",\n      \"evidence\": \"2026-03-12创建git-safety-guardian时，AI明确说明'使用skill-creator创建新skill'，实际执行了read→exec→write→write→exec→exec→read→edit→read→edit→edit→edit等12+步骤，耗时约10分钟\",\n      \"frequency\": \"high\",\n      \"suggested_skill\": \"skill-forge-automation\",\n      \"skill_description\": \"一键式Skill创建与部署工具，通过自然语言描述自动生成完整Skill框架、核心脚本、打包并安装，将12步流程压缩为1个指令\",\n      \"estimated_benefit\": \"单次节省8-10分钟，按每月创建3-5个Skill计算，月节省30-50分钟\",\n      \"priority\": \"high\",\n      \"action\": \"install_skill\"\n    },\n    {\n      \"type\": \"data_sync\",\n      \"title\": \"跨系统定时任务可靠性监控缺失\",\n      \"description\": \"OpenClaw版本更新导致isolated+agentTurn模式失效，所有定时任务停止执行但系统显示'成功'。缺乏对定时任务实际执行效果的监控，依赖用户主动发现。已发生2026.2.13版本事故导致全部7个核心任务失效。\",\n      \"evidence\": \"2026-03-13事故记录：'OpenClaw 2026.2.13版本更新导致isolated+agentTurn模式失效'，'任务显示执行成功但实际未执行，需要文件时间戳验证'，用户反馈'我只要不说，就不主动想'\",\n      \"frequency\": \"high\",\n      \"suggested_skill\": \"cron-watchdog-validator\",\n      \"skill_description\": \"定时任务执行效果验证系统，通过检查输出文件时间戳、日志完整性、预期产出存在性，主动发现'伪成功'任务，无需等待用户反馈\",\n      \"estimated_benefit\": \"避免重大事故，减少用户主动发现问题的次数，提升系统可信度\",\n      \"priority\": \"high\",\n      \"action\": \"install_skill\"\n    },\n    {\n      \"type\": \"content_processing\",\n      \"title\": \"文章剪藏链路健康监控盲区\",\n      \"description\": \"文章剪藏处理存在多个潜在故障点（微信文章获取kimi_fetch稳定性、AI深度创作sessions_spawn调用、15分钟超时机制、凌晨定时任务），但缺乏统一的链路健康监控。用户要求检查三个场景（即时处理、凌晨定时、补处理）时发现多个检查点待验证。\",\n      \"evidence\": \"2026-03-09记录：用户要求检查'即时处理→凌晨定时→补处理'三个场景，列出4个待检查脚本和5个关键检查点，全部标记为待验证状态[ ]\",\n      \"frequency\": \"medium\",\n      \"suggested_skill\": \"pipeline-health-monitor\",\n      \"skill_description\": \"端到端链路健康监控系统，自动检测文章剪藏各环节的可用性（URL获取、AI处理、超时机制、定时任务），提前发现故障而非等待用户反馈\",\n      \"estimated_benefit\": \"减少链路故障发现时间从'用户反馈时'到'自动预警时'，提升内容处理可靠性\",\n      \"priority\": \"medium\",\n      \"action\": \"install_skill\"\n    },\n    {\n     "
+  "raw_response": "```json\n{\n  \"gaps\": [\n    {\n      \"type\": \"workflow_optimization\",\n      \"title\": \"Skill创建流程高度手动化\",\n      \"description\": \"用户创建单个Skill需要执行12+次工具调用（read/exec/write/edit等），耗时5-10分钟。从对话可见，创建git-safety-guardian时涉及：读取模板、执行创建命令、编写核心脚本、编写钩子脚本、打包安装、更新分析器等多个手动步骤。\",\n      \"evidence\": \"对话显示创建git-safety-guardian耗时从01:15:50到01:20:29，涉及6次工具调用序列；用户明确反馈'创建Skill需12+次工具调用，耗时10分钟'\",\n      \"frequency\": \"high\",\n      \"suggested_skill\": \"skill-factory\",\n      \"skill_description\": \"通过自然语言描述自动生成完整Skill，包括：需求解析→代码生成→测试用例→打包安装→文档生成，将创建时间从10分钟降至30秒\",\n      \"estimated_benefit\": \"单次节省8-10分钟，按每月创建2-3个Skill计算，月节省30-50分钟\",\n      \"priority\": \"high\",\n      \"action\": \"install_skill\"\n    },\n    {\n      \"type\": \"messaging_automation\",\n      \"title\": \"飞书消息上下文断裂与重复响应\",\n      \"description\": \"用户消息被标记为'untrusted'，导致AI无法自动关联历史对话上下文。同一问题（复盘报告重复发送）在08:54、09:29、09:38被多次触发，AI每次都需要重新理解问题。此外，用户需要手动触发'重新发送'，系统无法自动检测修复后的重发需求。\",\n      \"evidence\": \"多次出现'Conversation info (untrusted metadata)'；用户08:54首次反馈问题，09:29再次发送相同内容，09:38第三次触发；修复后用户需手动要求'请把今天更新后的自我进化系统复盘再发一次'\",\n      \"frequency\": \"high\",\n      \"suggested_skill\": \"context-bridge\",\n      \"skill_description\": \"建立飞书消息线程的持久化上下文，实现：消息指纹关联、对话状态机管理、自动重发触发、跨会话记忆继承，消除'untrusted'导致的上下文断裂\",\n      \"estimated_benefit\": \"减少30%的重复解释成本，消除手动重发操作，提升响应一致性\",\n      \"priority\": \"high\",\n      \"action\": \"install_skill\"\n    },\n    {\n      \"type\": \"data_sync\",\n      \"title\": \"系统配置路径一致性缺乏自动校验\",\n      \"description\": \"run_daily_report_progress.py使用了错误的LEARNINGS_DIR路径（SCRIPT_DIR/.learnings而非WORKSPACE/.learnings），导致AI分析结果无法被读取，系统静默回退到旧数据。此类路径/配置错误需要人工排查才能发现，缺乏自动检测机制。\",\n      \"evidence\": \"路径错误导致'每日报告读取不到AI分析结果，只能回退到旧的evolution_analyzer.py结果'；用户需手动核查才发现'自我进化系统复盘推送的内容与昨天是一模一样的'\",\n      \"frequency\": \"medium\",\n      \"suggested_skill\": \"config-validator\",\n      \"skill_description\": \"自动扫描所有系统配置，检测：路径一致性、环境变量完整性、跨模块引用有效性、默认值覆盖情况，在配置错误导致功能异常前主动告警\",\n      \"estimated_benefit\": \"消除配置类故障的排查时间（本次案例耗时约20分钟），预防静默失败模式\",\n      \"priority\": \"high\",\n      \"action\": \"install_skill\"\n    },\n    {\n      \"type\": \"knowledg"
 }

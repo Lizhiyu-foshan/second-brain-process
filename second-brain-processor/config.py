@@ -55,9 +55,10 @@ ALICLOUD_API_KEY = os.environ.get('ALICLOUD_API_KEY', '')
 ALICLOUD_BASE_URL = os.environ.get('ALICLOUD_BASE_URL', 'https://coding.dashscope.aliyuncs.com/v1')
 
 # 模型ID配置
-ALICLOUD_MODEL_FAST = os.environ.get('ALICLOUD_MODEL_FAST', 'MiniMax-M2.5')
-ALICLOUD_MODEL_COMPLEX = os.environ.get('ALICLOUD_MODEL_COMPLEX', 'glm-5')
-ALICLOUD_MODEL_CHAT_FAST = os.environ.get('ALICLOUD_MODEL_CHAT_FAST', 'qwen3.5-plus')
+# 统一使用阿里云百炼Kimi K2.5模型
+ALICLOUD_MODEL_FAST = os.environ.get('ALICLOUD_MODEL_FAST', 'kimi-k2.5')
+ALICLOUD_MODEL_COMPLEX = os.environ.get('ALICLOUD_MODEL_COMPLEX', 'kimi-k2.5')
+ALICLOUD_MODEL_CHAT_FAST = os.environ.get('ALICLOUD_MODEL_CHAT_FAST', 'kimi-k2.5')
 ALICLOUD_MODEL_CHAT_COMPLEX = os.environ.get('ALICLOUD_MODEL_CHAT_COMPLEX', 'kimi-k2.5')
 
 # 默认模型
