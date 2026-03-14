@@ -98,7 +98,7 @@ def log_error(error_type: str, details: str, area: str = "general", priority: st
 
 # 性能限制
 MAX_FILE_SIZE = 30 * 1024 * 1024  # 30MB - 增加限制以处理大对话文件
-MAX_LINES_PER_FILE = 10000        # 最多解析10000行
+MAX_LINES_PER_FILE = 100000       # 最多解析100000行（放宽以处理大对话文件）
 MAX_FILES_TO_PROCESS = 15         # 最多处理15个文件
 MAX_FILE_AGE_HOURS = 24           # 24小时窗口 - 每天整理的逻辑
 
