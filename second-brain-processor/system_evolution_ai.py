@@ -135,13 +135,12 @@ def call_aliyun_ai(prompt: str, model: str = None) -> Optional[Dict]:
 
 def parse_ai_improvements(ai_response: Dict) -> List[Dict]:
     """
-    解析AI响应，提取改进方案
+    解析AI响应，提取改进方案（增强版）
     
-    Args:
-        ai_response: API返回的JSON
-    
-    Returns:
-        改进方案列表
+    修复：
+    1. 更健壮的正则表达式匹配
+    2. 处理嵌套JSON和特殊字符
+    3. 多个匹配尝试
     """
     try:
         if not ai_response or 'choices' not in ai_response:
@@ -149,26 +148,66 @@ def parse_ai_improvements(ai_response: Dict) -> List[Dict]:
         
         content = ai_response['choices'][0]['message']['content']
         
-        # 尝试从响应中提取JSON
-        # 查找代码块中的JSON
-        json_match = re.search(r'```json\s*(\{.*?)\s*```', content, re.DOTALL)
-        if json_match:
-            json_str = json_match.group(1)
-        else:
-            # 尝试直接解析整个内容
-            json_str = content
+        # 尝试多种方式提取JSON
+        data = None
+        errors = []
         
-        data = json.loads(json_str)
+        # 方法1: 查找```json代码块
+        try:
+            json_match = re.search(r'```json\s*({[\s\S]*?})\s*```', content, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(1)
+                data = json.loads(json_str)
+        except Exception as e:
+            errors.append(f"方法1失败: {e}")
+        
+        # 方法2: 查找```代码块（不带json标记）
+        if data is None:
+            try:
+                json_match = re.search(r'```\s*({[\s\S]*?})\s*```', content, re.DOTALL)
+                if json_match:
+                    json_str = json_match.group(1)
+                    data = json.loads(json_str)
+            except Exception as e:
+                errors.append(f"方法2失败: {e}")
+        
+        # 方法3: 查找JSON对象（从第一个{到最后一个}）
+        if data is None:
+            try:
+                json_match = re.search(r'({[\s\S]*})', content, re.DOTALL)
+                if json_match:
+                    json_str = json_match.group(1)
+                    # 尝试清理可能的Markdown标记
+                    json_str = re.sub(r'^[^{]*', '', json_str)
+                    json_str = re.sub(r'[^}]*$', '', json_str)
+                    data = json.loads(json_str)
+            except Exception as e:
+                errors.append(f"方法3失败: {e}")
+        
+        # 方法4: 尝试整个内容解析
+        if data is None:
+            try:
+                data = json.loads(content)
+            except Exception as e:
+                errors.append(f"方法4失败: {e}")
+        
+        if data is None:
+            log(f"❌ 所有JSON解析方法都失败: {'; '.join(errors)}")
+            # 记录失败的响应内容供调试
+            log(f"响应内容预览: {content[:500]}...")
+            return []
         
         improvements = []
         if 'improvements' in data:
             for imp in data['improvements']:
-                improvements.append({
-                    'file': imp.get('file', ''),
-                    'description': imp.get('description', ''),
-                    'old_code': imp.get('old_code', ''),
-                    'new_code': imp.get('new_code', '')
-                })
+                # 验证必要的字段
+                if 'file' in imp and 'description' in imp:
+                    improvements.append({
+                        'file': imp.get('file', ''),
+                        'description': imp.get('description', ''),
+                        'old_code': imp.get('old_code', ''),
+                        'new_code': imp.get('new_code', '')
+                    })
         
         return improvements
         

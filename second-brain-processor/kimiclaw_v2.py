@@ -171,6 +171,7 @@ def extract_url(text):
 def parse_session_messages_safe(session_content, max_lines=MAX_LINES_PER_FILE):
     """
     安全地解析session中的消息，限制行数防止大文件卡住
+    修复：正确处理Feishu消息，提取真正的用户内容
     """
     messages = []
     lines = session_content.split('\n')
@@ -188,6 +189,12 @@ def parse_session_messages_safe(session_content, max_lines=MAX_LINES_PER_FILE):
                     if msg_content and len(msg_content) > 0:
                         text = msg_content[0].get('text', '')
                         timestamp = data.get('timestamp', '')
+                        
+                        # 处理Feishu消息：提取真正的用户内容
+                        if text and 'Feishu[default] DM' in text:
+                            # 提取消息内容（去掉System前缀和元数据）
+                            text = extract_feishu_content(text)
+                        
                         if text and len(text) > 5:  # 过滤太短的消息
                             messages.append({
                                 'text': text,
@@ -197,6 +204,42 @@ def parse_session_messages_safe(session_content, max_lines=MAX_LINES_PER_FILE):
             continue
     
     return messages
+
+
+def extract_feishu_content(text):
+    """
+    从Feishu系统消息格式中提取真正的用户内容
+    
+    输入格式:
+    System: [2026-03-14 09:xx:xx GMT+8] Feishu[default] DM from ou_xxxx: 用户消息内容
+    
+    Conversation info (untrusted metadata):
+    ...
+    
+    输出: 用户消息内容
+    """
+    try:
+        # 找到"Feishu[default] DM from xxx: "之后的部分
+        marker = 'Feishu[default] DM from '
+        if marker in text:
+            # 提取用户ID之后的内容
+            parts = text.split(marker, 1)
+            if len(parts) > 1:
+                # 去掉用户ID，保留消息内容
+                after_marker = parts[1]
+                # 找到第一个冒号后的内容
+                if ':' in after_marker:
+                    content = after_marker.split(':', 1)[1].strip()
+                    
+                    # 去掉Conversation info部分
+                    if 'Conversation info' in content:
+                        content = content.split('Conversation info')[0].strip()
+                    
+                    return content
+    except Exception:
+        pass
+    
+    return text
 
 def get_session_content_since(since_time):
     """
@@ -342,8 +385,13 @@ SKIP_PATTERNS = [
 ]
 
 def is_system_message(text):
-    """检查是否是系统消息"""
+    """检查是否是系统消息（但保留Feishu用户消息）"""
     text_lower = text.lower()
+    
+    # 特殊处理：Feishu用户消息虽然以"System:"开头，但实际是用户对话
+    if 'feishu[default] dm' in text_lower or 'feishu[default]' in text_lower:
+        return False  # 不是系统消息，是用户对话
+    
     for pattern in SKIP_PATTERNS:
         if re.search(pattern, text_lower):
             return True
