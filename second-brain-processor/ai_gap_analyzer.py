@@ -42,9 +42,9 @@ class AIGapAnalyzer:
         self.output_file = LEARNINGS_DIR / "ai_gap_analysis.json"
         
         # API配置（从环境变量读取）
-        # 使用Kimi官方API
-        self.api_key = os.environ.get('KIMI_API_KEY', '')
-        self.base_url = 'https://api.moonshot.cn/v1'
+        # 使用阿里云百炼Kimi K2.5 API
+        self.api_key = os.environ.get('ALICLOUD_API_KEY', '')
+        self.base_url = 'https://coding.dashscope.aliyuncs.com/v1'
         self.model = 'kimi-k2.5'
         
         # 加载已安装的skills
