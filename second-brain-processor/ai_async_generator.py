@@ -21,19 +21,22 @@ try:
     from config import (
         ALICLOUD_API_KEY,
         ALICLOUD_BASE_URL,
-        ALICLOUD_MODEL_FAST,
-        ALICLOUD_MODEL_COMPLEX,
+        ALICLOUD_MODEL_CHAT_COMPLEX,
         ERRORS_FILE,
         AI_PENDING_FILE,
         AI_RESULTS_FILE,
         validate_api_key
     )
+    # 统一使用Kimi K2.5模型
+    ALICLOUD_MODEL_FAST = ALICLOUD_MODEL_CHAT_COMPLEX
+    ALICLOUD_MODEL_COMPLEX = ALICLOUD_MODEL_CHAT_COMPLEX
 except ImportError:
     # 降级处理
     ALICLOUD_API_KEY = os.environ.get('ALICLOUD_API_KEY', '')
     ALICLOUD_BASE_URL = os.environ.get('ALICLOUD_BASE_URL', 'https://coding.dashscope.aliyuncs.com/v1')
-    ALICLOUD_MODEL_FAST = os.environ.get('ALICLOUD_MODEL_FAST', 'MiniMax-M2.5')
-    ALICLOUD_MODEL_COMPLEX = os.environ.get('ALICLOUD_MODEL_COMPLEX', 'glm-5')
+    # 统一使用Kimi K2.5模型
+    ALICLOUD_MODEL_FAST = 'kimi-2.5'
+    ALICLOUD_MODEL_COMPLEX = 'kimi-2.5'
     WORKSPACE = Path("/root/.openclaw/workspace")
     ERRORS_FILE = WORKSPACE / ".learnings" / "ERRORS.md"
     AI_PENDING_FILE = WORKSPACE / ".learnings" / "AI_PENDING.json"

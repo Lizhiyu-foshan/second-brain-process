@@ -74,7 +74,7 @@ def call_aliyun_ai(prompt: str, model: str = None) -> Optional[Dict]:
     
     Args:
         prompt: 提示词
-        model: 模型名称，默认使用ALICLOUD_MODEL_FAST (MiniMax M2.5)
+        model: 模型名称，默认使用ALICLOUD_MODEL_CHAT_COMPLEX (Kimi K2.5)
     
     Returns:
         API响应的JSON数据
@@ -86,8 +86,8 @@ def call_aliyun_ai(prompt: str, model: str = None) -> Optional[Dict]:
         log("❌ 阿里云API Key未配置，请在 .env 文件中设置 ALICLOUD_API_KEY")
         return None
     
-    # 使用配置的模型，默认MiniMax M2.5用于快速响应
-    model = model or ALICLOUD_MODEL_FAST
+    # 统一使用Kimi K2.5模型
+    model = model or ALICLOUD_MODEL_CHAT_COMPLEX
     
     try:
         url = f"{ALICLOUD_BASE_URL}/chat/completions"

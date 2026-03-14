@@ -45,7 +45,7 @@ class AIGapAnalyzer:
         # 使用阿里云百炼Kimi K2.5 API
         self.api_key = os.environ.get('ALICLOUD_API_KEY', '')
         self.base_url = 'https://coding.dashscope.aliyuncs.com/v1'
-        self.model = 'kimi-k2.5'
+        self.model = 'kimi-2.5'
         
         # 加载已安装的skills
         self.installed_skills = self._load_installed_skills()
