@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Dict, Optional
 
 from shared.models import LockInfo
+from shared.test_hooks import TestHooks, HookPoint
+from shared.fault_injection import FaultInjector
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +73,19 @@ class LockManager:
             True: 获取成功
             False: 已被占用
         """
+        hooks = TestHooks()
+        injector = FaultInjector()
+        
+        # 触发 before_acquire 钩子
+        hooks.trigger(HookPoint.LOCK_BEFORE_ACQUIRE, 
+                     role_id=role_id, task_id=task_id, timeout_ms=timeout_ms)
+        
+        # 尝试故障注入
+        fault_config = injector.try_inject("lock_manager.acquire", 
+                                          {"role_id": role_id, "task_id": task_id})
+        if fault_config:
+            injector.apply_fault(fault_config)
+        
         timeout_ms = timeout_ms or self.default_timeout_ms
         lock_file = self.lock_dir / f"{role_id}.lock"
         
@@ -95,6 +110,9 @@ class LockManager:
                     # 重试一次
                     return self.acquire(role_id, task_id, timeout_ms)
                 
+                # 触发 timeout 钩子
+                hooks.trigger(HookPoint.LOCK_TIMEOUT, 
+                            role_id=role_id, task_id=task_id, reason="busy")
                 return False
             
             # 获取锁成功，写入锁信息
@@ -115,11 +133,18 @@ class LockManager:
             # 保存文件句柄
             self._lock_handles[role_id] = fd
             
+            # 触发 after_acquire 钩子
+            hooks.trigger(HookPoint.LOCK_AFTER_ACQUIRE, 
+                         role_id=role_id, task_id=task_id, success=True)
+            
             logger.info(f"Lock acquired: {role_id} for task {task_id} (pid: {os.getpid()})")
             return True
             
         except Exception as e:
             logger.error(f"Failed to acquire lock for {role_id}: {e}")
+            # 触发 after_acquire 钩子（失败）
+            hooks.trigger(HookPoint.LOCK_AFTER_ACQUIRE, 
+                         role_id=role_id, task_id=task_id, success=False, error=str(e))
             return False
     
     def release(self, role_id: str) -> bool:
@@ -132,41 +157,59 @@ class LockManager:
         Returns:
             True: 释放成功或锁不存在
         """
+        hooks = TestHooks()
+        injector = FaultInjector()
+        
+        # 触发 before_release 钩子
+        hooks.trigger(HookPoint.LOCK_BEFORE_RELEASE, role_id=role_id)
+        
+        # 尝试故障注入
+        fault_config = injector.try_inject("lock_manager.release", {"role_id": role_id})
+        if fault_config:
+            injector.apply_fault(fault_config)
+        
         fd = self._lock_handles.pop(role_id, None)
+        
+        success = False
         
         if fd is None:
             # 可能是其他进程持有的锁，尝试查找并释放
             lock_file = self.lock_dir / f"{role_id}.lock"
             if not lock_file.exists():
-                return True
-            
+                success = True
+            else:
+                try:
+                    fd = os.open(str(lock_file), os.O_RDWR)
+                    fcntl.flock(fd, fcntl.LOCK_UN)
+                    os.close(fd)
+                    lock_file.unlink()
+                    logger.info(f"Lock released (external): {role_id}")
+                    success = True
+                except Exception as e:
+                    logger.error(f"Failed to release external lock for {role_id}: {e}")
+                    success = False
+        else:
             try:
-                fd = os.open(str(lock_file), os.O_RDWR)
+                # 释放文件锁
                 fcntl.flock(fd, fcntl.LOCK_UN)
                 os.close(fd)
-                lock_file.unlink()
-                logger.info(f"Lock released (external): {role_id}")
-                return True
+                
+                # 删除锁文件
+                lock_file = self.lock_dir / f"{role_id}.lock"
+                if lock_file.exists():
+                    lock_file.unlink()
+                
+                logger.info(f"Lock released: {role_id}")
+                success = True
+                
             except Exception as e:
-                logger.error(f"Failed to release external lock for {role_id}: {e}")
-                return False
+                logger.error(f"Failed to release lock for {role_id}: {e}")
+                success = False
         
-        try:
-            # 释放文件锁
-            fcntl.flock(fd, fcntl.LOCK_UN)
-            os.close(fd)
-            
-            # 删除锁文件
-            lock_file = self.lock_dir / f"{role_id}.lock"
-            if lock_file.exists():
-                lock_file.unlink()
-            
-            logger.info(f"Lock released: {role_id}")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Failed to release lock for {role_id}: {e}")
-            return False
+        # 触发 after_release 钩子
+        hooks.trigger(HookPoint.LOCK_AFTER_RELEASE, role_id=role_id, success=success)
+        
+        return success
     
     def _is_stale_lock(self, lock_file: Path) -> bool:
         """

@@ -12,6 +12,8 @@ from typing import Dict, List, Optional, Any
 from uuid import uuid4
 
 from shared.models import Task, EnhancedJSONEncoder
+from shared.test_hooks import TestHooks, HookPoint
+from shared.fault_injection import FaultInjector
 
 logger = logging.getLogger(__name__)
 
@@ -177,6 +179,9 @@ class TaskQueue:
         Returns:
             任务ID
         """
+        hooks = TestHooks()
+        injector = FaultInjector()
+        
         # 生成任务ID
         if not task.id:
             task.id = f"task_{uuid4().hex[:8]}"
@@ -184,8 +189,24 @@ class TaskQueue:
         task.status = "pending"
         task.created_at = datetime.now()
         
+        # 触发 before_submit 钩子
+        hooks.trigger(HookPoint.TASK_BEFORE_SUBMIT, 
+                     task_id=task.id, role_id=task.role_id, priority=task.priority)
+        
+        # 尝试故障注入
+        fault_config = injector.try_inject("task_queue.submit", 
+                                          {"task_id": task.id, "role_id": task.role_id})
+        if fault_config:
+            result = injector.apply_fault(fault_config)
+            if result is None and fault_config.fault_type.value == "omission":
+                return task.id  # OMISSION 跳过实际操作
+        
         self.tasks[task.id] = task
         self._save()
+        
+        # 触发 after_submit 钩子
+        hooks.trigger(HookPoint.TASK_AFTER_SUBMIT, 
+                     task_id=task.id, role_id=task.role_id, success=True)
         
         logger.info(f"Submitted task: {task.id} ({task.name}) for role {task.role_id}")
         return task.id
@@ -261,12 +282,27 @@ class TaskQueue:
             status: 新状态 (pending, processing, completed, failed)
             result: 任务结果
         """
+        hooks = TestHooks()
+        injector = FaultInjector()
+        
         task = self.tasks.get(task_id)
         if not task:
             logger.warning(f"Task {task_id} not found for status update")
             return
         
         old_status = task.status
+        
+        # 对于 completed/failed 状态，触发 before_complete 钩子
+        if status in ["completed", "failed"]:
+            hooks.trigger(HookPoint.TASK_BEFORE_COMPLETE, 
+                         task_id=task_id, old_status=old_status, new_status=status)
+            
+            # 尝试故障注入
+            fault_config = injector.try_inject("task_queue.complete", 
+                                              {"task_id": task_id, "status": status})
+            if fault_config:
+                injector.apply_fault(fault_config)
+        
         task.status = status
         
         if status == "processing":
@@ -277,6 +313,12 @@ class TaskQueue:
                 task.result = result
         
         self._save()
+        
+        # 触发 after_complete 钩子
+        if status in ["completed", "failed"]:
+            hooks.trigger(HookPoint.TASK_AFTER_COMPLETE, 
+                         task_id=task_id, status=status, success=(status == "completed"))
+        
         logger.info(f"Task {task_id} status: {old_status} -> {status}")
     
     def increment_retry(self, task_id: str) -> bool:

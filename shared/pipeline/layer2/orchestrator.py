@@ -10,6 +10,8 @@ from typing import Dict, List, Optional, Any, Tuple
 from enum import Enum
 
 from shared.models import Task, Role, Conflict
+from shared.test_hooks import TestHooks, HookPoint
+from shared.fault_injection import FaultInjector
 from layer1.api import ResourceSchedulerAPI
 from layer2.planner import Planner, Blueprint
 from layer2.estimator import Estimator
@@ -199,9 +201,25 @@ class Orchestrator:
         Returns:
             (项目对象, 用户确认消息)
         """
+        hooks = TestHooks()
+        injector = FaultInjector()
+        
         # 生成项目ID
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         project_id = f"PROJ_{timestamp}_{hash(description) % 10000:04d}"
+        
+        # 触发 before_create 钩子
+        hooks.trigger(HookPoint.ORCH_BEFORE_CREATE, 
+                     project_id=project_id, description=description)
+        
+        # 尝试故障注入
+        fault_config = injector.try_inject("orchestrator.create_project", 
+                                          {"project_id": project_id})
+        if fault_config:
+            result = injector.apply_fault(fault_config)
+            if fault_config.fault_type.value == "omission":
+                # OMISSION 跳过创建
+                return None, "Project creation skipped due to fault injection"
         
         # 自动生成名称
         if not name:
@@ -228,6 +246,11 @@ class Orchestrator:
         message = self._format_planning_message(project, estimate)
         
         self._save_projects()
+        
+        # 触发 after_create 钩子
+        hooks.trigger(HookPoint.ORCH_AFTER_CREATE, 
+                     project_id=project_id, name=name, 
+                     task_count=len(blueprint.tasks))
         
         logger.info(f"Created project {project_id}: {name}")
         return project, message
@@ -281,6 +304,9 @@ class Orchestrator:
         Returns:
             (是否成功, 消息)
         """
+        hooks = TestHooks()
+        injector = FaultInjector()
+        
         project = self.projects.get(project_id)
         if not project:
             return False, f"❌ 项目不存在: {project_id}"
@@ -290,10 +316,25 @@ class Orchestrator:
         
         choice = choice.upper()
         
+        # 触发 before_decision 钩子
+        hooks.trigger(HookPoint.ORCH_BEFORE_DECISION, 
+                     project_id=project_id, choice=choice)
+        
+        # 尝试故障注入
+        fault_config = injector.try_inject("orchestrator.confirm_project", 
+                                          {"project_id": project_id, "choice": choice})
+        if fault_config:
+            injector.apply_fault(fault_config)
+        
         if choice == "D":
             # 取消项目
             project.status = ProjectStatus.CANCELLED
             self._save_projects()
+            
+            # 触发 after_decision 钩子
+            hooks.trigger(HookPoint.ORCH_AFTER_DECISION, 
+                         project_id=project_id, choice=choice, success=True)
+            
             return True, f"✅ 项目已取消: {project.name}"
         
         # A/B/C 都是启动项目，只是优先级不同
@@ -320,7 +361,16 @@ class Orchestrator:
             "timestamp": datetime.now().isoformat()
         })
         
+        # 触发 pdca_cycle 钩子
+        hooks.trigger(HookPoint.ORCH_PDCA_CYCLE, 
+                     project_id=project_id, cycle=project.pdca_cycle, 
+                     phase="planning", status="completed")
+        
         self._save_projects()
+        
+        # 触发 after_decision 钩子
+        hooks.trigger(HookPoint.ORCH_AFTER_DECISION, 
+                     project_id=project_id, choice=choice, success=True)
         
         logger.info(f"Project {project_id} started with mode {priority_mode}")
         
