@@ -1,0 +1,76 @@
+{
+  "PROJ_20260315_165705_9460": {
+    "id": "PROJ_20260315_165705_9460",
+    "name": "迁移 GAP02~GAP04 到 Pipeline 框架：\n...",
+    "description": "迁移 GAP02~GAP04 到 Pipeline 框架：\n- GAP02: cron-health-dashboard (高优先级，今晚完成)\n- GAP03: skill-semantic-index (中优先级)\n- GAP04: calendar-aware-prep (低优先级)\n",
+    "status": "running",
+    "blueprint": {
+      "project_type": "general",
+      "name": "项目: 迁移 GAP02~GAP04 到 Pipeline 框架：",
+      "description": "迁移 GAP02~GAP04 到 Pipeline 框架：\n- GAP02: cron-health-dashboard (高优先级，今晚完成)\n- GAP03: skill-semantic-index (中优先级)\n- GAP04: calendar-aware-prep (低优先级)\n",
+      "tasks": [
+        {
+          "name": "[Plan] 需求分析与规划",
+          "description": "分析项目需求: 迁移 GAP02~GAP04 到 Pipeline 框架：\n- GAP02: cron-health-dashboard (高优先级，今晚完成)\n- GAP03: skill-semantic-ind",
+          "role": "architect",
+          "pdca_phase": "plan",
+          "depends_on": [],
+          "estimated_hours": 2.0,
+          "capabilities_required": []
+        },
+        {
+          "name": "[Do] 核心功能开发",
+          "description": "实现核心功能",
+          "role": "developer",
+          "pdca_phase": "do",
+          "depends_on": [
+            0
+          ],
+          "estimated_hours": 8.0,
+          "capabilities_required": []
+        },
+        {
+          "name": "[Check] 测试验证",
+          "description": "执行测试验证",
+          "role": "tester",
+          "pdca_phase": "check",
+          "depends_on": [
+            1
+          ],
+          "estimated_hours": 3.0,
+          "capabilities_required": []
+        }
+      ],
+      "workflow": [
+        "architect",
+        "developer",
+        "tester"
+      ],
+      "estimated_duration": 15.7,
+      "estimated_roles": [
+        "Check",
+        "Do",
+        "Plan"
+      ],
+      "risk_factors": [],
+      "created_at": "2026-03-15T16:57:05.197345"
+    },
+    "tasks": [
+      "task_7bc793e1",
+      null,
+      null
+    ],
+    "created_at": "2026-03-15T16:57:05.197213",
+    "updated_at": "2026-03-15T16:57:05.199821",
+    "completed_at": null,
+    "pdca_cycle": 0,
+    "decision_history": [
+      {
+        "phase": "planning",
+        "decision": "A",
+        "timestamp": "2026-03-15T16:57:05.199822"
+      }
+    ],
+    "metadata": {}
+  }
+}

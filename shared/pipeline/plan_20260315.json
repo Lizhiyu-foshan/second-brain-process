@@ -1,0 +1,184 @@
+{
+  "plan_id": "PLAN-20260315-001",
+  "created_at": "2026-03-15T18:11:00+08:00",
+  "architect": "自我进化流水线-架构师",
+  "analysis_period": "2026-03-14 至 2026-03-15",
+  "previous_plan": "PLAN-20260314-001",
+  "summary": {
+    "total_gaps": 8,
+    "critical": 1,
+    "high_priority": 4,
+    "medium_priority": 3,
+    "completed_yesterday": 2,
+    "estimated_implementation_days": 12
+  },
+  "gaps": [
+    {
+      "id": "GAP-001",
+      "type": "system_reliability",
+      "title": "定时任务执行模式依赖不稳定",
+      "description": "OpenClaw 2026.2.13 版本后，`isolated` + `agentTurn` 模式下子 Agent 无法调用工具，导致所有定时任务失效。",
+      "status": "completed",
+      "skill_name": "openclaw-version-adapter",
+      "completion_date": "2026-03-14"
+    },
+    {
+      "id": "GAP-007",
+      "type": "error_handling",
+      "title": "错误捕获机制依赖人工记录",
+      "description": "系统错误需要依赖用户反馈或手动检查才能发现，缺乏自动捕获和记录机制。",
+      "status": "completed",
+      "skill_name": "auto-error-logger",
+      "completion_date": "2026-03-15",
+      "notes": "已实现装饰器、上下文管理器、手动记录、模式分析功能"
+    },
+    {
+      "id": "GAP-NEW-001",
+      "type": "pipeline_reliability",
+      "title": "自我进化流水线架构师任务执行失败",
+      "description": "架构师任务在 isolated + agentTurn 模式下失败，错误 'Unsupported channel: whatsapp'。这导致无法自动生成每日计划文件。",
+      "evidence": "dev_report_20260315.json: architect_task_failed: true, error: 'Unsupported channel: whatsapp'",
+      "frequency": "critical",
+      "impact": "自我进化流水线无法正常运转，依赖昨日计划继续执行",
+      "priority": "critical",
+      "proposed_solution": {
+        "skill_name": "pipeline-channel-adapter",
+        "description": "为 isolated session 创建无通道适配器，或迁移架构师任务到 main session + systemEvent 模式",
+        "estimated_effort": "1天",
+        "alternative": "修改流水线配置，架构师阶段直接使用 main session 执行"
+      }
+    },
+    {
+      "id": "GAP-005",
+      "type": "data_sync",
+      "title": "Git推送失败缺乏自动恢复机制",
+      "description": "GitHub连接超时、推送失败等问题多次发生，缺乏自动重试和告警。ERRORS.md 中记录5次失败，状态均为pending。",
+      "evidence": "ERRORS.md: ERR-20260307-1000, ERR-20260313-104919, ERR-20260313-160604, ERR-20260313-161627, ERR-20260313-164838",
+      "frequency": "high",
+      "impact": "代码同步中断，工作可能丢失，obsidian-vault 和 workspace 同步受阻",
+      "priority": "high",
+      "proposed_solution": {
+        "skill_name": "git-sync-guardian",
+        "description": "增强版Git同步守护：失败自动重试(指数退避)、离线队列、网络恢复后自动推送、失败告警",
+        "estimated_effort": "2天",
+        "dependencies": "可基于现有 git-safety-guardian 扩展"
+      }
+    },
+    {
+      "id": "GAP-002",
+      "type": "workflow_optimization",
+      "title": "Skill创建流程高度手动化",
+      "description": "用户创建单个Skill需要执行12+次工具调用，耗时5-10分钟。流程涉及读取模板、编写脚本、打包安装等多个手动步骤。",
+      "evidence": "创建git-safety-guardian耗时5分钟，涉及6次工具调用序列",
+      "frequency": "high",
+      "impact": "每次创建Skill浪费时间，阻碍快速迭代",
+      "priority": "high",
+      "proposed_solution": {
+        "skill_name": "skill-factory",
+        "description": "通过自然语言描述自动生成完整Skill：需求解析→代码生成→测试用例→打包安装→文档生成",
+        "estimated_effort": "4天",
+        "roi": "极高 - 每次节省5-10分钟"
+      }
+    },
+    {
+      "id": "GAP-003",
+      "type": "messaging_automation",
+      "title": "飞书消息上下文断裂与重复响应",
+      "description": "用户消息被标记为'untrusted'，导致AI无法关联历史对话上下文。同一问题需多次触发和重新理解。",
+      "evidence": "复盘报告重复发送问题在08:54、09:29、09:38被多次触发",
+      "frequency": "high",
+      "impact": "重复解释成本，响应不一致，用户体验下降",
+      "priority": "high",
+      "proposed_solution": {
+        "skill_name": "context-bridge",
+        "description": "建立飞书消息线程的持久化上下文：消息指纹关联、对话状态机、自动重发触发、跨会话记忆继承",
+        "estimated_effort": "3天"
+      }
+    },
+    {
+      "id": "GAP-004",
+      "type": "data_integrity",
+      "title": "测试数据污染错误日志",
+      "description": "auto-error-logger 测试产生了大量测试错误记录（8条），污染了真实的错误日志，需要清理和隔离。",
+      "evidence": "ERRORS.md: ERR-20260315-044309-0001 至 ERR-20260315-053035-0004 共8条测试错误",
+      "frequency": "medium",
+      "impact": "真实错误被淹没，错误分析准确性下降",
+      "priority": "medium",
+      "proposed_solution": {
+        "skill_name": "error-log-manager",
+        "description": "错误日志管理：自动清理测试数据、归档已解决错误、错误去重、生成错误趋势报告",
+        "estimated_effort": "1天",
+        "immediate_action": "手动清理8条测试错误记录"
+      }
+    },
+    {
+      "id": "GAP-006",
+      "type": "knowledge_query",
+      "title": "Skill市场元数据与来源标注缺失",
+      "description": "AI推荐的Skill无法自动区分'市场中已存在'还是'需要自建'，导致用户误解。",
+      "evidence": "git-safety-guardian被误认为已存在Skill，用户要求标注来源",
+      "frequency": "medium",
+      "impact": "推荐误解导致误操作，增加沟通成本",
+      "priority": "medium",
+      "proposed_solution": {
+        "skill_name": "skill-market-connector",
+        "description": "实时连接ClawHub、GitHub、本地Skill目录，提供来源标记、安装状态、版本信息",
+        "estimated_effort": "2天"
+      }
+    }
+  ],
+  "execution_roadmap": {
+    "phase_1_critical_fix": {
+      "duration": "1天",
+      "tasks": ["GAP-NEW-001"],
+      "milestone": "自我进化流水线恢复正常运转",
+      "deadline": "2026-03-16"
+    },
+    "phase_2_high_impact": {
+      "duration": "8天",
+      "tasks": ["GAP-005", "GAP-002", "GAP-003"],
+      "milestone": "核心痛点解决：Git同步稳定、Skill创建自动化、消息上下文连贯",
+      "dependencies": "GAP-005依赖git-safety-guardian现有代码"
+    },
+    "phase_3_optimization": {
+      "duration": "3天",
+      "tasks": ["GAP-004", "GAP-006"],
+      "milestone": "数据质量优化、市场信息透明"
+    }
+  },
+  "immediate_actions": [
+    {
+      "action": "清理测试错误记录",
+      "file": ".learnings/ERRORS.md",
+      "records_to_remove": ["ERR-20260315-044309-0001", "ERR-20260315-044309-0002", "ERR-20260315-044309-0003", "ERR-20260315-044309-0004", "ERR-20260315-053035-0001", "ERR-20260315-053035-0002", "ERR-20260315-053035-0003", "ERR-20260315-053035-0004"],
+      "reason": "这些是auto-error-logger测试产生的假错误"
+    },
+    {
+      "action": "修复架构师任务通道问题",
+      "options": ["迁移到main session", "创建通道适配器"],
+      "priority": "critical"
+    },
+    {
+      "action": "安装已完成的Skills",
+      "skills": ["openclaw-version-adapter", "auto-error-logger"],
+      "location": "/root/.openclaw/skills/"
+    }
+  ],
+  "resource_requirements": {
+    "skills_to_develop": ["pipeline-channel-adapter", "git-sync-guardian", "skill-factory", "context-bridge", "error-log-manager", "skill-market-connector"],
+    "estimated_total_effort": "13天",
+    "completed_effort": "4天",
+    "remaining_effort": "9天"
+  },
+  "risk_mitigation": {
+    "pipeline_failure": "建立备用执行路径：架构师失败时使用昨日计划+增量更新",
+    "git_sync_persistent": "实现离线队列，确保网络恢复后自动同步",
+    "skill_creation_complexity": "先实现MVP版本，支持基础模板生成，逐步增强"
+  },
+  "success_criteria": {
+    "pipeline": "架构师任务连续7天成功执行",
+    "git_sync": "推送失败自动恢复率>95%，无pending超过24小时的记录",
+    "skill_creation": "创建新Skill时间从10分钟降至2分钟",
+    "error_quality": "错误日志中测试数据占比<5%"
+  }
+}

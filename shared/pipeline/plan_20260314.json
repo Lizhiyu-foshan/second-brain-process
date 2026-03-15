@@ -1,37 +1,152 @@
 {
-  "date": "20260314",
-  "agent": "architect",
-  "model": "kimi-coding/k2p5",
-  "status": "completed",
-  "analysis": {
-    "target": "self-evolution pipeline",
-    "issues_found": 2,
-    "severity": "medium"
+  "plan_id": "PLAN-20260314-001",
+  "created_at": "2026-03-14T18:41:00+08:00",
+  "architect": "自我进化流水线-架构师",
+  "analysis_period": "2026-03-06 至 2026-03-14",
+  "summary": {
+    "total_gaps": 7,
+    "high_priority": 5,
+    "medium_priority": 2,
+    "estimated_implementation_days": 14
   },
   "gaps": [
     {
-      "id": 1,
-      "type": "automation",
-      "title": "Pipeline\u9700\u8981\u771f\u6b63\u7684\u591aAgent\u8c03\u7528\u673a\u5236",
-      "description": "\u5f53\u524dorchestrator\u4f7f\u7528\u6a21\u62df\u6267\u884c\uff0c\u9700\u8981\u63a5\u5165\u771f\u5b9e\u7684OpenClaw sessions_spawn API",
-      "priority": "high",
-      "suggested_action": "fix_config",
-      "evidence": "sessions_spawn\u547d\u4ee4\u884c\u4e0d\u5b58\u5728\uff0c\u9700\u8981\u901a\u8fc7Python API\u8c03\u7528"
+      "id": "GAP-001",
+      "type": "system_reliability",
+      "title": "定时任务执行模式依赖不稳定",
+      "description": "OpenClaw 2026.2.13 版本后，`isolated` + `agentTurn` 模式下子 Agent 无法调用工具，导致所有定时任务失效。虽已迁移到系统级 Cron，但缺乏对 OpenClaw 版本更新的自动适配机制。",
+      "evidence": "ERR-20260313-001: 所有定时任务停止执行，健康检查、自动压缩、消息监控、自我进化全部中断",
+      "frequency": "critical",
+      "impact": "系统自动化能力完全丧失",
+      "priority": "critical",
+      "proposed_solution": {
+        "skill_name": "openclaw-version-adapter",
+        "description": "监控 OpenClaw 版本更新，自动检测 API 变化，在版本升级前测试关键功能，提供迁移脚本",
+        "estimated_effort": "3天"
+      }
     },
     {
-      "id": 2,
-      "type": "observability",
-      "title": "\u7f3a\u4e4fPipeline\u6267\u884c\u53ef\u89c6\u5316",
-      "description": "\u65e0\u6cd5\u5b9e\u65f6\u67e5\u770b\u5404Agent\u7684\u6267\u884c\u72b6\u6001\u548c\u8fdb\u5ea6",
+      "id": "GAP-002",
+      "type": "workflow_optimization",
+      "title": "Skill创建流程高度手动化",
+      "description": "用户创建单个Skill需要执行12+次工具调用，耗时5-10分钟。流程涉及读取模板、编写脚本、打包安装等多个手动步骤。",
+      "evidence": "ai_gap_analysis.json: 创建git-safety-guardian耗时5分钟，涉及6次工具调用序列",
+      "frequency": "high",
+      "impact": "每次创建Skill浪费时间，阻碍快速迭代",
+      "priority": "high",
+      "proposed_solution": {
+        "skill_name": "skill-factory",
+        "description": "通过自然语言描述自动生成完整Skill：需求解析→代码生成→测试用例→打包安装→文档生成",
+        "estimated_effort": "4天"
+      }
+    },
+    {
+      "id": "GAP-003",
+      "type": "messaging_automation",
+      "title": "飞书消息上下文断裂与重复响应",
+      "description": "用户消息被标记为'untrusted'，导致AI无法关联历史对话上下文。同一问题需多次触发和重新理解。",
+      "evidence": "ai_gap_analysis.json: 复盘报告重复发送问题在08:54、09:29、09:38被多次触发",
+      "frequency": "high",
+      "impact": "重复解释成本，响应不一致，用户体验下降",
+      "priority": "high",
+      "proposed_solution": {
+        "skill_name": "context-bridge",
+        "description": "建立飞书消息线程的持久化上下文：消息指纹关联、对话状态机、自动重发触发、跨会话记忆继承",
+        "estimated_effort": "3天"
+      }
+    },
+    {
+      "id": "GAP-004",
+      "type": "data_sync",
+      "title": "系统配置路径一致性缺乏自动校验",
+      "description": "run_daily_report_progress.py使用了错误路径，导致AI分析结果无法读取，系统静默回退到旧数据。",
+      "evidence": "ai_gap_analysis.json: 路径错误导致每日报告读取不到AI分析结果，用户需20分钟排查",
+      "frequency": "medium",
+      "impact": "配置错误导致静默失败，排查成本高",
+      "priority": "high",
+      "proposed_solution": {
+        "skill_name": "config-validator",
+        "description": "自动扫描系统配置，检测路径一致性、环境变量完整性、跨模块引用有效性",
+        "estimated_effort": "2天"
+      }
+    },
+    {
+      "id": "GAP-005",
+      "type": "error_handling",
+      "title": "Git推送失败缺乏自动恢复机制",
+      "description": "GitHub连接超时、推送失败等问题多次发生(ERR-20260307-1000, ERR-20260313-104919等)，缺乏自动重试和告警。",
+      "evidence": "ERRORS.md: 5次Git推送失败记录，状态均为pending，未自动恢复",
+      "frequency": "high",
+      "impact": "代码同步中断，可能导致工作丢失",
+      "priority": "high",
+      "proposed_solution": {
+        "skill_name": "git-sync-guardian",
+        "description": "增强版Git同步守护：失败自动重试(指数退避)、离线队列、恢复后自动推送、失败告警",
+        "estimated_effort": "2天"
+      }
+    },
+    {
+      "id": "GAP-006",
+      "type": "knowledge_query",
+      "title": "Skill市场元数据与来源标注缺失",
+      "description": "AI推荐的Skill无法自动区分'市场中已存在'还是'需要自建'，导致用户误解。",
+      "evidence": "ai_gap_analysis.json: git-safety-guardian被误认为已存在Skill，用户要求标注来源",
+      "frequency": "medium",
+      "impact": "推荐误解导致误操作，增加沟通成本",
       "priority": "medium",
-      "suggested_action": "install_skill",
-      "suggested_skill": "pipeline-dashboard"
+      "proposed_solution": {
+        "skill_name": "skill-market-connector",
+        "description": "实时连接ClawHub、GitHub、本地Skill目录，提供来源标记、安装状态、版本信息",
+        "estimated_effort": "2天"
+      }
+    },
+    {
+      "id": "GAP-007",
+      "type": "workflow_optimization",
+      "title": "错误捕获机制依赖人工记录",
+      "description": "系统错误需要依赖用户反馈或手动检查才能发现，缺乏自动捕获和记录机制。",
+      "evidence": "FEATURE_REQUESTS.md FR-20260305-001: 需要自动错误捕获机制",
+      "frequency": "medium",
+      "impact": "问题发现延迟，被动响应模式",
+      "priority": "medium",
+      "proposed_solution": {
+        "skill_name": "auto-error-logger",
+        "description": "在关键操作包装try-catch，失败时自动写入ERRORS.md，定期回顾错误模式",
+        "estimated_effort": "1天"
+      }
     }
   ],
-  "recommendations": [
-    "\u63a5\u5165OpenClaw Gateway\u7684Python API\u8fdb\u884c\u771f\u5b9eAgent\u8c03\u7528",
-    "\u6dfb\u52a0Pipeline\u6267\u884c\u65e5\u5fd7\u548c\u72b6\u6001\u8ffd\u8e2a",
-    "\u5b9e\u73b0Agent\u95f4\u5b9e\u65f6\u901a\u4fe1\u673a\u5236"
-  ],
-  "next_stage": "development"
+  "execution_roadmap": {
+    "phase_1_critical": {
+      "duration": "3天",
+      "tasks": ["GAP-001"],
+      "milestone": "系统稳定性恢复，版本适配机制建立"
+    },
+    "phase_2_high_impact": {
+      "duration": "7天",
+      "tasks": ["GAP-002", "GAP-003", "GAP-004", "GAP-005"],
+      "milestone": "核心工作流自动化，配置可靠性提升"
+    },
+    "phase_3_optimization": {
+      "duration": "4天",
+      "tasks": ["GAP-006", "GAP-007"],
+      "milestone": "用户体验优化，错误处理自动化"
+    }
+  },
+  "resource_requirements": {
+    "skills_to_install": ["skill-factory", "context-bridge", "config-validator", "git-sync-guardian", "skill-market-connector", "auto-error-logger", "openclaw-version-adapter"],
+    "estimated_total_effort": "17天",
+    "dependencies": ["OpenClaw API 稳定性", "ClawHub 访问权限", "GitHub API 配额"]
+  },
+  "risk_mitigation": {
+    "version_changes": "建立版本锁定机制和变更预警",
+    "api_instability": "实现指数退避重试和离线降级",
+    "conflicting_skills": "建立Skill命名空间和优先级管理"
+  },
+  "success_criteria": {
+    "stability": "定时任务零中断运行30天",
+    "efficiency": "Skill创建时间从10分钟降至1分钟",
+    "reliability": "配置错误100%自动检测",
+    "recovery": "Git推送失败自动恢复率>95%"
+  }
 }

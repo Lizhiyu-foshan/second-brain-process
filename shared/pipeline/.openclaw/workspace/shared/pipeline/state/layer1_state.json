@@ -1,0 +1,141 @@
+{
+  "roles": {
+    "architect": {
+      "id": "architect",
+      "type": "architect",
+      "name": "\u67b6\u6784\u5e08",
+      "capabilities": [
+        "architecture",
+        "design",
+        "tech_selection",
+        "planning",
+        "api_design"
+      ],
+      "status": "idle",
+      "queue": [
+        "task_7bc793e1",
+        "task_37cd2d60"
+      ],
+      "current_task": null,
+      "metrics": {
+        "total_tasks": 0,
+        "success_count": 0,
+        "fail_count": 0,
+        "avg_duration": 0.0,
+        "success_rate": 1.0
+      },
+      "config": {
+        "poll_interval_minutes": 15,
+        "lock_timeout_minutes": 30,
+        "max_concurrent": 1
+      }
+    },
+    "developer": {
+      "id": "developer",
+      "type": "developer",
+      "name": "\u5f00\u53d1\u8005",
+      "capabilities": [
+        "coding",
+        "implementation",
+        "debugging",
+        "skill_development"
+      ],
+      "status": "idle",
+      "queue": [
+        "task_845863a9"
+      ],
+      "current_task": null,
+      "metrics": {
+        "total_tasks": 0,
+        "success_count": 0,
+        "fail_count": 0,
+        "avg_duration": 0.0,
+        "success_rate": 1.0
+      },
+      "config": {
+        "poll_interval_minutes": 15,
+        "lock_timeout_minutes": 30,
+        "max_concurrent": 1
+      }
+    },
+    "tester": {
+      "id": "tester",
+      "type": "tester",
+      "name": "\u6d4b\u8bd5\u5458",
+      "capabilities": [
+        "testing",
+        "validation",
+        "quality_assurance",
+        "test_automation"
+      ],
+      "status": "idle",
+      "queue": [],
+      "current_task": null,
+      "metrics": {
+        "total_tasks": 0,
+        "success_count": 0,
+        "fail_count": 0,
+        "avg_duration": 0.0,
+        "success_rate": 1.0
+      },
+      "config": {
+        "poll_interval_minutes": 15,
+        "lock_timeout_minutes": 30,
+        "max_concurrent": 1
+      }
+    },
+    "analyst": {
+      "id": "analyst",
+      "type": "analyst",
+      "name": "\u5206\u6790\u5e08",
+      "capabilities": [
+        "analysis",
+        "requirements",
+        "research"
+      ],
+      "status": "idle",
+      "queue": [
+        "task_cdff5896"
+      ],
+      "current_task": null,
+      "metrics": {
+        "total_tasks": 0,
+        "success_count": 0,
+        "fail_count": 0,
+        "avg_duration": 0.0,
+        "success_rate": 1.0
+      },
+      "config": {
+        "poll_interval_minutes": 15,
+        "lock_timeout_minutes": 30,
+        "max_concurrent": 1
+      }
+    },
+    "auditor": {
+      "id": "auditor",
+      "type": "auditor",
+      "name": "\u4ee3\u7801\u5ba1\u8ba1\u5458",
+      "capabilities": [
+        "security_audit",
+        "code_review",
+        "vulnerability_detection"
+      ],
+      "status": "idle",
+      "queue": [],
+      "current_task": null,
+      "metrics": {
+        "total_tasks": 0,
+        "success_count": 0,
+        "fail_count": 0,
+        "avg_duration": 0.0,
+        "success_rate": 1.0
+      },
+      "config": {
+        "poll_interval_minutes": 15,
+        "lock_timeout_minutes": 30,
+        "max_concurrent": 1
+      }
+    }
+  },
+  "last_updated": "2026-03-15T16:57:05.205326"
+}

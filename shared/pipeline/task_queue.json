@@ -1,0 +1,66 @@
+{
+  "version": "1.1",
+  "created_at": "2026-03-15T10:10:00+08:00",
+  "description": "多项目任务队列系统 - 支持动态角色扩展",
+  
+  "roles": {
+    "architect": {
+      "name": "架构师",
+      "description": "分析系统缺口，生成改进计划",
+      "lock": {
+        "status": "idle",
+        "since": null,
+        "task_id": null
+      },
+      "queue": [],
+      "config": {
+        "poll_interval_minutes": 15,
+        "lock_timeout_minutes": 30,
+        "max_concurrent": 1
+      }
+    },
+    "developer": {
+      "name": "开发者",
+      "description": "根据计划开发skill",
+      "lock": {
+        "status": "idle",
+        "since": null,
+        "task_id": null
+      },
+      "queue": [],
+      "config": {
+        "poll_interval_minutes": 15,
+        "lock_timeout_minutes": 60,
+        "max_concurrent": 1
+      }
+    },
+    "tester": {
+      "name": "测试员",
+      "description": "验证开发结果，生成测试报告",
+      "lock": {
+        "status": "idle",
+        "since": null,
+        "task_id": null
+      },
+      "queue": [],
+      "config": {
+        "poll_interval_minutes": 15,
+        "lock_timeout_minutes": 20,
+        "max_concurrent": 1
+      }
+    }
+  },
+  
+  "role_sequence": ["architect", "developer", "tester"],
+  
+  "projects": [],
+  "active_project": null,
+  "global_config": {
+    "default_poll_interval_minutes": 15,
+    "default_lock_timeout_minutes": 30,
+    "max_retry_count": 3,
+    "status_report_interval_minutes": 30
+  },
+  
+  "last_updated": "2026-03-15T10:10:00+08:00"
+}

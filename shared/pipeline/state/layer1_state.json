@@ -1,0 +1,31 @@
+{
+  "roles": {
+    "tester_6590bf": {
+      "id": "tester_6590bf",
+      "type": "tester",
+      "name": "\u8d28\u91cf\u9a8c\u8bc1\u5458",
+      "capabilities": [
+        "testing",
+        "validation",
+        "quality_assurance",
+        "bug_detection"
+      ],
+      "status": "idle",
+      "queue": [],
+      "current_task": "task_e27cf9c9",
+      "metrics": {
+        "total_tasks": 1,
+        "success_count": 1,
+        "fail_count": 0,
+        "avg_duration": 0.01667075,
+        "success_rate": 1.0
+      },
+      "config": {
+        "poll_interval_minutes": 15,
+        "lock_timeout_minutes": 30,
+        "max_concurrent": 1
+      }
+    }
+  },
+  "last_updated": "2026-03-15T12:06:31.838394"
+}
