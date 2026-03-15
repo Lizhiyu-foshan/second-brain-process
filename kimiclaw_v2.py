@@ -56,7 +56,8 @@ def release_lock():
 
 # 路径配置
 WORKSPACE = Path("/root/.openclaw/workspace")
-QUEUE_DIR = WORKSPACE / "second-brain-processor" / "queue"
+PROCESSOR_DIR = WORKSPACE / "second-brain-processor"
+QUEUE_DIR = PROCESSOR_DIR / "queue"
 VAULT_DIR = WORKSPACE / "obsidian-vault"
 MEMORY_DIR = WORKSPACE / "memory"
 SESSION_DIR = Path("/root/.openclaw/agents/main/sessions")
@@ -97,8 +98,8 @@ def log_error(error_type: str, details: str, area: str = "general", priority: st
         log(f"[错误记录失败] {e}")
 
 # 性能限制
-MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB   # 2MB - 覆盖截图文章场景
-MAX_LINES_PER_FILE = 10000        # 最多解析10000行
+MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB - 放宽限制以处理大对话文件（多次往返的长文本）
+MAX_LINES_PER_FILE = 100000       # 最多解析100000行（放宽以处理大对话文件）
 MAX_FILES_TO_PROCESS = 15         # 最多处理15个文件
 MAX_FILE_AGE_HOURS = 24           # 24小时窗口 - 每天整理的逻辑
 
@@ -136,22 +137,22 @@ def get_last_process_time():
 
 def get_fixed_daily_window(target_date=None):
     """
-    获取固定的每日处理窗口（只处理完整的"昨天"，前天5:00到昨天5:00）
-    修改：不再包含今天凌晨的内容，避免话题未聊完就被整理
+    获取固定的每日处理窗口（处理"昨天"，昨天5:00到今天5:00）
+    例如：今天3月13日凌晨5点运行，处理3月12日5:00至3月13日5:00的对话
     """
     if target_date is None:
         target_date = datetime.now()
     
-    # 昨天5:00（作为结束时间）
-    yesterday_5am = target_date.replace(hour=5, minute=0, second=0, microsecond=0) - timedelta(days=1)
+    # 今天5:00（作为结束时间）
+    today_5am = target_date.replace(hour=5, minute=0, second=0, microsecond=0)
     if target_date.hour < 5:
-        # 如果当前时间早于5:00，则昨天5:00是前天的5:00
-        yesterday_5am = yesterday_5am - timedelta(days=1)
+        # 如果当前时间早于5:00，则今天5:00是昨天的5:00
+        today_5am = today_5am - timedelta(days=1)
     
-    # 前天5:00（作为开始时间）
-    day_before_yesterday_5am = yesterday_5am - timedelta(days=1)
+    # 昨天5:00（作为开始时间）
+    yesterday_5am = today_5am - timedelta(days=1)
     
-    return day_before_yesterday_5am, yesterday_5am
+    return yesterday_5am, today_5am
 
 def save_last_process_time(dt=None):
     """保存本次整理时间"""
@@ -171,6 +172,7 @@ def extract_url(text):
 def parse_session_messages_safe(session_content, max_lines=MAX_LINES_PER_FILE):
     """
     安全地解析session中的消息，限制行数防止大文件卡住
+    修复：正确处理Feishu消息，提取真正的用户内容
     """
     messages = []
     lines = session_content.split('\n')
@@ -188,6 +190,12 @@ def parse_session_messages_safe(session_content, max_lines=MAX_LINES_PER_FILE):
                     if msg_content and len(msg_content) > 0:
                         text = msg_content[0].get('text', '')
                         timestamp = data.get('timestamp', '')
+                        
+                        # 处理Feishu消息：提取真正的用户内容
+                        if text and 'Feishu[default] DM' in text:
+                            # 提取消息内容（去掉System前缀和元数据）
+                            text = extract_feishu_content(text)
+                        
                         if text and len(text) > 5:  # 过滤太短的消息
                             messages.append({
                                 'text': text,
@@ -197,6 +205,42 @@ def parse_session_messages_safe(session_content, max_lines=MAX_LINES_PER_FILE):
             continue
     
     return messages
+
+
+def extract_feishu_content(text):
+    """
+    从Feishu系统消息格式中提取真正的用户内容
+    
+    输入格式:
+    System: [2026-03-14 09:xx:xx GMT+8] Feishu[default] DM from ou_xxxx: 用户消息内容
+    
+    Conversation info (untrusted metadata):
+    ...
+    
+    输出: 用户消息内容
+    """
+    try:
+        # 找到"Feishu[default] DM from xxx: "之后的部分
+        marker = 'Feishu[default] DM from '
+        if marker in text:
+            # 提取用户ID之后的内容
+            parts = text.split(marker, 1)
+            if len(parts) > 1:
+                # 去掉用户ID，保留消息内容
+                after_marker = parts[1]
+                # 找到第一个冒号后的内容
+                if ':' in after_marker:
+                    content = after_marker.split(':', 1)[1].strip()
+                    
+                    # 去掉Conversation info部分
+                    if 'Conversation info' in content:
+                        content = content.split('Conversation info')[0].strip()
+                    
+                    return content
+    except Exception:
+        pass
+    
+    return text
 
 def get_session_content_since(since_time):
     """
@@ -342,8 +386,13 @@ SKIP_PATTERNS = [
 ]
 
 def is_system_message(text):
-    """检查是否是系统消息"""
+    """检查是否是系统消息（但保留Feishu用户消息）"""
     text_lower = text.lower()
+    
+    # 特殊处理：Feishu用户消息虽然以"System:"开头，但实际是用户对话
+    if 'feishu[default] dm' in text_lower or 'feishu[default]' in text_lower:
+        return False  # 不是系统消息，是用户对话
+    
     for pattern in SKIP_PATTERNS:
         if re.search(pattern, text_lower):
             return True
@@ -467,6 +516,32 @@ def categorize_content(sessions_data, since_time):
                 
                 i += 1
     
+    # 处理temp_chats，合并相同主题的对话
+    if temp_chats:
+        # 按主题分组
+        from collections import defaultdict
+        theme_groups = defaultdict(list)
+        
+        for chat in temp_chats:
+            theme_key = chat.get('topic_key', ('未分类',))
+            theme_groups[theme_key].append(chat)
+        
+        # 为每个主题组创建独立对话条目（合并相似主题）
+        for theme_key, chats in theme_groups.items():
+            if len(chats) >= 2:  # 至少有2条才成为主题
+                # 合并主题下的所有对话
+                combined_text = "\n\n---\n\n".join([c['text'] for c in chats[:10]])
+                standalone_chats.append({
+                    'text': combined_text,
+                    'timestamp': chats[0]['timestamp'],
+                    'topic_key': theme_key,
+                    'message_count': len(chats)
+                })
+            else:
+                # 单条对话也保留
+                for chat in chats:
+                    standalone_chats.append(chat)
+    
     return {
         'links_with_discussion': links_with_discussion,
         'standalone_chats': standalone_chats,
@@ -513,17 +588,20 @@ def retry_failed_pushes():
         log_error("git_retry_failed", error_msg, area="git_sync", priority="medium")
 
 def commit_and_push(message):
-    """提交并推送到GitHub，带重试和指数退避"""
-    max_retries = 3
-    base_delay = 2  # 基础延迟2秒
-    
-    for i in range(max_retries):
+    """
+    提交并推送到GitHub，带重试策略：
+    - 第一轮：重试3次，超时120秒
+    - 等待300秒
+    - 第二轮：重试3次，超时120秒
+    - 仍失败：在复盘报告中报错，让用户手动提交
+    """
+    # 第一轮：3次重试，120秒超时
+    for i in range(3):
         try:
-            # 每次重试增加延迟（指数退避）
             if i > 0:
-                delay = base_delay * (2 ** i)
-                log(f"第{i+1}次重试，等待{delay}秒...")
-                time.sleep(delay)
+                log(f"第{i+1}次重试，等待{2**i}秒...")
+                time.sleep(2**i)
+            
             # 添加
             subprocess.run(
                 ['git', 'add', '.'],
@@ -539,22 +617,106 @@ def commit_and_push(message):
             if result.returncode != 0 and 'nothing to commit' not in result.stderr:
                 continue
             
-            # 推送
+            # 推送（120秒超时）
             result = subprocess.run(
-                ['git', 'push', '--force-with-lease'],
-                cwd=VAULT_DIR, capture_output=True, text=True, timeout=60
+                ['git', 'push', 'origin', 'main'],
+                cwd=VAULT_DIR, capture_output=True, text=True, timeout=120
             )
             
             if result.returncode == 0:
-                return {'success': True}
+                log("✅ Git推送成功")
+                # 发送推送成功通知（带防重保护）
+                try:
+                    sys.path.insert(0, str(PROCESSOR_DIR))
+                    from feishu_guardian import send_feishu_safe
+                    commit_hash = subprocess.run(
+                        ['git', 'rev-parse', '--short', 'HEAD'],
+                        cwd=VAULT_DIR, capture_output=True, text=True, timeout=10
+                    ).stdout.strip()
+                    send_feishu_safe(
+                        content=f"✅ Git推送成功\n\n提交: {message[:50]}...\n哈希: {commit_hash}",
+                        target="ou_363105a68ee112f714ed44e12c802051",
+                        msg_type="git_push"
+                    )
+                except Exception as e:
+                    log(f"[WARN] 推送通知发送失败: {e}")
+                return {'success': True, 'round': 1, 'attempt': i+1}
             
+        except subprocess.TimeoutExpired:
+            log(f"⚠️ 第{i+1}次推送超时（120秒）")
+            continue
         except Exception as e:
-            if i == max_retries - 1:
-                error_msg = f"Git操作失败: {str(e)}"
-                log_error("git_operation_failed", error_msg, area="git_sync", priority="high")
-                return {'success': False, 'error': str(e)}
+            log(f"⚠️ 第{i+1}次推送异常: {str(e)[:100]}")
+            continue
     
-    return {'success': False, 'error': 'Max retries exceeded'}
+    # 第一轮失败，等待300秒
+    log("第一轮推送失败，等待300秒后进行第二轮重试...")
+    time.sleep(300)
+    
+    # 第二轮：3次重试，120秒超时
+    for i in range(3):
+        try:
+            if i > 0:
+                log(f"第二轮第{i+1}次重试，等待{2**i}秒...")
+                time.sleep(2**i)
+            
+            # 重新拉取最新变更
+            subprocess.run(
+                ['git', 'fetch', 'origin'],
+                cwd=VAULT_DIR, capture_output=True, text=True, timeout=30
+            )
+            
+            # 推送（120秒超时）
+            result = subprocess.run(
+                ['git', 'push', 'origin', 'main'],
+                cwd=VAULT_DIR, capture_output=True, text=True, timeout=120
+            )
+            
+            if result.returncode == 0:
+                log("✅ Git推送成功（第二轮）")
+                # 发送推送成功通知（带防重保护）
+                try:
+                    sys.path.insert(0, str(PROCESSOR_DIR))
+                    from feishu_guardian import send_feishu_safe
+                    commit_hash = subprocess.run(
+                        ['git', 'rev-parse', '--short', 'HEAD'],
+                        cwd=VAULT_DIR, capture_output=True, text=True, timeout=10
+                    ).stdout.strip()
+                    send_feishu_safe(
+                        content=f"✅ Git推送成功（第二轮重试）\n\n提交: {message[:50]}...\n哈希: {commit_hash}",
+                        target="ou_363105a68ee112f714ed44e12c802051",
+                        msg_type="git_push"
+                    )
+                except Exception as e:
+                    log(f"[WARN] 推送通知发送失败: {e}")
+                return {'success': True, 'round': 2, 'attempt': i+1}
+            
+        except subprocess.TimeoutExpired:
+            log(f"⚠️ 第二轮第{i+1}次推送超时（120秒）")
+            continue
+        except Exception as e:
+            log(f"⚠️ 第二轮第{i+1}次推送异常: {str(e)[:100]}")
+            continue
+    
+    # 全部失败，记录错误并在复盘报告中报错
+    error_msg = "Git推送失败：两轮重试共6次均失败（第一轮3次+等待300秒+第二轮3次，每次超时120秒）。请手动执行：cd obsidian-vault && git push origin main"
+    log(f"❌ {error_msg}")
+    log_error("git_push_failed_all_retries", error_msg, area="git_sync", priority="critical")
+    
+    # 保存到待处理文件，在复盘报告中提醒
+    pending_push_file = LEARNINGS_DIR / "pending_git_push.txt"
+    try:
+        pending_push_file.write_text(
+            f"时间: {datetime.now().isoformat()}\n"
+            f"消息: {message}\n"
+            f"状态: 推送失败，需手动提交\n"
+            f"命令: cd /root/.openclaw/workspace/obsidian-vault && git push origin main\n",
+            encoding='utf-8'
+        )
+    except:
+        pass
+    
+    return {'success': False, 'error': error_msg, 'needs_manual': True}
 
 def get_vault_stats():
     """获取知识库统计"""

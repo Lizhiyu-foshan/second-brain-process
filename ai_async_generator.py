@@ -21,19 +21,22 @@ try:
     from config import (
         ALICLOUD_API_KEY,
         ALICLOUD_BASE_URL,
-        ALICLOUD_MODEL_FAST,
-        ALICLOUD_MODEL_COMPLEX,
+        ALICLOUD_MODEL_CHAT_COMPLEX,
         ERRORS_FILE,
         AI_PENDING_FILE,
         AI_RESULTS_FILE,
         validate_api_key
     )
+    # 统一使用Kimi K2.5模型
+    ALICLOUD_MODEL_FAST = ALICLOUD_MODEL_CHAT_COMPLEX
+    ALICLOUD_MODEL_COMPLEX = ALICLOUD_MODEL_CHAT_COMPLEX
 except ImportError:
     # 降级处理
     ALICLOUD_API_KEY = os.environ.get('ALICLOUD_API_KEY', '')
     ALICLOUD_BASE_URL = os.environ.get('ALICLOUD_BASE_URL', 'https://coding.dashscope.aliyuncs.com/v1')
-    ALICLOUD_MODEL_FAST = os.environ.get('ALICLOUD_MODEL_FAST', 'MiniMax-M2.5')
-    ALICLOUD_MODEL_COMPLEX = os.environ.get('ALICLOUD_MODEL_COMPLEX', 'glm-5')
+    # 统一使用Kimi K2.5模型
+    ALICLOUD_MODEL_FAST = 'kimi-k2.5'
+    ALICLOUD_MODEL_COMPLEX = 'kimi-k2.5'
     WORKSPACE = Path("/root/.openclaw/workspace")
     ERRORS_FILE = WORKSPACE / ".learnings" / "ERRORS.md"
     AI_PENDING_FILE = WORKSPACE / ".learnings" / "AI_PENDING.json"
@@ -95,7 +98,7 @@ def call_ai_async(prompt: str, task_type: str = 'complex', timeout: int = 300) -
     
     # 选择模型
     model = select_model_by_task(task_type)
-    model_name = "MiniMax M2.5" if task_type == 'fast' else "GLM-5"
+    model_name = "Kimi K2.5"  # 统一使用Kimi K2.5
     
     try:
         url = f"{ALICLOUD_BASE_URL}/chat/completions"
@@ -359,7 +362,7 @@ def process_pending_ai_tasks():
     analysis = analyze_error(latest_error)
     task_type = analysis.get('task_type', 'complex')
     
-    model_name = "MiniMax M2.5" if task_type == 'fast' else "GLM-5"
+    model_name = "Kimi K2.5"  # 统一使用Kimi K2.5
     log(f"错误模式: {analysis['pattern']}")
     log(f"任务类型: {task_type} -> 使用{model_name}")
     

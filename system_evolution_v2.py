@@ -63,8 +63,16 @@ def get_recent_errors(hours=24) -> List[Dict]:
         
         for error_id, title, logged_time in matches:
             try:
-                # 修复：正确处理带时区的时间
-                log_dt = datetime.fromisoformat(logged_time.replace('Z', '+00:00'))
+                # 修复：统一处理各种时区格式
+                time_str = logged_time.strip()
+                # 如果是Z结尾，替换为+00:00
+                if time_str.endswith('Z'):
+                    time_str = time_str[:-1] + '+00:00'
+                # 解析时间（可能带时区也可能不带）
+                log_dt = datetime.fromisoformat(time_str)
+                # 如果log_dt没有时区，添加本地时区以便比较
+                if log_dt.tzinfo is None:
+                    log_dt = log_dt.astimezone()
                 if log_dt > cutoff_time:
                     # 提取详细内容
                     error_section = re.search(
@@ -808,7 +816,8 @@ def cleanup_old_errors():
     
     try:
         content = ERRORS_FILE.read_text(encoding='utf-8')
-        cutoff_time = datetime.now() - timedelta(days=ERROR_RETENTION_DAYS)
+        # 修复：使用带时区的当前时间
+        cutoff_time = datetime.now().astimezone() - timedelta(days=ERROR_RETENTION_DAYS)
         
         error_pattern = r'(## \[ERR-\d{8}-\d+\] .+?)(?=## \[ERR-|\Z)'
         matches = re.findall(error_pattern, content + '\n## [', re.DOTALL)
@@ -818,10 +827,21 @@ def cleanup_old_errors():
             time_match = re.search(r'\*\*Logged\*\*: ([^\n]+)', match)
             if time_match:
                 try:
-                    log_time = datetime.fromisoformat(time_match.group(1).replace('Z', '+00:00').replace('+00:00', ''))
+                    # 修复：正确处理带时区的时间字符串
+                    time_str = time_match.group(1)
+                    # 统一处理各种时区格式
+                    if time_str.endswith('Z'):
+                        time_str = time_str[:-1] + '+00:00'
+                    # 解析时间
+                    log_time = datetime.fromisoformat(time_str)
+                    # 如果log_dt没有时区，添加本地时区以便比较
+                    if log_time.tzinfo is None:
+                        log_time = log_time.astimezone()
                     if log_time > cutoff_time:
                         kept_errors.append(match.rstrip())
-                except:
+                except Exception as e:
+                    # 解析失败保留
+                    print(f"[WARN] 时间解析失败，保留错误记录: {e}")
                     kept_errors.append(match.rstrip())
             else:
                 kept_errors.append(match.rstrip())

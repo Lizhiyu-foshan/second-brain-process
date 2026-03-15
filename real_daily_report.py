@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 每日复盘报告 - 真正执行版
-带消息送达校验
+带消息送达校验 + 防重复发送保护
 """
 
 import json
@@ -14,6 +14,10 @@ from pathlib import Path
 WORKSPACE = Path("/root/.openclaw/workspace")
 REPORT_SCRIPT = WORKSPACE / "second-brain-processor" / "daily_report.py"
 LOG_FILE = WORKSPACE / "second-brain-processor" / "send_verify.log"
+
+# 导入防重保护
+sys.path.insert(0, str(WORKSPACE / "second-brain-processor"))
+from feishu_guardian import send_feishu_safe, check_duplicate_by_date
 
 def log(msg):
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -58,46 +62,26 @@ def generate_report():
         return None
 
 def send_report(report: str) -> dict:
-    """真正执行消息发送"""
+    """真正执行消息发送 - 使用防重保护"""
     log("步骤2: 执行消息发送...")
     
-    # 转义特殊字符
-    escaped_report = report.replace('"', '\\"').replace('$', '\\$')
+    # 检查今天是否已发送过复盘报告
+    today_str = datetime.now().strftime('%Y-%m-%d')
+    if check_duplicate_by_date("daily_report", today_str):
+        log(f"⚠️ 今天({today_str})的复盘报告已发送过，跳过")
+        return {"success": True, "skipped": True, "message": "今日报告已发送"}
     
-    try:
-        # 使用 openclaw message 命令发送
-        result = subprocess.run(
-            ["openclaw", "message", "send", 
-             "--target", "ou_363105a68ee112f714ed44e12c802051",
-             "--message", report],
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
-        
-        log(f"发送命令返回码: {result.returncode}")
-        log(f"发送命令输出: {result.stdout[:200]}")
-        
-        if result.returncode != 0:
-            log(f"发送失败: {result.stderr}")
-            return {"success": False, "error": result.stderr}
-        
-        # 解析返回的 messageId
-        try:
-            response = json.loads(result.stdout)
-            message_id = response.get("result", {}).get("messageId")
-            log(f"消息ID: {message_id}")
-            return {"success": True, "message_id": message_id}
-        except:
-            # 可能没有JSON，但只要returncode为0就认为成功
-            return {"success": True, "message_id": None}
-            
-    except subprocess.TimeoutExpired:
-        log("发送超时")
-        return {"success": False, "error": "timeout"}
-    except Exception as e:
-        log(f"发送异常: {e}")
-        return {"success": False, "error": str(e)}
+    # 使用防重保护发送
+    result = send_feishu_safe(
+        content=report,
+        target="ou_363105a68ee112f714ed44e12c802051",
+        msg_type="daily_report"
+    )
+    
+    log(f"发送结果: {result['message']}")
+    log(f"消息指纹: {result['fingerprint']}")
+    
+    return result
 
 def verify_send(message_id: str = None) -> bool:
     """校验消息是否真的送达"""
@@ -117,19 +101,15 @@ def verify_send(message_id: str = None) -> bool:
         return False
 
 def send_alert(title: str, content: str):
-    """发送告警"""
+    """发送告警 - 使用防重保护"""
     alert_msg = f"⚠️ {title}\n\n{content}\n\n时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     
-    try:
-        subprocess.run(
-            ["openclaw", "message", "send",
-             "--target", "ou_363105a68ee112f714ed44e12c802051",
-             "--message", alert_msg],
-            capture_output=True,
-            timeout=30
-        )
-    except:
-        pass
+    # 使用防重保护发送
+    send_feishu_safe(
+        content=alert_msg,
+        target="ou_363105a68ee112f714ed44e12c802051",
+        msg_type="system_alert"
+    )
 
 def main():
     log("=" * 50)
@@ -150,12 +130,16 @@ def main():
     # 2. 发送报告
     send_result = send_report(report)
     
+    if send_result.get("skipped"):
+        log("⏭️ 今日报告已发送过，跳过重复发送")
+        sys.exit(0)
+    
     if not send_result["success"]:
-        send_alert("复盘报告发送失败", f"错误: {send_result.get('error', '未知错误')}")
+        send_alert("复盘报告发送失败", f"错误: {send_result.get('message', '未知错误')}")
         sys.exit(1)
     
     # 3. 校验送达
-    verified = verify_send(send_result.get("message_id"))
+    verified = verify_send(send_result.get("fingerprint"))
     
     if verified:
         log("✅ 复盘报告发送并校验成功")

@@ -198,6 +198,7 @@ def send_feishu_safe(content: str, target: str = "ou_363105a68ee112f714ed44e12c8
             cmd = [
                 "openclaw", "message", "send",
                 "--target", target,
+                "--channel", "feishu",
                 "--message", content
             ]
             

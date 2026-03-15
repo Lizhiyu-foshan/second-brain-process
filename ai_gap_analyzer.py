@@ -42,10 +42,10 @@ class AIGapAnalyzer:
         self.output_file = LEARNINGS_DIR / "ai_gap_analysis.json"
         
         # API配置（从环境变量读取）
-        # 优先使用ALICLOUD_API_KEY（阿里云DashScope）
-        self.api_key = os.environ.get('ALICLOUD_API_KEY', '') or os.environ.get('KIMI_API_KEY', '')
-        # 使用阿里云DashScope API（KimiCode套餐）
-        self.base_url = os.environ.get('ALICLOUD_BASE_URL', 'https://coding.dashscope.aliyuncs.com/v1')
+        # 使用阿里云百炼Kimi K2.5 API
+        self.api_key = os.environ.get('ALICLOUD_API_KEY', '')
+        self.base_url = 'https://coding.dashscope.aliyuncs.com/v1'
+        self.model = 'kimi-k2.5'
         
         # 加载已安装的skills
         self.installed_skills = self._load_installed_skills()
@@ -58,14 +58,95 @@ class AIGapAnalyzer:
         return [d.name for d in skills_dir.iterdir() if d.is_dir()]
     
     def _is_skill_installed(self, skill_name: str) -> bool:
-        """检查某个skill是否已安装（支持模糊匹配）"""
+        """检查某个skill是否已安装（支持模糊匹配和关键词映射）"""
         if not skill_name:
             return False
         
         skill_name_lower = skill_name.lower()
+        
+        # 关键词映射表：建议名称 -> 已安装skill关键词
+        # 基于 SKILL_INDEX.md 建立的功能-名称映射
+        skill_keyword_map = {
+            # 文章剪藏/内容处理类
+            'article-clip': ['pipeline-health', 'health-monitor'],
+            'content-pipeline': ['pipeline-health', 'health-monitor'],
+            'article-clip-pipeline': ['pipeline-health', 'health-monitor'],
+            'content-processing': ['pipeline-health', 'health-monitor', 'knowledge-studio'],
+            'article-processing': ['pipeline-health', 'health-monitor'],
+            
+            # 上下文/会话管理类
+            'context-threshold': ['auto-compact', 'dynamic-compact', 'auto-fix'],
+            'context-adaptive': ['auto-compact', 'dynamic-compact', 'auto-fix'],
+            'session-compact': ['auto-compact', 'dynamic-compact', 'auto-fix'],
+            'dynamic-compact': ['auto-compact', 'dynamic-compact'],
+            'context-guardian': ['auto-compact', 'dynamic-compact'],
+            'session-management': ['auto-compact', 'dynamic-compact', 'auto-fix'],
+            
+            # 知识管理/会议准备类
+            'meeting-prep': ['knowledge-studio'],
+            'discussion-prep': ['knowledge-studio'],
+            'knowledge-prep': ['knowledge-studio'],
+            'meeting-orchestrator': ['knowledge-studio'],
+            'knowledge-management': ['knowledge-studio'],
+            'content-organization': ['knowledge-studio'],
+            
+            # 待办/行动项管理类
+            'action-item': ['auto-fix'],
+            'action-loop': ['auto-fix'],
+            'task-tracker': ['auto-fix'],
+            'todo-management': ['auto-fix'],
+            'action-closer': ['auto-fix'],
+            'workflow-automation': ['auto-fix'],
+            
+            # Skill市场/发现类
+            'skill-market': ['clawhub'],
+            'skill-scout': ['clawhub'],
+            'skill-discovery': ['clawhub'],
+            'market-search': ['clawhub'],
+            
+            # Git/代码安全类
+            'git-safety': ['git-safety-guardian'],
+            'git-guardian': ['git-safety-guardian'],
+            'push-protection': ['git-safety-guardian'],
+            'code-safety': ['git-safety-guardian'],
+            
+            # 飞书/消息处理类
+            'feishu-dedup': ['feishu-deduplication', 'feishu-send-guardian'],
+            'message-guardian': ['feishu-deduplication', 'feishu-send-guardian'],
+            'send-protection': ['feishu-send-guardian'],
+            'duplicate-prevention': ['feishu-deduplication'],
+            'message-deduplication': ['feishu-deduplication'],
+            
+            # BMAD/开发框架类
+            'bmad': ['bmad-evo', 'bmad-method'],
+            'multi-agent': ['bmad-evo', 'bmad-method'],
+            'development-framework': ['bmad-evo', 'bmad-method'],
+            'agent-framework': ['bmad-evo', 'bmad-method'],
+            
+            # 频道配置类
+            'channel-setup': ['channels-setup'],
+            'im-config': ['channels-setup'],
+            'messaging-setup': ['channels-setup'],
+            
+            # 飞书自动化类
+            'feishu-auto': ['feishu-automation'],
+            'lark-automation': ['feishu-automation'],
+            'feishu-bot': ['feishu-automation'],
+        }
+        
+        # 检查映射表
+        for keyword, installed_keywords in skill_keyword_map.items():
+            if keyword in skill_name_lower:
+                for installed in self.installed_skills:
+                    installed_lower = installed.lower()
+                    for ik in installed_keywords:
+                        if ik in installed_lower:
+                            print(f"[INFO] 通过关键词映射跳过已安装skill: {skill_name} -> {installed}")
+                            return True
+        
+        # 原有匹配逻辑
         for installed in self.installed_skills:
             installed_lower = installed.lower()
-            # 完全匹配或包含关系
             if skill_name_lower == installed_lower or skill_name_lower in installed_lower or installed_lower in skill_name_lower:
                 return True
         return False

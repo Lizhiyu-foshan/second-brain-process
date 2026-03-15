@@ -93,7 +93,51 @@ def get_vault_stats():
     return stats
 
 
-def get_health_status() -> str:
+def get_installed_skills() -> str:
+    """获取已安装的技能列表"""
+    lines = ["\n📦 **已安装 Skills**"]
+    
+    # 自建 Skills
+    custom_skills = [
+        ("git-safety-guardian", "Git 推送安全守护", "🛠️自建"),
+        ("feishu-deduplication", "消息去重解决方案", "🛠️自建"),
+        ("feishu-send-guardian", "消息发送防重守护", "🛠️自建"),
+        ("pipeline-health-monitor", "文章剪藏链路监控", "🛠️自建"),
+        ("auto-fix", "自动修复工具", "🛠️自建"),
+        ("auto-compact-dynamic", "动态上下文压缩", "🛠️自建"),
+    ]
+    
+    # 检查实际安装状态
+    skills_dir = WORKSPACE / "skills"
+    installed = []
+    
+    for skill_id, skill_name, source in custom_skills:
+        skill_path = skills_dir / skill_id
+        if skill_path.exists() or (skills_dir / f"{skill_id}.skill").exists():
+            installed.append(f"   ✅ {skill_name} [{source}]")
+    
+    if installed:
+        lines.extend(installed)
+    else:
+        lines.append("   ℹ️ 暂无已记录的技能")
+    
+    # 系统配置状态
+    lines.append("\n🔧 **系统配置**")
+    
+    # 检查 pre-push 钩子
+    hook_file = VAULT_DIR / ".git" / "hooks" / "pre-push"
+    if hook_file.exists():
+        lines.append("   ✅ Obsidian-vault 已安装 pre-push 钩子")
+    
+    # 检查 GitHub 推送配置
+    auto_push_script = WORKSPACE / "scripts" / "auto_git_push.sh"
+    if auto_push_script.exists():
+        lines.append("   ✅ GitHub 自动推送脚本已配置")
+    
+    return "\n".join(lines)
+
+
+def get_health_status():
     """获取文章剪藏链路健康状态"""
     try:
         # 检查健康检查报告
@@ -163,7 +207,16 @@ def generate_report():
   - 对话记录：{stats['conversations']} 篇
   - 文章剪藏：{stats['articles']} 篇
 {health_section}
-
+    
+    # 检查是否有待手动提交的Git推送
+    pending_git_file = LEARNINGS_DIR / "pending_git_push.txt"
+    git_alert = ""
+    if pending_git_file.exists():
+        try:
+            git_alert = "\n🚨 **需要手动处理**\nGitHub推送失败，需要手动提交：\n" +                        "```bash\ncd /root/.openclaw/workspace/obsidian-vault && git push origin main\n```\n\n"
+        except:
+            pass
+    
 {evolution_section}
 
 💡 其他功能
@@ -281,10 +334,12 @@ def _format_ai_suggestions(ai_result: dict) -> str:
                 evidence = evidence[:80] + "..."
             lines.append(f"   📊 行为证据: {evidence}")
         
-        # 推荐Skill
+        # 推荐Skill - 标注来源
         skill = gap.get('suggested_skill', '')
         if skill:
-            lines.append(f"   💡 推荐Skill: {skill}")
+            # 判断skill来源
+            source_mark = get_skill_source_mark(skill)
+            lines.append(f"   💡 推荐Skill: {skill} {source_mark}")
             skill_desc = gap.get('skill_description', '')
             if skill_desc:
                 if len(skill_desc) > 80:
@@ -370,8 +425,8 @@ def run_with_progress():
     print("预计总耗时: 15-30秒")
     print("=" * 50)
     
-    # 创建进度报告器（2个步骤）
-    progress = ProgressReporter(total_steps=2, task_name="每日复盘")
+    # 创建进度报告器（3个步骤）
+    progress = ProgressReporter(total_steps=3, task_name="每日复盘")
     
     # 步骤1: 统计数据
     progress.start_step("统计知识库数据", estimated_seconds=10)
@@ -393,6 +448,36 @@ def run_with_progress():
         progress.update("发送成功", 100)
         progress.complete_step("发送完成")
         print("\n✅ 复盘报告已发送到飞书")
+        
+        # 步骤3: 提取行动项（新增）
+        try:
+            progress.start_step("提取行动项", estimated_seconds=5)
+            progress.update("分析报告内容...", 50)
+            
+            # 保存报告到临时文件
+            report_file = Path("/tmp/daily_report_content.txt")
+            report_file.write_text(report, encoding='utf-8')
+            
+            # 调用 action-item-closer 提取行动项
+            result = subprocess.run(
+                ["python3", 
+                 "/root/.openclaw/workspace/skills/action-item-closer/scripts/action_tracker.py",
+                 "--extract", str(report_file)],
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            
+            if result.returncode == 0:
+                progress.update("提取完成", 100)
+                progress.complete_step("行动项提取完成")
+                print("✅ 行动项已提取并记录")
+            else:
+                progress.complete_step("行动项提取跳过")
+                
+        except Exception as e:
+            print(f"[WARN] 行动项提取失败: {e}")
+            progress.complete_step("行动项提取失败（非致命）")
     else:
         progress.update("发送失败", 50)
         progress.complete_step("发送失败")
