@@ -50,11 +50,11 @@ tail -f /tmp/health_check.log
 
 ---
 
-## [ERR-20260307-1000] git_push_timeout
+## [ERR-20260307-1000] (已解决) git_push_timeout
 
 **Logged**: 2026-03-07T10:46:00+08:00
 **Priority**: high
-**Status**: pending
+**Status**: resolved
 **Area**: git_sync
 
 ### 问题
@@ -82,11 +82,11 @@ deploy_check.sh 使用 `set -e`，当某个测试失败时整个脚本直接退�
 ### 关联
 - 文件: second-brain-processor/deploy_check.sh
 
-## [ERR-20260313-104919] git_push_failed
+## [ERR-20260313-104919] (已解决) git_push_failed
 
 **Logged**: 2026-03-13T10:49:19.023732
 **Priority**: high
-**Status**: pending
+**Status**: resolved
 **Area**: git_sync
 
 ### 问题
@@ -106,11 +106,11 @@ deploy_check.sh 使用 `set -e`，当某个测试失败时整个脚本直接退�
 
 ---
 
-## [ERR-20260313-160604] git_push_failed
+## [ERR-20260313-160604] (已解决) git_push_failed
 
 **Logged**: 2026-03-13T16:06:04.730569
 **Priority**: high
-**Status**: pending
+**Status**: resolved
 **Area**: git_sync
 
 ### 问题
@@ -130,11 +130,11 @@ deploy_check.sh 使用 `set -e`，当某个测试失败时整个脚本直接退�
 
 ---
 
-## [ERR-20260313-161627] git_retry_failed
+## [ERR-20260313-161627] (已解决) git_retry_failed
 
 **Logged**: 2026-03-13T16:16:27.706205
 **Priority**: medium
-**Status**: pending
+**Status**: resolved
 **Area**: git_sync
 
 ### 问题
@@ -145,11 +145,11 @@ deploy_check.sh 使用 `set -e`，当某个测试失败时整个脚本直接退�
 
 ---
 
-## [ERR-20260313-164838] git_push_failed
+## [ERR-20260313-164838] (已解决) git_push_failed
 
 **Logged**: 2026-03-13T16:48:38.258189
 **Priority**: high
-**Status**: pending
+**Status**: resolved
 **Area**: git_sync
 
 ### 问题
