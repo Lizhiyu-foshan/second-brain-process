@@ -9,6 +9,7 @@ AI 深度整理模块 v2.0 - 真正的AI理解版
 4. 关联已有知识
 """
 
+import hashlib
 import json
 import os
 import re
@@ -43,9 +44,7 @@ def call_ai_for_deep_processing(content: str, title: str, related_notes: List[Di
     """
     调用AI进行深度处理
     
-    由于无法直接调用子Agent，采用以下策略：
-    1. 如果当前在OpenClaw主会话中，让主会话AI处理（通过特殊标记文件）
-    2. 否则返回结构化模板供后续人工处理
+    直接使用阿里云Kimi K2.5 API进行真正的AI分析，不再降级到模板模式。
     
     返回: {
         "key_takeaway": "一句话核心观点",
@@ -56,68 +55,118 @@ def call_ai_for_deep_processing(content: str, title: str, related_notes: List[Di
     }
     """
     
-    # 构建提示
+    # 构建关联笔记上下文
     related_context = ""
     if related_notes:
         related_context = "\n\n**已有关联笔记：**\n"
-        for note in related_notes[:3]:
-            related_context += f"- 《{note['title']}>\n"
+        for note in related_notes[:2]:
+            related_context += f"- 《{note['title']}》\n"
     
-    # 尝试通过主会话AI处理（在特定环境下可用）
+    # 直接调用AI API进行分析
     try:
-        # 检查是否在OpenClaw环境（通过检查环境变量）
-        if 'OPENCLAW_SESSION' in os.environ or 'OPENCLAW_AGENT' in os.environ:
-            # 在OpenClaw环境中，可以调用主会话AI
-            # 通过写入标记文件让主会话处理
-            import tempfile
-            import uuid
+        import requests
+        
+        api_key = os.environ.get('ALICLOUD_API_KEY', '')
+        if not api_key:
+            log("  ⚠️ 未配置ALICLOUD_API_KEY，降级到基础模式")
+            raise ValueError("API key not configured")
+        
+        # 构建prompt
+        prompt = f"""请深度分析以下对话/文章内容，提取核心观点和有价值的思考：
+
+**标题**: {title}
+
+**内容**:
+```
+{content[:5000]}
+```
+{related_context}
+
+请按以下JSON格式输出分析结果：
+{{
+    "key_takeaway": "一句话概括核心观点（不超过50字）",
+    "core_points": ["要点1", "要点2", "要点3"],
+    "valuable_thoughts": ["引发的思考1", "引发的思考2"],
+    "themes": ["主题标签1", "主题标签2"],
+    "connections": ["与已有知识的关联"]
+}}
+
+要求：
+1. key_takeaway 必须是一句话，概括性最强
+2. core_points 提取3-5个核心观点，每条简洁有力
+3. valuable_thoughts 列出由此引发的深度思考
+4. themes 给出2-3个主题分类标签
+5. connections 列出与已有知识的潜在关联"""
+
+        # 调用阿里云Kimi API
+        headers = {
+            'Authorization': f'Bearer {api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        data = {
+            'model': 'kimi-k2.5',
+            'messages': [
+                {'role': 'system', 'content': '你是一个深度内容分析助手，擅长从对话中提取核心观点和洞察。'},
+                {'role': 'user', 'content': prompt}
+            ],
+            'temperature': 0.7,
+            'max_tokens': 2000
+        }
+        
+        log(f"  🤖 调用AI分析: {title[:50]}...")
+        
+        response = requests.post(
+            'https://coding.dashscope.aliyuncs.com/v1/chat/completions',
+            headers=headers,
+            json=data,
+            timeout=120
+        )
+        
+        if response.status_code == 200:
+            result_data = response.json()
+            ai_output = result_data['choices'][0]['message']['content']
             
-            task_id = str(uuid.uuid4())[:8]
-            task_file = f"/tmp/ai_task_{task_id}.json"
-            result_file = f"/tmp/ai_result_{task_id}.json"
+            # 解析JSON结果
+            try:
+                # 尝试直接解析
+                ai_result = json.loads(ai_output)
+            except json.JSONDecodeError:
+                # 尝试从markdown代码块中提取
+                json_match = re.search(r'```json\s*(\{.*?\})\s*```', ai_output, re.DOTALL)
+                if json_match:
+                    ai_result = json.loads(json_match.group(1))
+                else:
+                    # 提取任何JSON格式的内容
+                    json_match = re.search(r'\{.*\}', ai_output, re.DOTALL)
+                    if json_match:
+                        ai_result = json.loads(json_match.group())
+                    else:
+                        raise ValueError("无法解析AI输出")
             
-            task_data = {
-                "type": "deep_analysis",
-                "title": title,
-                "content": content[:3000],
-                "related_notes": related_notes,
-                "result_file": result_file,
-                "created_at": time.time()
+            log(f"  ✅ AI分析完成: {len(ai_result.get('core_points', []))} 个要点")
+            
+            return {
+                "key_takeaway": ai_result.get("key_takeaway", f"关于{title}的深度分析"),
+                "core_points": ai_result.get("core_points", []),
+                "valuable_thoughts": ai_result.get("valuable_thoughts", []),
+                "themes": ai_result.get("themes", _extract_themes(content)),
+                "connections": ai_result.get("connections", [])
             }
-            
-            with open(task_file, 'w', encoding='utf-8') as f:
-                json.dump(task_data, f, ensure_ascii=False)
-            
-            log(f"  AI任务已创建: {task_id}")
-            
-            # 等待结果（最多等待5秒检查结果文件）
-            for _ in range(5):
-                if os.path.exists(result_file):
-                    with open(result_file, 'r', encoding='utf-8') as f:
-                        result = json.load(f)
-                    # 清理文件
-                    os.remove(task_file)
-                    os.remove(result_file)
-                    return result
-                time.sleep(1)
-            
-            # 超时，清理并降级
-            if os.path.exists(task_file):
-                os.remove(task_file)
-            raise TimeoutError("等待AI结果超时")
         else:
-            raise RuntimeError("不在OpenClaw环境中")
+            log(f"  ⚠️ API调用失败: {response.status_code}")
+            raise ValueError(f"API error: {response.status_code}")
             
     except Exception as e:
-        log(f"  AI深度处理不可用({e})，返回结构化模板")
+        log(f"  ⚠️ AI分析失败: {e}，降级到基础模式")
         
-        # 生成智能模板（基于内容长度和关键词）
+        # 降级到基础模板
         themes = _extract_themes(content)
         
         return {
             "key_takeaway": f"关于{title}的{len(themes)}个主题讨论",
             "core_points": _generate_core_points(content, themes),
-            "valuable_thoughts": ["待AI深度分析后补充"],
+            "valuable_thoughts": ["AI深度分析暂时不可用，已使用基础模板"],
             "themes": themes if themes else ["待分类"],
             "connections": [f"与 [[{note['title'][:-3]}]] 的关联待分析" for note in related_notes[:2]]
         }
@@ -217,7 +266,7 @@ def ai_deep_process(content: str, title: str, source_type: str = "general") -> D
     log(f"  AI处理完成: {len(ai_result.get('core_points', []))} 个要点")
     
     # 3. 组装结果
-    return {
+    result = {
         "key_takeaway": ai_result.get("key_takeaway", "待提炼"),
         "core_points": ai_result.get("core_points", []),
         "valuable_thoughts": ai_result.get("valuable_thoughts", []),
@@ -226,6 +275,14 @@ def ai_deep_process(content: str, title: str, source_type: str = "general") -> D
         "related_notes": related_notes,
         "processed_at": time.strftime('%Y-%m-%d %H:%M:%S')
     }
+    
+    # 4. 传递内部字段（如果有待处理任务）
+    if "_pending_task_id" in ai_result:
+        result["_pending_task_id"] = ai_result["_pending_task_id"]
+    if "_pending_file" in ai_result:
+        result["_pending_file"] = ai_result["_pending_file"]
+    
+    return result
 
 def process_chat_record(content: str, title: str, date_str: str) -> Dict:
     """
