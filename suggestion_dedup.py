@@ -1,0 +1,498 @@
+#!/usr/bin/env python3
+"""
+进化建议去重器 - Suggestion Deduplicator
+
+功能：检测并合并功能相似但命名/描述不同的进化建议。
+
+去重策略：
+1. 语义相似度：使用TF-IDF + 余弦相似度比较建议描述
+2. 技能名称归一化：提取核心功能关键词进行匹配
+3. 历史对比：与昨日建议对比，识别重复
+4. 智能合并：保留最新描述，合并证据来源
+
+使用方式：
+    from suggestion_dedup import SuggestionDedup
+    
+    dedup = SuggestionDedup()
+    unique_suggestions = dedup.deduplicate(today_suggestions)
+"""
+
+import json
+import re
+import hashlib
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import List, Dict, Tuple, Optional, Set
+from dataclasses import dataclass, asdict
+
+
+@dataclass
+class Suggestion:
+    """标准化建议对象"""
+    id: str
+    title: str
+    description: str
+    type: str
+    suggested_skill: str
+    skill_description: str
+    priority: str
+    evidence: str
+    timestamp: str
+    source: str = "ai_analysis"
+    
+    @property
+    def content_hash(self) -> str:
+        """生成内容指纹"""
+        content = f"{self.title}|{self.description}|{self.suggested_skill}"
+        return hashlib.md5(content.encode()).hexdigest()[:16]
+    
+    @property
+    def core_keywords(self) -> Set[str]:
+        """提取核心关键词"""
+        text = f"{self.title} {self.description} {self.suggested_skill} {self.skill_description}"
+        # 提取中文词汇和英文单词
+        words = set()
+        
+        # 中文：2-6个字的词
+        for i in range(len(text)):
+            for j in range(2, 7):
+                if i + j <= len(text):
+                    word = text[i:i+j]
+                    if '\u4e00' <= word[0] <= '\u9fff':  # 以中文字符开头
+                        words.add(word)
+        
+        # 英文单词
+        english_words = re.findall(r'[a-zA-Z_]+', text.lower())
+        words.update(english_words)
+        
+        # 过滤停用词
+        stopwords = {'的', '了', '和', '是', '在', '有', '我', '都', '个', '与', 'the', 'a', 'an', 'is', 'are', 'to', 'of'}
+        words = words - stopwords
+        
+        return words
+
+
+class SuggestionDedup:
+    """建议去重器"""
+    
+    def __init__(self, workspace: Path = None):
+        self.workspace = workspace or Path("/root/.openclaw/workspace")
+        self.learnings_dir = self.workspace / ".learnings"
+        self.suggestions_file = self.learnings_dir / "evolution_suggestions.json"
+        self.dedup_log = self.learnings_dir / "suggestion_dedup_log.json"
+        
+        # 语义相似度阈值
+        self.similarity_threshold = 0.65  # 65%相似度认为是重复
+        
+        # 功能映射表：功能关键词 -> 标准名称
+        self.function_mappings = {
+            # 配置验证类
+            'config': ['config-validator', 'configuration', 'validate', 'validation', '配置验证', '配置检查', 'openclaw-config'],
+            'cron-validator': ['cron', 'schedule', '定时任务', '定时检查', '任务验证', 'cron-health'],
+            'version-adapter': ['version', 'adapter', 'upgrade', '版本适配', '升级适配', 'openclaw-version'],
+            
+            # 上下文管理类
+            'context': ['context', 'compact', 'session', 'threshold', '上下文', '压缩', '会话管理'],
+            'dynamic-compact': ['auto-compact', 'dynamic', 'adaptive', '自动压缩', '动态压缩', 'context-threshold'],
+            
+            # Git同步类
+            'git-sync': ['git', 'sync', 'push', 'pull', '同步', '推送', '拉取', '仓库', 'git-sync'],
+            'git-safety': ['safety', 'guardian', 'protection', '安全检查', '推送保护', 'git-safety'],
+            
+            # 错误处理类
+            'error-logger': ['error', 'log', 'analyze', '错误日志', '错误分析', 'auto-error'],
+            'auto-fix': ['auto-fix', 'repair', '自动修复', '自动处理', '自动修正'],
+            
+            # 飞书/消息类
+            'feishu': ['feishu', 'lark', '飞书', '消息'],
+            'feishu-dedup': ['dedup', 'duplicate', 'deduplication', '去重', '防重复', 'feishu-deduplication'],
+            'feishu-send': ['send-guardian', 'send', '发送保护', '发送守护', 'feishu-send'],
+            'feishu-auto': ['automation', 'auto', '自动化', '自动推送', 'feishu-automation', 'lark-auto'],
+            
+            # 知识管理类
+            'knowledge': ['knowledge', 'obsidian', 'vault', '知识', '笔记', '知识库'],
+            'knowledge-studio': ['studio', 'knowledge-studio', '知识工坊', 'knowledge-management'],
+            
+            # 内容处理类
+            'content': ['content', 'article', 'process', '内容', '文章', '处理'],
+            'article-clip': ['clip', 'article-clip', '剪藏', '文章剪藏', 'content-clip'],
+            'pipeline-health': ['pipeline', 'health', '链路', '健康检查', '链路监控', 'article-clip-pipeline', 'content-pipeline'],
+            
+            # 开发框架类
+            'bmad': ['bmad', 'multi-agent', 'development', '开发框架', '多Agent', 'agent-framework'],
+            'skill-creator': ['skill-creator', 'create', 'skill', '技能创建', 'skill-factory', 'auto-create'],
+            'skill-market': ['skill-market', 'market', 'scout', 'discovery', '技能市场', '技能发现'],
+            'skill-semantic': ['semantic', 'index', '语义索引', 'skill-semantic', 'skill-matcher', 'name-mapping'],
+            
+            # 会议/讨论类
+            'meeting': ['meeting', 'discussion', 'prep', '会议', '讨论', '准备'],
+            'meeting-prep': ['meeting-prep', 'orchestrator', '会议准备', 'calendar-aware', 'calendar-prep'],
+            
+            # 定时任务/监控类
+            'cron-health': ['cron-health', 'health-dashboard', '定时任务监控', 'cron-monitor', 'schedule-health', 'cron-validator'],
+            
+            # 频道配置类
+            'channels': ['channels', 'channel-setup', 'im-config', 'messaging-setup', '频道配置', '消息配置'],
+            
+            # 去重相关（功能重叠）
+            'deduplication': ['deduplication', 'dedup', '去重', 'duplicate-prevention', 'message-guardian', 'send-guardian'],
+            
+            # 自我进化/分析类（已通过代码实现）
+            'evolution': ['evolution', 'ai_gap', 'gap-analyzer', '自我进化', '能力分析'],
+            'self-improvement': ['evolution', 'ai_gap', '自我改进', 'auto-improve'],
+        }
+    
+    def _normalize_skill_name(self, skill_name: str) -> str:
+        """
+        标准化技能名称，提取核心功能标识
+        
+        例如：
+        - "config-validator-v2" -> "config"
+        - "auto-error-logger" -> "error-logger"
+        - "dynamic-context-compact" -> "context"
+        """
+        if not skill_name:
+            return ""
+        
+        skill_lower = skill_name.lower()
+        
+        # 遍历功能映射表，找到最匹配的标准名称
+        for standard_name, keywords in self.function_mappings.items():
+            for keyword in keywords:
+                if keyword in skill_lower:
+                    return standard_name
+        
+        # 如果没有匹配，返回原始名称的核心部分（去掉版本号等）
+        # 移除版本号如 -v1, -v2, -2.0 等
+        cleaned = re.sub(r'[-_]?v?\d+(\.\d+)*$', '', skill_lower)
+        # 移除常见后缀
+        cleaned = re.sub(r'[-_]?(skill|tool|assistant|helper)$', '', cleaned)
+        
+        return cleaned or skill_lower
+    
+    def _calculate_similarity(self, sug1: Suggestion, sug2: Suggestion) -> float:
+        """
+        计算两个建议的相似度 (0-1)
+        
+        综合以下维度：
+        1. 技能名称相似度（标准化后）
+        2. 核心关键词重叠度
+        3. 描述文本相似度（简单Jaccard）
+        """
+        scores = []
+        
+        # 1. 技能名称相似度（权重：0.4）
+        norm1 = self._normalize_skill_name(sug1.suggested_skill)
+        norm2 = self._normalize_skill_name(sug2.suggested_skill)
+        
+        name_similarity = 0.0
+        if norm1 and norm2:
+            if norm1 == norm2:
+                name_similarity = 1.0  # 标准化名称完全相同
+            elif norm1 in norm2 or norm2 in norm1:
+                name_similarity = 0.8
+            else:
+                # 计算关键词重叠
+                set1 = set(norm1.split('-'))
+                set2 = set(norm2.split('-'))
+                if set1 & set2:
+                    overlap = len(set1 & set2) / max(len(set1), len(set2))
+                    name_similarity = overlap * 0.6
+        
+        scores.append(name_similarity)
+        
+        # 2. 核心关键词重叠度（权重：0.35）
+        keywords1 = sug1.core_keywords
+        keywords2 = sug2.core_keywords
+        
+        if keywords1 and keywords2:
+            intersection = len(keywords1 & keywords2)
+            union = len(keywords1 | keywords2)
+            if union > 0:
+                jaccard = intersection / union
+                scores.append(jaccard)
+        
+        # 3. 描述文本相似度（权重：0.25）
+        desc1 = sug1.description.lower()
+        desc2 = sug2.description.lower()
+        
+        if desc1 and desc2:
+            # 简单Jaccard相似度
+            words1 = set(re.findall(r'\w+', desc1))
+            words2 = set(re.findall(r'\w+', desc2))
+            
+            if words1 and words2:
+                intersection = len(words1 & words2)
+                union = len(words1 | words2)
+                if union > 0:
+                    scores.append(intersection / union)
+        
+        # 加权平均
+        if not scores:
+            return 0.0
+        
+        # 如果有名称完全匹配，给基础分 0.7，再加上其他分数的加权
+        if name_similarity >= 1.0:
+            # 名称相同，基础分 0.7 + 其他分数平均 * 0.3
+            other_scores = [s for s in scores if s != name_similarity]
+            if other_scores:
+                return 0.7 + (sum(other_scores) / len(other_scores)) * 0.3
+            return 0.85  # 只有名称匹配，也给 85%
+        
+        # 如果有高相似度信号，提升整体分数
+        if max(scores) > 0.8:
+            return min(0.95, sum(scores) / len(scores) * 1.2)
+        
+        return sum(scores) / len(scores)
+    
+    def _load_historical_suggestions(self, days: int = 7) -> List[Suggestion]:
+        """加载历史建议"""
+        historical = []
+        
+        cutoff_date = datetime.now() - timedelta(days=days)
+        
+        # 加载当前建议文件
+        if self.suggestions_file.exists():
+            try:
+                with open(self.suggestions_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    
+                    # 处理不同格式
+                    suggestions_list = []
+                    if isinstance(data, dict):
+                        if 'gaps' in data:
+                            suggestions_list = data['gaps']
+                        elif 'patterns' in data:
+                            suggestions_list = data['patterns']
+                    elif isinstance(data, list):
+                        suggestions_list = data
+                    
+                    for item in suggestions_list:
+                        # 检查时间戳
+                        item_time = item.get('timestamp', '')
+                        if item_time:
+                            try:
+                                item_dt = datetime.fromisoformat(item_time.replace('Z', '+00:00'))
+                                if item_dt > cutoff_date:
+                                    historical.append(self._dict_to_suggestion(item))
+                            except:
+                                historical.append(self._dict_to_suggestion(item))
+                        else:
+                            historical.append(self._dict_to_suggestion(item))
+                            
+            except Exception as e:
+                print(f"[WARN] 加载历史建议失败: {e}")
+        
+        return historical
+    
+    def _dict_to_suggestion(self, data: Dict) -> Suggestion:
+        """字典转Suggestion对象"""
+        return Suggestion(
+            id=data.get('id', hashlib.md5(str(data).encode()).hexdigest()[:8]),
+            title=data.get('title', data.get('type', '未命名')),
+            description=data.get('description', ''),
+            type=data.get('type', 'unknown'),
+            suggested_skill=data.get('suggested_skill', data.get('skill_name', '')),
+            skill_description=data.get('skill_description', ''),
+            priority=data.get('priority', 'medium'),
+            evidence=data.get('evidence', ''),
+            timestamp=data.get('timestamp', datetime.now().isoformat()),
+            source=data.get('source', 'historical')
+        )
+    
+    def deduplicate(self, new_suggestions: List[Dict], 
+                   compare_with_history: bool = True) -> Tuple[List[Dict], Dict]:
+        """
+        去重主函数
+        
+        Args:
+            new_suggestions: 新的建议列表（字典格式）
+            compare_with_history: 是否与历史建议对比
+            
+        Returns:
+            (去重后的建议列表, 去重统计信息)
+        """
+        # 转换为Suggestion对象
+        new_sugs = [self._dict_to_suggestion(s) for s in new_suggestions]
+        
+        # 加载历史建议
+        historical_sugs = []
+        if compare_with_history:
+            historical_sugs = self._load_historical_suggestions(days=7)
+            print(f"[INFO] 加载 {len(historical_sugs)} 条历史建议用于对比")
+        
+        # 去重
+        unique_sugs = []
+        merged_count = 0
+        duplicate_details = []
+        
+        for new_sug in new_sugs:
+            is_duplicate = False
+            merge_target = None
+            max_similarity = 0.0
+            
+            # 与已保留的建议对比
+            for existing in unique_sugs:
+                similarity = self._calculate_similarity(new_sug, existing)
+                if similarity > max_similarity:
+                    max_similarity = similarity
+                    if similarity >= self.similarity_threshold:
+                        is_duplicate = True
+                        merge_target = existing
+                        break
+            
+            # 与历史建议对比
+            if not is_duplicate and historical_sugs:
+                for historical in historical_sugs:
+                    similarity = self._calculate_similarity(new_sug, historical)
+                    if similarity > max_similarity:
+                        max_similarity = similarity
+                    if similarity >= self.similarity_threshold:
+                        is_duplicate = True
+                        merge_target = historical
+                        break
+            
+            if is_duplicate and merge_target:
+                # 合并建议（保留更详细的描述）
+                merged_count += 1
+                duplicate_details.append({
+                    'new_title': new_sug.title,
+                    'existing_title': merge_target.title,
+                    'similarity': round(max_similarity, 2),
+                    'skill_new': new_sug.suggested_skill,
+                    'skill_existing': merge_target.suggested_skill
+                })
+                print(f"[INFO] 发现重复建议 ({max_similarity:.0%} similar): '{new_sug.title}' -> 合并到 '{merge_target.title}'")
+                
+                # 更新合并目标的证据（保留两者）
+                if new_sug.evidence and new_sug.evidence not in merge_target.evidence:
+                    merge_target.evidence += f" | {new_sug.evidence}"
+            else:
+                unique_sugs.append(new_sug)
+        
+        # 转换回字典
+        result = []
+        for sug in unique_sugs:
+            result.append({
+                'id': sug.id,
+                'title': sug.title,
+                'description': sug.description,
+                'type': sug.type,
+                'suggested_skill': sug.suggested_skill,
+                'skill_description': sug.skill_description,
+                'priority': sug.priority,
+                'evidence': sug.evidence,
+                'timestamp': sug.timestamp,
+                'source': sug.source,
+                'content_hash': sug.content_hash
+            })
+        
+        # 统计信息
+        stats = {
+            'input_count': len(new_suggestions),
+            'output_count': len(result),
+            'removed_count': len(new_suggestions) - len(result),
+            'merged_count': merged_count,
+            'duplicates': duplicate_details,
+            'dedup_time': datetime.now().isoformat()
+        }
+        
+        # 保存去重日志
+        self._save_dedup_log(stats)
+        
+        return result, stats
+    
+    def _save_dedup_log(self, stats: Dict):
+        """保存去重日志"""
+        try:
+            self.learnings_dir.mkdir(parents=True, exist_ok=True)
+            
+            # 加载现有日志
+            logs = []
+            if self.dedup_log.exists():
+                try:
+                    with open(self.dedup_log, 'r', encoding='utf-8') as f:
+                        logs = json.load(f)
+                except:
+                    logs = []
+            
+            # 添加新记录
+            logs.append(stats)
+            
+            # 只保留最近30条
+            logs = logs[-30:]
+            
+            with open(self.dedup_log, 'w', encoding='utf-8') as f:
+                json.dump(logs, f, ensure_ascii=False, indent=2)
+                
+        except Exception as e:
+            print(f"[WARN] 保存去重日志失败: {e}")
+
+
+def test_deduplication():
+    """测试去重功能"""
+    print("=" * 60)
+    print("🧪 测试进化建议去重器")
+    print("=" * 60)
+    
+    dedup = SuggestionDedup()
+    
+    # 测试建议：故意设置相似的建议
+    test_suggestions = [
+        {
+            'title': '配置验证工具升级',
+            'description': '增加对定时任务配置的自动检查，验证openclaw.json和cron配置的合法性，避免isolated+agentTurn高风险配置',
+            'suggested_skill': 'config-validator-v2',
+            'skill_description': '验证OpenClaw配置合法性，支持定时任务检查和模型切换风险评估',
+            'priority': 'high',
+            'type': 'config_validation'
+        },
+        {
+            'title': 'OpenClaw配置检查器',
+            'description': '自动验证openclaw.json配置，检查定时任务模式是否正确，防止配置错误导致系统故障',
+            'suggested_skill': 'openclaw-config-checker',
+            'skill_description': 'OpenClaw配置文件验证工具，支持多种配置检查',
+            'priority': 'high',
+            'type': 'config_check'
+        },
+        {
+            'title': 'Git仓库同步助手',
+            'description': '自动检测并同步多个Git仓库的状态',
+            'suggested_skill': 'git-sync-guardian',
+            'skill_description': 'Git同步监控和自动执行',
+            'priority': 'medium',
+            'type': 'git_sync'
+        },
+        {
+            'title': '代码推送保护工具',
+            'description': 'Git推送前进行安全检查，防止误操作',
+            'suggested_skill': 'git-safety-guardian',
+            'skill_description': 'Git推送安全守护',
+            'priority': 'high',
+            'type': 'git_safety'
+        }
+    ]
+    
+    print(f"\n输入建议数: {len(test_suggestions)}")
+    for i, s in enumerate(test_suggestions, 1):
+        print(f"  {i}. {s['title']} ({s['suggested_skill']})")
+    
+    # 执行去重
+    result, stats = dedup.deduplicate(test_suggestions, compare_with_history=False)
+    
+    print(f"\n去重结果:")
+    print(f"  输入: {stats['input_count']}")
+    print(f"  输出: {stats['output_count']}")
+    print(f"  合并: {stats['merged_count']}")
+    
+    if stats['duplicates']:
+        print(f"\n检测到的重复:")
+        for dup in stats['duplicates']:
+            print(f"  - {dup['new_title']} -> {dup['existing_title']} ({dup['similarity']} similar)")
+    
+    print("\n" + "=" * 60)
+    return stats['output_count'] < stats['input_count']
+
+
+if __name__ == "__main__":
+    test_deduplication()
