@@ -1,0 +1,4522 @@
+{
+  "total_files": 76,
+  "files_with_issues": 69,
+  "total_violations": 671,
+  "by_severity": {
+    "critical": 14,
+    "high": 547,
+    "medium": 32,
+    "low": 78
+  },
+  "files": [
+    {
+      "file": ".bmad/batch_audit.py",
+      "violations": 7,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 18,
+          "description": "函数 'audit_project' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 117,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 118,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 107,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 108,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 109,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 110,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": ".bmad/fix_analyzer_high.py",
+      "violations": 4,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 97,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 113,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 11,
+          "description": "函数 'add_null_checks' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 60,
+          "description": "函数 'add_exception_handling' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": ".bmad/fix_critical.py",
+      "violations": 4,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 41,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 65,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 96,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 126,
+          "description": "文件 IO 操作缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": ".bmad/fix_critical_v2.py",
+      "violations": 7,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 36,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 37,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 70,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 106,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 107,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 136,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 137,
+          "description": "文件 IO 操作缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": ".bmad/fix_high_issues.py",
+      "violations": 6,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 24,
+          "description": "函数 'add_null_check' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 162,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 178,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 24,
+          "description": "函数 'add_null_check' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 55,
+          "description": "函数 'fix_function_null_checks' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 108,
+          "description": "函数 'add_exception_handling' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": ".bmad/fix_high_v2.py",
+      "violations": 7,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 59,
+          "description": "函数 'infer_type' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 155,
+          "description": "函数 'add_null_checks' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 210,
+          "description": "函数 'add_exception_handling' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 251,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 270,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 270,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 273,
+          "description": "文件 IO 操作缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": ".bmad/fix_kimiclaw_high.py",
+      "violations": 4,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 110,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 126,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 11,
+          "description": "函数 'add_null_checks' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 59,
+          "description": "函数 'add_exception_handling' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": ".bmad/fix_report_progress.py",
+      "violations": 4,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 103,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 115,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 11,
+          "description": "函数 'add_null_checks' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 55,
+          "description": "函数 'add_exception_handling' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": ".bmad/fix_system_evolution.py",
+      "violations": 4,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 90,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 102,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 11,
+          "description": "函数 'add_null_checks' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 56,
+          "description": "函数 'add_exception_handling' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": ".bmad/fix_v2_high.py",
+      "violations": 4,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 116,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 132,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 11,
+          "description": "函数 'add_null_checks' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 64,
+          "description": "函数 'add_exception_handling' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "ai_async_generator.py",
+      "violations": 17,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 58,
+          "description": "函数 'log' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 64,
+          "description": "函数 'select_model_by_task' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 80,
+          "description": "函数 'call_ai_async' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 188,
+          "description": "函数 'analyze_error' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 267,
+          "description": "函数 'generate_glm5_prompt' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 306,
+          "description": "函数 'parse_glm5_response' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 325,
+          "description": "函数 'save_ai_result' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 171,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 257,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 139,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 339,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 340,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 35,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 36,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 235,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 271,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 363,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "ai_deep_processor.py",
+      "violations": 27,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 25,
+          "description": "函数 'log' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 32,
+          "description": "函数 'find_related_notes' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 176,
+          "description": "函数 '_extract_themes' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 202,
+          "description": "函数 '_generate_core_points' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 227,
+          "description": "函数 'process_conversation_with_ai' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 248,
+          "description": "函数 'ai_deep_process' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 289,
+          "description": "函数 'process_chat_record' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 121,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 149,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 152,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 153,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 154,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 155,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 156,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 268,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 272,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 273,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 274,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 275,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 276,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 355,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 364,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 374,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 381,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 387,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 391,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 393,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "ai_gap_analyzer.py",
+      "violations": 42,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 46,
+          "description": "函数 '__init__' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 222,
+          "description": "函数 '_filter_installed_skills' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 233,
+          "description": "函数 '_call_llm' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 263,
+          "description": "函数 '_call_llm_with_requests' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 296,
+          "description": "函数 '_read_memory_files' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 316,
+          "description": "函数 '_read_session_summary' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 421,
+          "description": "函数 '_build_analysis_prompt' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 560,
+          "description": "函数 '_parse_text_response' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 637,
+          "description": "函数 '_save_result' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 335,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 54,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 226,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 651,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 657,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 658,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 662,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 663,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 669,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 670,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 672,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 673,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 676,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 682,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 689,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 695,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 702,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 707,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 46,
+          "description": "函数 '__init__' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 61,
+          "description": "函数 '_load_installed_skills' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 68,
+          "description": "函数 '_is_skill_installed' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 222,
+          "description": "函数 '_filter_installed_skills' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 233,
+          "description": "函数 '_call_llm' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 263,
+          "description": "函数 '_call_llm_with_requests' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 296,
+          "description": "函数 '_read_memory_files' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 316,
+          "description": "函数 '_read_session_summary' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 354,
+          "description": "函数 'analyze_with_ai' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 421,
+          "description": "函数 '_build_analysis_prompt' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 469,
+          "description": "函数 '_parse_analysis_response' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 560,
+          "description": "函数 '_parse_text_response' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 637,
+          "description": "函数 '_save_result' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 649,
+          "description": "函数 'format_report' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 731,
+          "description": "函数 '_get_skill_source_tag' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "ai_processor.py",
+      "violations": 11,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 105,
+          "description": "函数 'cosine_similarity' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 153,
+          "description": "函数 'find_related_notes_fallback' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 180,
+          "description": "函数 'generate_related_thoughts' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 206,
+          "description": "函数 'extract_key_takeaway' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 230,
+          "description": "函数 'extract_core_points' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 257,
+          "description": "函数 'ai_process_content' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 269,
+          "description": "函数 'process_and_sync' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 78,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 79,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 80,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 105,
+          "description": "函数 'cosine_similarity' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "ai_processor_backup.py",
+      "violations": 7,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 57,
+          "description": "函数 'extract_keywords' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 90,
+          "description": "函数 'calculate_similarity' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 48,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 49,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 50,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 101,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 122,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "ai_summarizer.py",
+      "violations": 3,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 10,
+          "description": "函数 'call_kimi' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 30,
+          "description": "函数 'ai_summarize' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "critical",
+          "rule": "安全模式",
+          "line": 80,
+          "description": "发现可能的硬编码密钥：hardcoded_secret_assignment"
+        }
+      ]
+    },
+    {
+      "file": "batch_ai_analysis.py",
+      "violations": 10,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 24,
+          "description": "函数 'log' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 45,
+          "description": "函数 'analyze_with_subagent' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 168,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 169,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 52,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 153,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 154,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 155,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 162,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 173,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "chat_extractor.py",
+      "violations": 11,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 69,
+          "description": "函数 'extract_content_text' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 87,
+          "description": "函数 'is_heartbeat' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 214,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 215,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 51,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 54,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 75,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 76,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 77,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 79,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 81,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "check_ai_status.py",
+      "violations": 2,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 36,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 47,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "cleanup_pending_tasks.py",
+      "violations": 5,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 23,
+          "description": "函数 'log' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 134,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 100,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 101,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 103,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "config.py",
+      "violations": 19,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 163,
+          "description": "函数 'get_model_display_name' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 47,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 104,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 106,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 109,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 110,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 111,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 112,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 115,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 118,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 121,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 122,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 123,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 124,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 125,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 126,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 166,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 167,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 175,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "daily_complete_report.py",
+      "violations": 6,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 33,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 80,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 93,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 100,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 151,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 116,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "daily_report.py",
+      "violations": 17,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 330,
+          "description": "函数 'delta_str' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 481,
+          "description": "函数 'delta_str' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 206,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 228,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 238,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 255,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 170,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 170,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 192,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 344,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 347,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 475,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 475,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 496,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 499,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 330,
+          "description": "函数 'delta_str' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 481,
+          "description": "函数 'delta_str' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "daily_task.py",
+      "violations": 16,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 271,
+          "description": "函数 'extract_title' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 287,
+          "description": "函数 'extract_author' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 301,
+          "description": "函数 'extract_source' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 376,
+          "description": "函数 'parse_response' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 38,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 78,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 273,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 289,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 303,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 195,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 196,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 260,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 261,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 341,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 358,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 408,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "deep_process_all.py",
+      "violations": 14,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 27,
+          "description": "函数 'log' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 70,
+          "description": "函数 'process_file_with_ai' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 147,
+          "description": "函数 'sync_to_github' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 123,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 124,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 254,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 255,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 54,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 55,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 56,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 91,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 92,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 135,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 136,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "diagnose_feishu.py",
+      "violations": 11,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 34,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 35,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 36,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 37,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 37,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 38,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 38,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 83,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 91,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 92,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 93,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "evolution_analyzer.py",
+      "violations": 1,
+      "passed": false,
+      "details": [
+        {
+          "severity": "critical",
+          "rule": "代码质量",
+          "line": 440,
+          "description": "代码无法解析：SyntaxError: expected an indented block after 'try' statement on line 439 (<unknown>, line 440)"
+        }
+      ]
+    },
+    {
+      "file": "evolution_command_handler.py",
+      "violations": 8,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 29,
+          "description": "函数 'check_evolution_command' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 65,
+          "description": "函数 'execute_command' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 129,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 130,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 132,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 133,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 162,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 172,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "evolution_executor.py",
+      "violations": 22,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 47,
+          "description": "函数 'execute_gap_fix' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 86,
+          "description": "函数 'generate_action_plan' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 130,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 37,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 49,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 50,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 51,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 52,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 67,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 68,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 102,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 103,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 104,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 105,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 115,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 116,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 117,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 122,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 123,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 124,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 47,
+          "description": "函数 'execute_gap_fix' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 86,
+          "description": "函数 'generate_action_plan' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "evolution_response_handler.py",
+      "violations": 5,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 31,
+          "description": "函数 'parse_command' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 82,
+          "description": "函数 'execute_command' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 199,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 209,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 209,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "feishu_guardian.py",
+      "violations": 19,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 34,
+          "description": "函数 '_generate_fingerprint' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 57,
+          "description": "函数 '_save_records' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 69,
+          "description": "函数 '_cleanup_old_records' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 87,
+          "description": "函数 'check_duplicate' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 118,
+          "description": "函数 'check_duplicate_by_date' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 136,
+          "description": "函数 'record_send' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 159,
+          "description": "函数 'send_feishu_safe' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 102,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 103,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 104,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 126,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 127,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 128,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 263,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 264,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 264,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 269,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 270,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 277,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "feishu_message_manager.py",
+      "violations": 9,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 47,
+          "description": "函数 '_save_state' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 60,
+          "description": "函数 '_cleanup_old_records' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 78,
+          "description": "函数 '_generate_msg_id' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 85,
+          "description": "函数 'is_duplicate' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 102,
+          "description": "函数 'record_sent' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 125,
+          "description": "函数 'send_feishu_message' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 196,
+          "description": "函数 'send_with_retry' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 94,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 96,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "feishu_receive_dedup.py",
+      "violations": 11,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 45,
+          "description": "函数 '_save_received' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 57,
+          "description": "函数 '_cleanup_old' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 74,
+          "description": "函数 'generate_message_fingerprint' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 95,
+          "description": "函数 'is_message_received' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 124,
+          "description": "函数 'record_message_received' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 157,
+          "description": "函数 'check_and_record_message' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 113,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 114,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 116,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 138,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 139,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "fetcher.py",
+      "violations": 1,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 9,
+          "description": "函数 'fetch_url' 缺少输入参数空值检查"
+        }
+      ]
+    },
+    {
+      "file": "focused_ai_organizer.py",
+      "violations": 10,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 20,
+          "description": "函数 'log' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 23,
+          "description": "函数 'clean_fragmented_content' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 52,
+          "description": "函数 'extract_core_topics' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 72,
+          "description": "函数 'process_file' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 107,
+          "description": "函数 'group_by_theme' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 76,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 77,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 264,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 265,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 20,
+          "description": "函数 'log' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "focused_ai_organizer_v2.py",
+      "violations": 10,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 22,
+          "description": "函数 'log' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 25,
+          "description": "函数 'clean_fragmented_content' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 51,
+          "description": "函数 'extract_core_topics' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 69,
+          "description": "函数 'process_file' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 98,
+          "description": "函数 'group_by_theme' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 73,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 74,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 247,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 248,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 22,
+          "description": "函数 'log' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "focused_ai_organizer_v3.py",
+      "violations": 11,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 23,
+          "description": "函数 'log' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 26,
+          "description": "函数 'is_fragment_file' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 63,
+          "description": "函数 'clean_fragmented_content' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 89,
+          "description": "函数 'extract_core_topics' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 107,
+          "description": "函数 'process_file' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 136,
+          "description": "函数 'group_by_theme' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 111,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 112,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 286,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 287,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 23,
+          "description": "函数 'log' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "git_push_dedup.py",
+      "violations": 14,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 43,
+          "description": "函数 '_save_records' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 55,
+          "description": "函数 '_cleanup_old_records' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 65,
+          "description": "函数 'is_git_push_related' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 103,
+          "description": "函数 'generate_push_fingerprint' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 159,
+          "description": "函数 'record_git_push_reply' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 59,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 60,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 134,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 135,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 136,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 184,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 185,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 191,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 192,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "git_sync.py",
+      "violations": 2,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 13,
+          "description": "函数 'run_git_command' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 131,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "kimiclaw_v2.py",
+      "violations": 1,
+      "passed": false,
+      "details": [
+        {
+          "severity": "critical",
+          "rule": "代码质量",
+          "line": 117,
+          "description": "代码无法解析：SyntaxError: expected an indented block after 'try' statement on line 116 (<unknown>, line 117)"
+        }
+      ]
+    },
+    {
+      "file": "link_handler.py",
+      "violations": 11,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 21,
+          "description": "函数 'extract_url' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 27,
+          "description": "函数 'generate_options_message' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 72,
+          "description": "函数 'save_to_queue' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 96,
+          "description": "函数 'handle_user_choice' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 137,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 138,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 140,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 141,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 145,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 162,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 163,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "link_topic_associator.py",
+      "violations": 16,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 33,
+          "description": "函数 'log' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 39,
+          "description": "函数 'extract_urls' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 45,
+          "description": "函数 'fetch_url_content' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 90,
+          "description": "函数 'analyze_association' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 159,
+          "description": "函数 'trigger_topic_discussion' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 78,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 28,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 161,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 161,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 172,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 174,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 176,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 223,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 223,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 226,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 226,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "message_dedup.py",
+      "violations": 7,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 42,
+          "description": "函数 '_save_fingerprints' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 52,
+          "description": "函数 '_generate_fingerprint' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 60,
+          "description": "函数 '_cleanup_old_fingerprints' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 66,
+          "description": "函数 'is_message_sent' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 87,
+          "description": "函数 'record_message_sent' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 63,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 79,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "model_router.py",
+      "violations": 25,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 97,
+          "description": "函数 '__init__' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 161,
+          "description": "函数 'detect_manual_override' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 179,
+          "description": "函数 'detect_link_intent' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 205,
+          "description": "函数 'detect_task_type' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 233,
+          "description": "函数 'detect_complexity' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 253,
+          "description": "函数 'select_model' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 296,
+          "description": "函数 'get_system_prompt' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 310,
+          "description": "函数 'select_model_for_prompt' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 28,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 29,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 30,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 304,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "critical",
+          "rule": "安全模式",
+          "line": 264,
+          "description": "发现可能的硬编码密钥：hardcoded_secret_assignment"
+        },
+        {
+          "severity": "critical",
+          "rule": "安全模式",
+          "line": 266,
+          "description": "发现可能的硬编码密钥：hardcoded_secret_assignment"
+        },
+        {
+          "severity": "critical",
+          "rule": "安全模式",
+          "line": 280,
+          "description": "发现可能的硬编码密钥：hardcoded_secret_assignment"
+        },
+        {
+          "severity": "critical",
+          "rule": "安全模式",
+          "line": 283,
+          "description": "发现可能的硬编码密钥：hardcoded_secret_assignment"
+        },
+        {
+          "severity": "critical",
+          "rule": "安全模式",
+          "line": 287,
+          "description": "发现可能的硬编码密钥：hardcoded_secret_assignment"
+        },
+        {
+          "severity": "critical",
+          "rule": "安全模式",
+          "line": 290,
+          "description": "发现可能的硬编码密钥：hardcoded_secret_assignment"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 97,
+          "description": "函数 '__init__' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 161,
+          "description": "函数 'detect_manual_override' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 179,
+          "description": "函数 'detect_link_intent' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 205,
+          "description": "函数 'detect_task_type' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 233,
+          "description": "函数 'detect_complexity' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 253,
+          "description": "函数 'select_model' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 296,
+          "description": "函数 'get_system_prompt' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "model_session_manager.py",
+      "violations": 8,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 119,
+          "description": "函数 'save_session_state' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 151,
+          "description": "函数 'detect_mode_switch' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 183,
+          "description": "函数 'switch_model' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 221,
+          "description": "函数 'process_message_with_mode' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 249,
+          "description": "函数 'get_model_display_name' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 180,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 205,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 257,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "process_all.py",
+      "violations": 1,
+      "passed": false,
+      "details": [
+        {
+          "severity": "critical",
+          "rule": "代码质量",
+          "line": 77,
+          "description": "代码无法解析：SyntaxError: expected an indented block after 'try' statement on line 76 (<unknown>, line 77)"
+        }
+      ]
+    },
+    {
+      "file": "process_pending_ai_analysis.py",
+      "violations": 18,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 19,
+          "description": "函数 'log' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 40,
+          "description": "函数 'analyze_with_ai' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 147,
+          "description": "函数 'process_single_task' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 94,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 138,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 139,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 47,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 100,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 104,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 107,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 109,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 112,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 113,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 115,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 117,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 149,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 150,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 151,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "process_raw.py",
+      "violations": 4,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 28,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 29,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 30,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 31,
+          "description": "文件 IO 操作缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "processor.py",
+      "violations": 15,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 23,
+          "description": "函数 'extract_url' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 29,
+          "description": "函数 'get_source_from_url' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 46,
+          "description": "函数 'extract_keywords' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 74,
+          "description": "函数 'generate_enhanced_markdown' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 178,
+          "description": "函数 'fetch_url_content' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 203,
+          "description": "函数 'extract_text_from_html' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 231,
+          "description": "函数 'process_link' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 290,
+          "description": "函数 'extract_tags' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 307,
+          "description": "函数 'extract_title' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 321,
+          "description": "函数 'extract_source' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 292,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 309,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 323,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 256,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 257,
+          "description": "文件 IO 操作缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "queue_response_handler.py",
+      "violations": 5,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 32,
+          "description": "函数 'check_evolution_response' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 87,
+          "description": "函数 '_execute_install' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 185,
+          "description": "函数 '_execute_detail' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 213,
+          "description": "函数 '_execute_fix' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 219,
+          "description": "函数 '_execute_enable' 缺少输入参数空值检查"
+        }
+      ]
+    },
+    {
+      "file": "real_daily_report.py",
+      "violations": 10,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 22,
+          "description": "函数 'log' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 64,
+          "description": "函数 'send_report' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 86,
+          "description": "函数 'verify_send' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 103,
+          "description": "函数 'send_alert' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 26,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 27,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 133,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 138,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 142,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 22,
+          "description": "函数 'log' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "reply_dedup.py",
+      "violations": 5,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 77,
+          "description": "函数 'record_reply' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 97,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 98,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 67,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 68,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "run_daily_report_progress.py",
+      "violations": 1,
+      "passed": false,
+      "details": [
+        {
+          "severity": "critical",
+          "rule": "代码质量",
+          "line": 179,
+          "description": "代码无法解析：SyntaxError: expected an indented block after 'try' statement on line 178 (<unknown>, line 179)"
+        }
+      ]
+    },
+    {
+      "file": "run_morning_process_progress.py",
+      "violations": 22,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 39,
+          "description": "函数 'record_execution_complete' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 56,
+          "description": "函数 '__init__' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 63,
+          "description": "函数 'start_step' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 73,
+          "description": "函数 'update' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 90,
+          "description": "函数 'complete_step' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 95,
+          "description": "函数 'complete' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 100,
+          "description": "函数 'error' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 104,
+          "description": "函数 '_report' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 116,
+          "description": "函数 '_send_feishu_notification' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 288,
+          "description": "函数 '_log_error' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 47,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 48,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 314,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 315,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 56,
+          "description": "函数 '__init__' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 63,
+          "description": "函数 'start_step' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 73,
+          "description": "函数 'update' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 90,
+          "description": "函数 'complete_step' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 95,
+          "description": "函数 'complete' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 100,
+          "description": "函数 'error' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 104,
+          "description": "函数 '_report' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 116,
+          "description": "函数 '_send_feishu_notification' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "send_feishu.py",
+      "violations": 1,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 45,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "smart_model_processor.py",
+      "violations": 2,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 23,
+          "description": "函数 'smart_model_select' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 72,
+          "description": "函数 'process_with_current_mode' 缺少输入参数空值检查"
+        }
+      ]
+    },
+    {
+      "file": "standalone_daily_report.py",
+      "violations": 6,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 58,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 59,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 60,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 61,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 79,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 107,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "suggestion_dedup.py",
+      "violations": 1,
+      "passed": false,
+      "details": [
+        {
+          "severity": "critical",
+          "rule": "代码质量",
+          "line": 426,
+          "description": "代码无法解析：SyntaxError: expected an indented block after 'try' statement on line 425 (<unknown>, line 426)"
+        }
+      ]
+    },
+    {
+      "file": "system_evolution.py",
+      "violations": 1,
+      "passed": false,
+      "details": [
+        {
+          "severity": "critical",
+          "rule": "代码质量",
+          "line": 493,
+          "description": "代码无法解析：SyntaxError: expected an indented block after 'try' statement on line 492 (<unknown>, line 493)"
+        }
+      ]
+    },
+    {
+      "file": "system_evolution_ai.py",
+      "violations": 1,
+      "passed": false,
+      "details": [
+        {
+          "severity": "critical",
+          "rule": "代码质量",
+          "line": 131,
+          "description": "代码无法解析：SyntaxError: expected an indented block after 'try' statement on line 130 (<unknown>, line 131)"
+        }
+      ]
+    },
+    {
+      "file": "system_evolution_v2.py",
+      "violations": 45,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 40,
+          "description": "函数 'log' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 101,
+          "description": "函数 'analyze_error_root_cause' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 169,
+          "description": "函数 '__init__' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 174,
+          "description": "函数 'add_file_change' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 185,
+          "description": "函数 'add_new_file' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 194,
+          "description": "函数 'generate_plan' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 204,
+          "description": "函数 'generate_improvement_plan' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 230,
+          "description": "函数 '_add_network_improvements' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 328,
+          "description": "函数 '_add_file_check_improvements' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 355,
+          "description": "函数 '_add_error_handling_improvements' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 372,
+          "description": "函数 '_add_memory_improvements' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 514,
+          "description": "函数 'implement_improvements' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 575,
+          "description": "函数 '_create_new_file' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 607,
+          "description": "函数 'verify_improvements' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 642,
+          "description": "函数 'rollback_to_commit' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 661,
+          "description": "函数 'log_evolution' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 709,
+          "description": "函数 'generate_report' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 558,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 630,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 701,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 702,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 852,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 853,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 104,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 539,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 679,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 692,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 693,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 696,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 696,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 723,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 722,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 723,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 726,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 727,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 730,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 782,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 790,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 797,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 40,
+          "description": "函数 'log' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 50,
+          "description": "函数 'get_recent_errors' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 169,
+          "description": "函数 '__init__' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 174,
+          "description": "函数 'add_file_change' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 185,
+          "description": "函数 'add_new_file' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 194,
+          "description": "函数 'generate_plan' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "task_executor.py",
+      "violations": 13,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 47,
+          "description": "函数 '_save_executor_state' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 59,
+          "description": "函数 '_record_task_start' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 77,
+          "description": "函数 '_record_task_end' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 134,
+          "description": "函数 '__init__' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 141,
+          "description": "函数 '__enter__' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 195,
+          "description": "函数 'run_command' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 175,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 181,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 154,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 116,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 134,
+          "description": "函数 '__init__' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 141,
+          "description": "函数 '__enter__' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 167,
+          "description": "函数 '__exit__' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "test_cron_env.py",
+      "violations": 5,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 163,
+          "description": "函数 'generate_report' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 61,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 92,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 93,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 163,
+          "description": "函数 'generate_report' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "test_four_models.py",
+      "violations": 5,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 95,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 58,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 59,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 131,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 173,
+          "description": "网络请求缺少异常处理"
+        }
+      ]
+    },
+    {
+      "file": "update_dashboard.py",
+      "violations": 3,
+      "passed": true,
+      "details": [
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 51,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 55,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 86,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        }
+      ]
+    },
+    {
+      "file": "wechat_fetcher.py",
+      "violations": 26,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 38,
+          "description": "函数 '__init__' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 43,
+          "description": "函数 '_get_cache_key' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 47,
+          "description": "函数 '_get_cached' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 66,
+          "description": "函数 '_save_cache' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 146,
+          "description": "函数 'strategy_1_kimi_fetch' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 199,
+          "description": "函数 'strategy_2_web_fetch' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 257,
+          "description": "函数 'strategy_3_browser_fetch' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 356,
+          "description": "函数 'strategy_4_fallback' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 383,
+          "description": "函数 'fetch' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 447,
+          "description": "函数 'fetch_wechat_article' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 56,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 164,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 322,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 323,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 324,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 325,
+          "description": "网络请求缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 38,
+          "description": "函数 '__init__' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 43,
+          "description": "函数 '_get_cache_key' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 47,
+          "description": "函数 '_get_cached' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 66,
+          "description": "函数 '_save_cache' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 84,
+          "description": "函数 '_clean_wechat_content' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 146,
+          "description": "函数 'strategy_1_kimi_fetch' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 199,
+          "description": "函数 'strategy_2_web_fetch' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 257,
+          "description": "函数 'strategy_3_browser_fetch' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 356,
+          "description": "函数 'strategy_4_fallback' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 383,
+          "description": "函数 'fetch' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "zhihu_crawler.py",
+      "violations": 7,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 21,
+          "description": "函数 'random_delay' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 85,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 106,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 116,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 139,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 21,
+          "description": "函数 'random_delay' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 26,
+          "description": "函数 'crawl_zhihu_article' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "zhihu_crawler_cookie.py",
+      "violations": 7,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 21,
+          "description": "函数 'random_delay' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 25,
+          "description": "函数 'crawl_zhihu_article' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 93,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 105,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "high",
+          "rule": "错误处理",
+          "line": 148,
+          "description": "文件 IO 操作缺少异常处理"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 21,
+          "description": "函数 'random_delay' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 25,
+          "description": "函数 'crawl_zhihu_article' 缺少参数类型注解"
+        }
+      ]
+    },
+    {
+      "file": "zhihu_crawler_visible.py",
+      "violations": 7,
+      "passed": false,
+      "details": [
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 19,
+          "description": "函数 'random_delay' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "high",
+          "rule": "空值检查",
+          "line": 23,
+          "description": "函数 'crawl_zhihu_article' 缺少输入参数空值检查"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 75,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 81,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "medium",
+          "rule": "异常流",
+          "line": 84,
+          "description": "使用了裸 except，会捕获所有异常（包括 KeyboardInterrupt）"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 19,
+          "description": "函数 'random_delay' 缺少参数类型注解"
+        },
+        {
+          "severity": "low",
+          "rule": "类型注解",
+          "line": 23,
+          "description": "函数 'crawl_zhihu_article' 缺少参数类型注解"
+        }
+      ]
+    }
+  ]
+}

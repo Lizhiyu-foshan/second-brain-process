@@ -1,0 +1,56 @@
+# 模型配置文件
+
+# API 配置
+api:
+  alicloud:
+    base_url: ${ALICLOUD_BASE_URL:-https://coding.dashscope.aliyuncs.com/v1}
+    api_key: ${ALICLOUD_API_KEY}
+
+# 模型映射（简洁名称 -> 完整模型 ID）
+mapping:
+  minimax: "alicloud/MiniMax-M2.5"
+  MiniMax: "alicloud/MiniMax-M2.5"
+  glm: "alicloud/glm-5"
+  GLM: "alicloud/glm-5"
+  glm-5: "alicloud/glm-5"
+  qwen: "alicloud/qwen3.5-plus"
+  Qwen: "alicloud/qwen3.5-plus"
+  qwen3.5-plus: "alicloud/qwen3.5-plus"
+  通义: "alicloud/qwen3.5-plus"
+  kimi: "kimi-coding/k2p5"
+  Kimi: "kimi-coding/k2p5"
+  kimi-2.5: "kimi-coding/k2p5"
+  default: "kimi-coding/k2p5"
+  "默认": "kimi-coding/k2p5"
+
+# 默认模型
+default_model: "kimi-coding/k2p5"
+
+# 场景化模型配置
+scenarios:
+  fast_chat:
+    model: "kimi-coding/k2p5"
+    max_tokens: 2048
+    temperature: 0.7
+  
+  complex_reasoning:
+    model: "kimi-coding/k2p5"
+    max_tokens: 4096
+    temperature: 0.5
+  
+  code_generation:
+    model: "kimi-coding/k2p5"
+    max_tokens: 4096
+    temperature: 0.3
+  
+  creative_writing:
+    model: "kimi-coding/k2p5"
+    max_tokens: 2048
+    temperature: 0.8
+
+# 模型显示名称
+display_names:
+  "alicloud/MiniMax-M2.5": "MiniMax M2.5"
+  "alicloud/glm-5": "GLM-5"
+  "alicloud/qwen3.5-plus": "Qwen 3.5 Plus"
+  "kimi-coding/k2p5": "Kimi 2.5"

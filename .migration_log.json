@@ -1,0 +1,20 @@
+[
+  {
+    "timestamp": "2026-03-14T20:40:53.152540",
+    "action": "generate_migration",
+    "details": {
+      "from": "2026.2.13",
+      "to": "2026.3.13",
+      "output": "/tmp/test_migration.sh"
+    }
+  },
+  {
+    "timestamp": "2026-03-14T21:31:03.280539",
+    "action": "generate_migration",
+    "details": {
+      "from": "2026.2.13",
+      "to": "2026.3.13",
+      "output": "/tmp/test_migration.sh"
+    }
+  }
+]

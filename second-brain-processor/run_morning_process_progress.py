@@ -101,7 +101,7 @@ class ProgressReporter:
             # 使用 openclaw message 命令发送
             cmd = [
                 "openclaw", "message", "send",
-                "--target", FEISHU_USER,
+                "--to", FEISHU_USER,
                 "--content", f"{title}\n\n{content}"
             ]
             subprocess.run(cmd, capture_output=True, timeout=10)
@@ -128,12 +128,11 @@ def run_with_progress():
         
         # 执行Python脚本
         process = subprocess.Popen(
-            ["python3", "-u", "kimiclaw_v2.py", "--morning-process"],
+            ["python3", "kimiclaw_v2.py", "--morning-process"],
             cwd=SCRIPT_DIR,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            text=True,
-            bufsize=1  # 行缓冲模式
+            text=True
         )
         
         # 读取输出并更新进度
@@ -149,11 +148,11 @@ def run_with_progress():
         for line in process.stdout:
             line = line.strip()
             output_lines.append(line)
-            print(line, flush=True)  # 实时输出，强制刷新
+            print(line)  # 实时输出
             
-            # 根据输出内容更新进度（支持带【】和不带的格式）
+            # 根据输出内容更新进度
             for marker, pct in step_markers.items():
-                if marker in line or f"【{marker}】" in line:
+                if marker in line:
                     progress.update(line.replace("【", "").replace("】", "")[:30], pct)
         
         process.wait()

@@ -1,0 +1,119 @@
+# BMAD-EVO Project Charter - second-brain-processor
+# 项目章程：代码质量修复
+
+project:
+  name: "second-brain-processor 代码质量修复"
+  vision: "系统性修复 AST 审计发现的 937 个代码质量问题"
+  scope: "/root/.openclaw/workspace/second-brain-processor/"
+
+# 审计现状
+audit_status:
+  files_scanned: 66
+  files_with_issues: 59
+  total_violations: 937
+  by_severity:
+    critical: 22
+    high: 753
+    medium: 43
+    low: 119
+
+# 约束定义
+constraints:
+  # 安全性约束（CRITICAL）
+  security:
+    - no_hardcoded_secrets: true
+      severity: critical
+      description: "禁止硬编码密钥，必须使用环境变量"
+    
+    - no_empty_except: true
+      severity: critical
+      description: "禁止空异常处理器 (except: pass)"
+  
+  # 边界检查约束（HIGH）
+  boundary_check:
+    - check_null: true
+      severity: high
+      description: "函数参数必须进行空值检查"
+    
+    - check_empty: true
+      severity: high
+      description: "集合参数必须检查是否为空"
+  
+  # 异常处理约束（HIGH）
+  exception_handling:
+    - check_io: true
+      severity: high
+      description: "文件 IO 操作必须有异常处理"
+    
+    - check_network: true
+      severity: high
+      description: "网络请求必须有异常处理"
+    
+    - no_bare_except: true
+      severity: medium
+      description: "禁止裸 except，必须指定异常类型"
+  
+  # 代码结构约束（MEDIUM）
+  code_structure:
+    - max_function_lines: 60
+      severity: medium
+      description: "函数最大行数限制"
+    
+    - max_file_lines: 500
+      severity: medium
+      description: "文件最大行数限制"
+  
+  # 可读性约束（LOW）
+  readability:
+    - require_type_annotations: true
+      severity: low
+      description: "函数参数和返回值需要类型注解"
+    
+    - require_docstrings: true
+      severity: low
+      description: "公共函数需要文档字符串"
+
+# 质量门禁
+thresholds:
+  pass_score: 85
+  target_score: 95
+  blocking_severities:
+    - critical
+    - high
+
+# 修复策略
+fix_strategy:
+  priority_order:
+    - "CRITICAL (22 个) - 立即修复：硬编码密钥、空异常处理器"
+    - "HIGH - 核心模块：wechat_fetcher.py, ai_deep_processor.py, kimiclaw_v2.py"
+    - "HIGH - 其他文件"
+    - "MEDIUM + LOW - 优化"
+  
+  batch_size: 5  # 每次修复的文件数
+  
+  retry_limit: 3  # 每个文件最多重试次数
+
+# AST 规则配置
+ast_rules:
+  enabled:
+    - null_check
+    - exception_flow
+    - no_bare_except
+    - no_empty_except
+    - io_exception
+    - network_exception
+    - hardcoded_secret
+    - type_annotation
+
+# 必须手动检查的项目
+manual_checks:
+  - idempotent: "函数必须是幂等的"
+  - error_logging: "异常必须记录日志"
+  - resource_cleanup: "资源必须正确释放"
+
+# 成功标准
+success_criteria:
+  - "0 CRITICAL violations"
+  - "0 HIGH violations"
+  - "Audit score >= 95"
+  - "All core modules pass constraint check"

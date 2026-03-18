@@ -1,0 +1,37 @@
+# 系统配置文件
+
+# 应用设置
+app:
+  name: "Kimi Claw Second Brain"
+  version: "2.0"
+  environment: ${ENV:-production}  # development, staging, production
+  debug: false
+
+# 超时设置（秒）
+timeouts:
+  ai_request: 300
+  file_operation: 30
+  network_request: 60
+
+# 重试配置
+retry:
+  max_attempts: 3
+  delay_seconds: 5
+  backoff_multiplier: 2
+
+# 批处理配置
+batch:
+  max_concurrent: 5
+  chunk_size: 10
+
+# 日志配置
+logging:
+  level: INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  max_file_size_mb: 10
+  backup_count: 5
+
+# 队列配置
+queue:
+  max_age_hours: 24
+  cleanup_interval_hours: 1

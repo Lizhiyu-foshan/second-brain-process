@@ -1,0 +1,199 @@
+{
+  "project_id": "GAP02-EVO-20260315",
+  "name": "自我进化系统 GAP02 计划开发",
+  "description": "基于今日学习记录分析，开发4个高优先级Skill：cron-health-dashboard、skill-factory-automation、skill-semantic-index、calendar-aware-prep",
+  "created_at": "2026-03-15T20:15:00+08:00",
+  "architect_analysis": {
+    "analysis_date": "2026-03-15",
+    "data_sources": [
+      ".learnings/ai_gap_analysis.json",
+      ".learnings/ERRORS.md",
+      ".learnings/EVOLUTION_LOG.md",
+      ".learnings/LEARNINGS.md"
+    ],
+    "total_gaps_identified": 4,
+    "critical_fixes_needed": 1
+  },
+  "tasks": [
+    {
+      "task_id": "TASK_001",
+      "name": "设计 cron-health-dashboard 架构",
+      "description": "设计跨系统定时任务监控面板架构，支持OpenClaw cron/Linux cron监控，定义'僵尸任务'检测算法",
+      "role": "architect",
+      "pdca_phase": "plan",
+      "depends_on": [],
+      "estimated_hours": 1.0,
+      "capabilities_required": ["architecture", "design"],
+      "gap_id": "GAP02",
+      "deliverables": ["architecture_doc.md", "data_model.json"]
+    },
+    {
+      "task_id": "TASK_002",
+      "name": "开发 cron-health-dashboard 核心模块",
+      "description": "实现任务状态采集器、健康检查引擎、僵尸任务检测、告警通知模块",
+      "role": "developer",
+      "pdca_phase": "do",
+      "depends_on": ["TASK_001"],
+      "estimated_hours": 4.0,
+      "capabilities_required": ["coding", "python", "linux"],
+      "gap_id": "GAP02",
+      "deliverables": ["cron_health_dashboard.py", "config.yaml"]
+    },
+    {
+      "task_id": "TASK_003",
+      "name": "测试 cron-health-dashboard",
+      "description": "验证监控面板能正确检测失效任务，测试告警机制，验证多种调度系统兼容性",
+      "role": "tester",
+      "pdca_phase": "check",
+      "depends_on": ["TASK_002"],
+      "estimated_hours": 2.0,
+      "capabilities_required": ["testing", "validation"],
+      "gap_id": "GAP02",
+      "deliverables": ["test_report.json", "test_cases.md"]
+    },
+    {
+      "task_id": "TASK_004",
+      "name": "设计 skill-factory-automation 架构",
+      "description": "设计一键式Skill创建流水线架构，定义需求解析→命名建议→市场查重→代码生成的流程",
+      "role": "architect",
+      "pdca_phase": "plan",
+      "depends_on": ["TASK_003"],
+      "estimated_hours": 1.0,
+      "capabilities_required": ["architecture", "design"],
+      "gap_id": "GAP01",
+      "deliverables": ["architecture_doc.md", "workflow_diagram.png"]
+    },
+    {
+      "task_id": "TASK_005",
+      "name": "开发 skill-factory-automation",
+      "description": "实现Skill创建流水线：自然语言需求解析、AI代码生成、自动打包安装、测试用例生成",
+      "role": "developer",
+      "pdca_phase": "do",
+      "depends_on": ["TASK_004"],
+      "estimated_hours": 6.0,
+      "capabilities_required": ["coding", "python", "ai_integration"],
+      "gap_id": "GAP01",
+      "deliverables": ["skill_factory.py", "templates/", "cli.py"]
+    },
+    {
+      "task_id": "TASK_006",
+      "name": "测试 skill-factory-automation",
+      "description": "验证创建Skill时间从10分钟降至2分钟，测试12+步骤自动化流程，验证命名查重准确性",
+      "role": "tester",
+      "pdca_phase": "check",
+      "depends_on": ["TASK_005"],
+      "estimated_hours": 2.0,
+      "capabilities_required": ["testing", "validation"],
+      "gap_id": "GAP01",
+      "deliverables": ["test_report.json", "benchmark_results.md"]
+    },
+    {
+      "task_id": "TASK_007",
+      "name": "开发 skill-semantic-index",
+      "description": "基于功能描述的Skill语义搜索引擎，实现'功能意图→实现方案→已安装实例'三层映射",
+      "role": "developer",
+      "pdca_phase": "do",
+      "depends_on": ["TASK_006"],
+      "estimated_hours": 4.0,
+      "capabilities_required": ["coding", "python", "nlp"],
+      "gap_id": "GAP03",
+      "deliverables": ["semantic_index.py", "skill_embeddings.json"]
+    },
+    {
+      "task_id": "TASK_008",
+      "name": "测试 skill-semantic-index",
+      "description": "验证能消除'已安装但被推荐'误报，测试自然语言查询匹配准确性",
+      "role": "tester",
+      "pdca_phase": "check",
+      "depends_on": ["TASK_007"],
+      "estimated_hours": 1.5,
+      "capabilities_required": ["testing", "validation"],
+      "gap_id": "GAP03",
+      "deliverables": ["test_report.json", "accuracy_metrics.json"]
+    },
+    {
+      "task_id": "TASK_009",
+      "name": "开发 calendar-aware-prep",
+      "description": "对接日历系统，实现会议事件识别、T-30分钟知识预加载、议程生成功能",
+      "role": "developer",
+      "pdca_phase": "do",
+      "depends_on": ["TASK_008"],
+      "estimated_hours": 3.0,
+      "capabilities_required": ["coding", "python", "api_integration"],
+      "gap_id": "GAP04",
+      "deliverables": ["calendar_prep.py", "calendar_connectors/"]
+    },
+    {
+      "task_id": "TASK_010",
+      "name": "测试 calendar-aware-prep",
+      "description": "验证会议准备时间从15分钟降至2分钟，测试日历事件识别准确率",
+      "role": "tester",
+      "pdca_phase": "check",
+      "depends_on": ["TASK_009"],
+      "estimated_hours": 1.5,
+      "capabilities_required": ["testing", "validation"],
+      "gap_id": "GAP04",
+      "deliverables": ["test_report.json", "integration_test_results.md"]
+    }
+  ],
+  "workflow": ["architect", "developer", "tester"],
+  "estimated_duration": 26.0,
+  "estimated_roles": ["architect", "developer", "tester"],
+  "risk_factors": [
+    "isolated+agentTurn模式失效，需迁移到main session执行",
+    "Git推送超时问题可能影响代码同步",
+    "AI代码生成稳定性需验证"
+  ],
+  "priority": "high",
+  "gaps_addressed": [
+    {
+      "id": "GAP01",
+      "title": "Skill创建流程高度手动化",
+      "priority": "high",
+      "skill": "skill-factory-automation",
+      "tasks": ["TASK_004", "TASK_005", "TASK_006"]
+    },
+    {
+      "id": "GAP02",
+      "title": "跨系统定时任务状态监控缺失",
+      "priority": "high",
+      "skill": "cron-health-dashboard",
+      "tasks": ["TASK_001", "TASK_002", "TASK_003"]
+    },
+    {
+      "id": "GAP03",
+      "title": "Skill名称语义匹配失效",
+      "priority": "medium",
+      "skill": "skill-semantic-index",
+      "tasks": ["TASK_007", "TASK_008"]
+    },
+    {
+      "id": "GAP04",
+      "title": "讨论准备依赖人工触发",
+      "priority": "low",
+      "skill": "calendar-aware-prep",
+      "tasks": ["TASK_009", "TASK_010"]
+    }
+  ],
+  "execution_strategy": {
+    "phase_1": {
+      "name": "高优先级 - 监控与自动化",
+      "duration": "2-3天",
+      "gaps": ["GAP02", "GAP01"],
+      "tasks": ["TASK_001", "TASK_002", "TASK_003", "TASK_004", "TASK_005", "TASK_006"]
+    },
+    "phase_2": {
+      "name": "中优先级 - 语义与智能",
+      "duration": "1-2天",
+      "gaps": ["GAP03", "GAP04"],
+      "tasks": ["TASK_007", "TASK_008", "TASK_009", "TASK_010"]
+    }
+  },
+  "success_criteria": {
+    "cron_health_dashboard": "故障发现时间从>16小时缩短至<10分钟",
+    "skill_factory": "创建Skill时间从10分钟降至2分钟",
+    "semantic_index": "消除100%的已安装技能误报",
+    "calendar_prep": "会议准备时间从15分钟降至2分钟"
+  },
+  "notes": "架构师阶段手动执行完成，计划已生成。下一步：开发者阶段（20:40触发）将读取此计划并开始开发TASK_001和TASK_002。"
+}

@@ -1,0 +1,69 @@
+{
+  "status": "analyzed",
+  "timestamp": "2026-03-16T06:00:01.759765",
+  "total_errors": 12,
+  "analysis_period_days": 1,
+  "error_types": {
+    "RuntimeError": 6,
+    "ValueError": 3,
+    "ConnectionError": 3
+  },
+  "error_contexts": {
+    "test_manual_logging": 3,
+    "test_decorator": 3,
+    "test_context_error": 3,
+    "test_context_suppress": 3
+  },
+  "trends": {
+    "daily_counts": {
+      "2026-03-15": 12
+    },
+    "recent_count": 12,
+    "previous_count": 0,
+    "trend": "increasing"
+  },
+  "recommendations": [
+    {
+      "priority": "high",
+      "type": "error_pattern",
+      "description": "错误类型 'RuntimeError' 出现 6 次，需要优先处理",
+      "action": "检查所有 RuntimeError 错误的共同原因，考虑添加全局异常处理"
+    },
+    {
+      "priority": "high",
+      "type": "error_pattern",
+      "description": "错误类型 'ValueError' 出现 3 次，需要优先处理",
+      "action": "检查所有 ValueError 错误的共同原因，考虑添加全局异常处理"
+    },
+    {
+      "priority": "high",
+      "type": "error_pattern",
+      "description": "错误类型 'ConnectionError' 出现 3 次，需要优先处理",
+      "action": "检查所有 ConnectionError 错误的共同原因，考虑添加全局异常处理"
+    },
+    {
+      "priority": "medium",
+      "type": "context_pattern",
+      "description": "操作 'test_manual_logging' 失败 3 次",
+      "action": "检查 test_manual_logging 的实现，考虑添加重试机制或错误恢复"
+    },
+    {
+      "priority": "medium",
+      "type": "context_pattern",
+      "description": "操作 'test_decorator' 失败 3 次",
+      "action": "检查 test_decorator 的实现，考虑添加重试机制或错误恢复"
+    },
+    {
+      "priority": "medium",
+      "type": "context_pattern",
+      "description": "操作 'test_context_error' 失败 3 次",
+      "action": "检查 test_context_error 的实现，考虑添加重试机制或错误恢复"
+    },
+    {
+      "priority": "high",
+      "type": "trend",
+      "description": "错误数量呈上升趋势",
+      "action": "进行系统健康检查，识别最近的变化"
+    }
+  ]
+}

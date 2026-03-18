@@ -1,0 +1,33 @@
+# 路径配置文件
+# 所有路径都应该通过 config_loader.py 加载，不要硬编码
+
+# 基础路径
+workspace: ${KIMI_WORKSPACE:-/root/.openclaw/workspace}
+
+# 核心目录
+directories:
+  second_brain_processor: "{workspace}/second-brain-processor"
+  learnings: "{workspace}/.learnings"
+  memory: "{workspace}/memory"
+  obsidian_vault: "{workspace}/obsidian-vault"
+  skills: "{workspace}/skills"
+  scripts: "{workspace}/scripts"
+  projects: "{workspace}/projects"
+  logs: "{workspace}/logs"
+  config: "{workspace}/config"
+
+# 状态文件
+files:
+  model_state: "{learnings}/model_session_state.json"
+  ai_pending: "{learnings}/AI_PENDING.json"
+  ai_results: "{learnings}/AI_RESULTS.json"
+  errors: "{learnings}/ERRORS.md"
+  evolution_log: "{learnings}/EVOLUTION_LOG.md"
+  fake_impl: "{learnings}/FAKE_IMPLEMENTATIONS.md"
+  env_file: "{workspace}/.env"
+
+# 日志目录
+logs:
+  cron: "{logs}/cron"
+  ai_processor: "{logs}/ai_processor"
+  health_check: "{logs}/health_check"

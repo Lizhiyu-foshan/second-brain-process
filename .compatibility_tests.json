@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-03-15T18:29:21.910340",
+  "tests": [
+    {
+      "name": "gateway_status",
+      "description": "Gateway \u72b6\u6001\u68c0\u67e5",
+      "timestamp": "2026-03-15T18:29:21.910348",
+      "status": "passed",
+      "returncode": 0,
+      "stdout": "Service: systemd (enabled)\nFile logs: /tmp/openclaw/openclaw-2026-03-15.log\nCommand: /usr/bin/node /usr/lib/node_modules/openclaw/dist/index.js gateway --port 18789\nService file: ~/.config/systemd/user/openclaw-gateway.service\nService env: OPENCLAW_GATEWAY_PORT=18789\n\nConfig (cli): ~/.openclaw/openclaw.json\nConfig (service): ~/.openclaw/openclaw.json\n\nGateway: bind=loopback (127.0.0.1), port=18789 (service args)\nProbe target: ws://127.0.0.1:18789\nDashboard: http://127.0.0.1:18789/\nProbe note: Lo",
+      "stderr": ""
+    },
+    {
+      "name": "session_list",
+      "description": "\u4f1a\u8bdd\u5217\u8868\u67e5\u8be2",
+      "timestamp": "2026-03-15T18:29:23.864774",
+      "status": "passed",
+      "returncode": 0,
+      "stdout": "Session store: /root/.openclaw/agents/main/sessions/sessions.json\nSessions listed: 24\nKind   Key                        Age       Model          Tokens (ctx %)       Flags\ndirect agent:main:main            1m ago    k2p5           72k/131k (55%)       reasoning:on system id:80e19d59-8ae7-47a5-b93f-3d47381238ef\ndirect agent:main:cron:...121ac2  18m ago   k2p5           42k/131k (32%)       system id:1edaedd3-6c98-4559-a1fc-78ee9b3092a9\ndirect agent:main:cron:...3092a9  18m ago   k2p5           42",
+      "stderr": ""
+    },
+    {
+      "name": "cron_list",
+      "description": "\u5b9a\u65f6\u4efb\u52a1\u5217\u8868",
+      "timestamp": "2026-03-15T18:29:25.572016",
+      "status": "passed",
+      "returncode": 0,
+      "stdout": "ID                                   Name                     Schedule                         Next       Last       Status    Target    Agent     \nbc1e430c-b55b-4188-8d2c-03804f121ac2 \u81ea\u6211\u8fdb\u5316\u6d41\u6c34\u7ebf-\u67b6\u6784\u5e08              cron 0 4,20 * * * @ Asia/Shan... in 2h      18m ago    error     isolated  main\nab5cc2b3-4325-420e-85f8-addf1dbf636f GAP02-cron-health-das... at 2026-03-15 12:00Z             in 2h      -          idle      isolated  main\nbbc6b233-105c-4ee3-9f53-791fc21bf56d \u81ea\u6211\u8fdb\u5316\u6d41\u6c34\u7ebf-\u5f00\u53d1\u8005              cron 4",
+      "stderr": ""
+    }
+  ],
+  "issues": [],
+  "summary": {
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "timeout": 0,
+    "error": 0
+  }
+}

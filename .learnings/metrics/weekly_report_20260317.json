@@ -1,0 +1,157 @@
+{
+  "error_rate": {
+    "period_days": 7,
+    "total_errors": 4,
+    "total_tasks": 18,
+    "error_rate": 22.22,
+    "error_rate_per_day": 0.57,
+    "by_area": {
+      "cron_tasks": 1,
+      "git_sync": 20,
+      "deploy": 1,
+      "daily_task": 3
+    },
+    "by_status": {
+      "resolved": 7,
+      "pending": 18
+    },
+    "errors": [
+      {
+        "date": "2026-03-13",
+        "source": "ERRORS.md"
+      },
+      {
+        "date": "2026-03-16",
+        "source": "ERRORS.md"
+      },
+      {
+        "date": "2026-03-17",
+        "source": "ERRORS.md"
+      },
+      {
+        "date": "2026-03-15",
+        "source": "ERRORS.md"
+      }
+    ]
+  },
+  "fix_time": {
+    "period_days": 7,
+    "resolved_errors": 7,
+    "pending_errors": 18,
+    "avg_fix_time_hours": 24.0,
+    "median_fix_time_hours": 24.0,
+    "min_fix_time_hours": 24.0,
+    "max_fix_time_hours": 24.0
+  },
+  "improvement_density": {
+    "period_days": 7,
+    "total_improvements": 11,
+    "improvements_per_week": 11.0,
+    "improvements_per_day": 1.57,
+    "by_type": {
+      "代码/配置/工具/流程": 1,
+      "自动代码改进": 8,
+      "AI驱动的自动代码改进": 2,
+      "系统优化": 7
+    },
+    "by_status": {
+      "实施中/已验证/已回滚": 1,
+      "失败": 8,
+      "成功": 2,
+      "已验证": 7
+    },
+    "improvements": [
+      {
+        "date": "2026-03-13",
+        "id": "1049",
+        "title": "优化git操作流程、增加前置检查"
+      },
+      {
+        "date": "2026-03-13",
+        "id": "1606",
+        "title": "json_decode"
+      },
+      {
+        "date": "2026-03-13",
+        "id": "1616",
+        "title": "优化git操作流程、增加前置检查"
+      },
+      {
+        "date": "2026-03-14",
+        "id": "0058",
+        "title": "json_decode"
+      },
+      {
+        "date": "2026-03-14",
+        "id": "0500",
+        "title": "json_decode"
+      },
+      {
+        "date": "2026-03-14",
+        "id": "0918",
+        "title": "json_decode"
+      },
+      {
+        "date": "2026-03-14",
+        "id": "0946",
+        "title": "优化git操作流程、增加前置检查"
+      },
+      {
+        "date": "2026-03-14",
+        "id": "0948",
+        "title": "优化git操作流程、增加前置检查"
+      },
+      {
+        "date": "2026-03-14",
+        "id": "1049",
+        "title": "优化git操作流程、增加前置检查"
+      },
+      {
+        "date": "2026-03-14",
+        "id": "1124",
+        "title": "git_push_timeout"
+      }
+    ]
+  },
+  "rule_stability": {
+    "period_days": 7,
+    "total_modifications": 3,
+    "modifications_per_week": 3.0,
+    "stability_score": 70,
+    "modifications": [
+      {
+        "commit": "fb89fb71",
+        "date": "2026-03-15",
+        "message": "rules: 添加代码修复验证流程规则（规则8）"
+      },
+      {
+        "commit": "cf0b7345",
+        "date": "2026-03-14",
+        "message": "backup: 系统进化前自动备份 20260314_164814"
+      },
+      {
+        "commit": "d0b91dfb",
+        "date": "2026-03-13",
+        "message": "feat: 知识库、记忆文件和处理器代码"
+      }
+    ]
+  },
+  "cron_reliability": {
+    "period_days": 7,
+    "cron_health": {
+      "healthy_tasks": 10,
+      "total_tasks": 11,
+      "health_rate": 90.91
+    },
+    "message_delivery": {}
+  },
+  "roi": {
+    "period_days": 7,
+    "error_reduction": 2,
+    "improvement_investment": 11,
+    "roi_ratio": 0.18,
+    "efficiency_score": 59.09090909090909,
+    "interpretation": "需关注：改进效果不明显，可能需要调整策略"
+  },
+  "generated_at": "2026-03-17T14:49:19.686601"
+}

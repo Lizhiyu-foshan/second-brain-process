@@ -99,5 +99,23 @@
     "due_date": "2026-03-16",
     "status": "pending",
     "completed": false
+  },
+  {
+    "id": "2026-03-16_1",
+    "text": "检测到 'data_sync' 模式，本周出现 11 次 - 配置 auto-git-sync trigger，文件变更自动推送",
+    "source": "daily_report",
+    "created_date": "2026-03-16",
+    "due_date": "2026-03-17",
+    "status": "pending",
+    "completed": false
+  },
+  {
+    "id": "2026-03-16_2",
+    "text": "检测到 'content_processing' 模式，本周出现 3 次 - 启用 auto-content-processor，自动分析剪藏文章",
+    "source": "daily_report",
+    "created_date": "2026-03-16",
+    "due_date": "2026-03-17",
+    "status": "pending",
+    "completed": false
   }
 ]

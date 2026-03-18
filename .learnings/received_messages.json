@@ -1,77 +1,29 @@
 {
   "messages": [
     {
-      "fingerprint": "a5656930d0bba29d",
-      "time": "2026-03-12T10:59:16.104746",
+      "fingerprint": "7027ac236a309e26",
+      "time": "2026-03-16T19:51:01.187859",
+      "sender": "user_test",
+      "content_preview": "最终测试 2026-03-16"
+    },
+    {
+      "fingerprint": "df1e9ed42651b474",
+      "time": "2026-03-16T20:21:39.115679",
       "sender": "test_user",
-      "content_preview": "测试消息"
+      "content_preview": "测试消息 123"
     },
     {
-      "fingerprint": "e73e67c4893a483e",
-      "time": "2026-03-12T10:59:16.105107",
-      "sender": "other_user",
-      "content_preview": "测试消息"
-    },
-    {
-      "fingerprint": "a0df47fa16ef66a0",
-      "time": "2026-03-12T12:11:13.745592",
+      "fingerprint": "ee878fbd6864d510",
+      "time": "2026-03-16T20:21:58.034047",
       "sender": "test_user",
-      "content_preview": "测试消息"
+      "content_preview": "测试消息_1773663717"
     },
     {
-      "fingerprint": "2f797aa25944cd17",
-      "time": "2026-03-12T12:11:13.745962",
-      "sender": "other_user",
-      "content_preview": "测试消息"
-    },
-    {
-      "fingerprint": "b304f2d17e663e61",
-      "time": "2026-03-12T12:27:10.605348",
-      "sender": "ou_363105a68ee112f714ed44e12c802051",
-      "content_preview": "我愿意"
-    },
-    {
-      "fingerprint": "bef58eac3f0f25e6",
-      "time": "2026-03-12T13:45:48.059116",
-      "sender": "ou_363105a68ee112f714ed44e12c802051",
-      "content_preview": "检查一下，如果不用换插件，只是更改设置，且不会导致这个飞书机器人无法通信，我愿意尝试，但你要先给一个"
-    },
-    {
-      "fingerprint": "19966fccb75cfafb",
-      "time": "2026-03-12T14:20:10.313369",
-      "sender": "",
-      "content_preview": "[cron:48fdce69-3915-402d-80b0-3f2927b882fd 消息延迟监控-"
-    },
-    {
-      "fingerprint": "8dbaf0bdad952f1d",
-      "time": "2026-03-12T14:41:12.309654",
-      "sender": "ou_363105a68ee112f714ed44e12c802051",
-      "content_preview": "今天凌晨5：00整理了8个主题的对话？发给我看看是哪8个主题？有这么多吗？"
-    },
-    {
-      "fingerprint": "5ecf53884f03e347",
-      "time": "2026-03-12T15:36:14.970827",
-      "sender": "",
-      "content_preview": "[cron:88cd193c-61a5-4a0e-a6b5-1b738f8a5e52 文章剪藏链路健"
-    },
-    {
-      "fingerprint": "fe012d98e9083431",
-      "time": "2026-03-12T15:51:10.628437",
-      "sender": "",
-      "content_preview": "文章剪藏链路健康检查"
-    },
-    {
-      "fingerprint": "1962478a4bf0cc3d",
-      "time": "2026-03-12T17:57:27.313102",
-      "sender": "ou_363105a68ee112f714ed44e12c802051",
-      "content_preview": "检查一下这些消息的延迟问题，虽然现在有机制不再处理旧消息了，但消息延迟的情况一直都有，能否帮忙仔细分"
-    },
-    {
-      "fingerprint": "fe460b6c1ee8b50a",
-      "time": "2026-03-13T07:50:34.715111",
-      "sender": "ou_363105a68ee112f714ed44e12c802051",
-      "content_preview": "https://mp.weixin.qq.com/s/vAp5stHcQIAZvLZHRRXzYg"
+      "fingerprint": "31f253d834aebd4a",
+      "time": "2026-03-16T20:22:07.021147",
+      "sender": "test_user",
+      "content_preview": "测试消息_1773663726"
     }
   ],
-  "last_cleanup": "2026-03-12T10:59:16.104735"
+  "last_cleanup": "2026-03-16T00:00:00"
 }

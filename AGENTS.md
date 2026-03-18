@@ -919,3 +919,128 @@ When new information or any data requiring long-term storage is shared, immediat
 
 For cron jobs, default the sessionTarget to "isolated" and set payload.kind="agentTurn". Only use sessionTarget="main" with payload.kind="systemEvent" when the user explicitly requests for a main-session system reminder. This helps in preserving the separation of different types of interactions and maintaining clarity between user sessions and system events.
 </IMPORTANT_REMINDER>
+
+---
+
+### 规则 9：定时任务强制验证清单（2026-03-16）
+**Priority**: critical
+**Status**: active
+
+**触发条件**：新增、修改、修复定时任务
+
+**核心原则**：约定 + 工具 + 兜底检查
+
+**执行方式（三合一）**：
+
+#### 1. 工具强制（cron_manager.py）
+**唯一入口**：所有定时任务操作必须通过 `cron_manager.py` 工具
+```bash
+# ✅ 正确：使用工具
+python3 /root/.openclaw/workspace/scripts/cron_manager.py add --name "任务名" --schedule "0 8 * * *" --command "xxx"
+python3 /root/.openclaw/workspace/scripts/cron_manager.py update --job-id "xxx" --schedule "0 9 * * *"
+python3 /root/.openclaw/workspace/scripts/cron_manager.py verify --all
+
+# ❌ 禁止：直接调用 openclaw cron
+openclaw cron add --job "..."  # 绕过验证清单
+```
+
+**验证流程（工具自动执行）**：
+- 步骤 1：验证配置（任务存在性、cron 表达式、命令存在性）
+- 步骤 2：执行操作（新增/修改）
+- 步骤 3：验证结果（确认操作成功）
+- 步骤 4：记录日志（保存到 `.learnings/cron_validation_log.md`）
+
+#### 2. 约定强制（AGENTS.md 记录）
+**禁止行为**：
+- ❌ 直接使用 `openclaw cron` 命令
+- ❌ 直接编辑配置文件绕过工具
+- ❌ 在子 Agent 中直接调用 `cron.add()`
+
+**允许行为**：
+- ✅ 通过 `cron_manager.py` 工具操作
+- ✅ 紧急情况手动操作后补验证
+
+#### 3. 兜底检查（健康检查集成）
+**执行时间**：每天 4:30 健康检查时自动执行
+**检查内容**：
+- 调用 `cron_manager.py verify --all` 验证所有任务
+- 检查任务执行记录（send_records.json）
+- 验证输出文件时间戳
+- 发现未经验证的任务时告警
+
+**检查清单**：
+- [ ] 所有定时任务配置正确
+- [ ] 所有任务最近有执行记录
+- [ ] 输出文件按时更新
+- [ ] 日志无错误
+
+**验证失败处理**：
+1. 记录到 `.learnings/ERRORS.md`
+2. 通知用户"定时任务验证失败，需要检查"
+3. 使用 `cron_manager.py` 重新验证并修复
+
+---
+
+## 规则 10：用户触发 AI 整理（2026-03-17）
+**Priority**: high
+**Status**: active
+
+**触发条件**：用户回复"整理"、"开始整理"、"AI 处理"
+
+**场景**：8:30 定时任务发送待确认消息后，用户回复确认
+
+**执行操作**：
+```bash
+python3 /root/.openclaw/workspace/second-brain-processor/handle_user_confirm.py
+```
+
+**完整流程**：
+1. 用户回复"整理"
+2. 调用 `handle_user_confirm.py` 脚本
+3. 脚本执行 `ai_process_and_push.py --confirmed`
+4. AI 深度分析（Kimi K2.5）
+5. 推送到 GitHub
+6. 通知用户完成
+
+**检查清单**：
+- [ ] 检测到用户确认回复
+- [ ] 执行 AI 整理脚本
+- [ ] 等待完成（2-5 分钟）
+- [ ] 通知用户结果
+
+---
+
+**关键文档**：
+- 验证清单详情：`/root/.openclaw/workspace/docs/fix_verification_checklist.md`
+- 验证日志：`/root/.openclaw/workspace/.learnings/cron_validation_log.md`
+- 管理工具：`/root/.openclaw/workspace/scripts/cron_manager.py`
+
+---
+
+## 规则 11：凭据处理禁令（2026-03-18）
+**Priority**: CRITICAL
+**Status**: active
+
+**触发条件**：任何涉及凭据、Token、密码的操作
+
+**严令禁止**：
+- ❌ **删除任何凭据前必须先创建备份**
+- ❌ **未经用户明确确认不得修改或删除凭据**
+- ❌ **不得以"安全修复"为由擅自删除用户配置的 Token**
+
+**必须执行**（违反任一条均属严重事故）：
+1. **备份优先**：修改前创建可恢复的备份
+2. **用户确认**：明确告知用户并获批准后方可操作
+3. **功能验证**：修改后立即测试相关功能是否正常
+4. **回滚方案**：确保有问题时可立即恢复原状
+
+**事故案例**（2026-03-18）：
+- 误将 GITHUB_TOKEN 识别为"硬编码密钥"并删除
+- 未创建备份，导致 Token 永久丢失
+- 自动推送功能瘫痪，用户极度愤怒
+- 违反用户反复强调的"修复不能破坏运行"原则
+
+**修复原则重申**：
+> "任何修复都不能破坏原文件的运行逻辑，如果修复导致系统不能运行，那修复了还有什么意义。"
+
+---

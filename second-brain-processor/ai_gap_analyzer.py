@@ -31,6 +31,14 @@ sys.path.insert(0, str(SCRIPT_DIR))
 
 from config import WORKSPACE, LEARNINGS_DIR, DEFAULT_MODEL
 
+# 导入建议去重器（如果可用）
+try:
+    from suggestion_dedup import SuggestionDedup
+    SUGGESTION_DEDUP_AVAILABLE = True
+except ImportError:
+    SUGGESTION_DEDUP_AVAILABLE = False
+    print("[WARN] 建议去重器未加载，进化建议可能会出现重复")
+
 
 class AIGapAnalyzer:
     """AI能力缺口分析器"""
@@ -64,8 +72,40 @@ class AIGapAnalyzer:
         
         skill_name_lower = skill_name.lower()
         
-        # 关键词映射表：建议名称 -> 已安装skill关键词
-        # 基于 SKILL_INDEX.md 建立的功能-名称映射
+        # 使用去重器的标准化名称映射
+        if SUGGESTION_DEDUP_AVAILABLE:
+            from suggestion_dedup import SuggestionDedup
+            dedup = SuggestionDedup(workspace=WORKSPACE)
+            normalized_suggested = dedup._normalize_skill_name(skill_name)
+            
+            for installed in self.installed_skills:
+                normalized_installed = dedup._normalize_skill_name(installed)
+                if normalized_suggested == normalized_installed:
+                    print(f"[INFO] 通过标准化名称跳过已安装skill: {skill_name} -> {installed}")
+                    return True
+        
+        # 检查是否是通过代码实现的解决方案（gap-003等）
+        # 这些功能虽然没有独立的skill目录，但已通过代码集成实现
+        code_implemented_features = {
+            # gap-003: Skill名称语义匹配
+            'skill-semantic-index': '已通过suggestion_dedup.py实现',
+            'semantic-index': '已通过suggestion_dedup.py实现',
+            'skill-matcher': '已通过suggestion_dedup.py实现',
+            'name-mapping': '已通过suggestion_dedup.py实现',
+            'skill-semantic': '已通过suggestion_dedup.py实现',
+            
+            # 其他已通过代码实现的功能
+            'evolution-analyzer': '已通过ai_gap_analyzer.py实现',
+            'gap-analyzer': '已通过ai_gap_analyzer.py实现',
+            'suggestion-dedup': '已通过suggestion_dedup.py实现',
+        }
+        
+        for feature_key, implementation in code_implemented_features.items():
+            if feature_key in skill_name_lower:
+                print(f"[INFO] 跳过已通过代码实现的功能: {skill_name} ({implementation})")
+                return True
+        
+        # 原有的关键词映射表（作为fallback）
         skill_keyword_map = {
             # 文章剪藏/内容处理类
             'article-clip': ['pipeline-health', 'health-monitor'],
@@ -132,6 +172,34 @@ class AIGapAnalyzer:
             'feishu-auto': ['feishu-automation'],
             'lark-automation': ['feishu-automation'],
             'feishu-bot': ['feishu-automation'],
+            
+            # 新增映射（gap-003完善）
+            # 定时任务监控类
+            'cron-health': ['cron-health-dashboard'],
+            'cron-dashboard': ['cron-health-dashboard'],
+            'schedule-monitor': ['cron-health-dashboard'],
+            'cron-validator': ['cron-health-dashboard', 'config-validator'],
+            
+            # 版本适配类
+            'version-adapter': ['openclaw-version-adapter'],
+            'upgrade-adapter': ['openclaw-version-adapter'],
+            'version-compatibility': ['openclaw-version-adapter'],
+            
+            # Git同步类
+            'git-sync': ['git-sync-guardian'],
+            'repo-sync': ['git-sync-guardian'],
+            
+            # 错误日志类
+            'error-logger': ['auto-error-logger'],
+            'auto-error': ['auto-error-logger'],
+            'error-analyzer': ['auto-error-logger'],
+            
+            # Skill语义索引类（gap-003核心）
+            'skill-semantic': ['suggestion-dedup', 'ai_gap_analyzer'],
+            'semantic-index': ['suggestion-dedup'],
+            'skill-matcher': ['suggestion-dedup'],
+            'name-mapping': ['suggestion-dedup'],
+            'deduplication': ['suggestion-dedup'],
         }
         
         # 检查映射表
@@ -318,6 +386,22 @@ class AIGapAnalyzer:
         if filtered_count > 0:
             print(f"[INFO] 过滤了 {filtered_count} 个已安装skill的建议")
         
+        # 去重：合并功能相似但命名不同的建议
+        if SUGGESTION_DEDUP_AVAILABLE and gaps:
+            print("🔄 启动建议去重（检测功能相似但命名不同的建议）...")
+            dedup = SuggestionDedup(workspace=WORKSPACE)
+            gaps, dedup_stats = dedup.deduplicate(gaps, compare_with_history=True)
+            
+            if dedup_stats['removed_count'] > 0:
+                print(f"[INFO] 去重完成：移除 {dedup_stats['removed_count']} 条重复建议，保留 {dedup_stats['output_count']} 条唯一建议")
+                # 记录去重信息到结果
+                self._last_dedup_stats = dedup_stats
+            else:
+                print("[INFO] 未发现重复建议")
+                self._last_dedup_stats = None
+        else:
+            self._last_dedup_stats = None
+        
         # 添加已安装skill信息到结果
         result = {
             "timestamp": datetime.now().isoformat(),
@@ -325,7 +409,8 @@ class AIGapAnalyzer:
             "analysis_days": days,
             "gaps": gaps,
             "installed_skills": self.installed_skills,  # 记录已安装skill供参考
-            "raw_response": response[:2000] if len(response) > 2000 else response  # 保留原始响应供调试
+            "raw_response": response[:2000] if len(response) > 2000 else response,  # 保留原始响应供调试
+            "dedup_stats": self._last_dedup_stats  # 去重统计信息
         }
         
         # 保存结果
@@ -571,8 +656,14 @@ class AIGapAnalyzer:
         lines = ["\n🧠 **AI自主进化分析**（Kimi K2.5 深度分析）\n"]
         lines.append(f"📅 分析时间: {result.get('timestamp', '未知')[:19]}")
         lines.append(f"📊 分析天数: {result.get('analysis_days', 7)} 天")
-        lines.append(f"🔍 发现缺口: {len(gaps)} 个\n")
-        lines.append("---\n")
+        lines.append(f"🔍 发现缺口: {len(gaps)} 个")
+        
+        # 添加去重信息
+        dedup_stats = result.get('dedup_stats')
+        if dedup_stats and dedup_stats.get('removed_count', 0) > 0:
+            lines.append(f"🔄 去重合并: {dedup_stats['removed_count']} 条重复建议已合并")
+        
+        lines.append("\n---\n")
         
         for i, gap in enumerate(gaps[:5], 1):
             priority = gap.get('priority', 'medium')

@@ -233,6 +233,168 @@
       "success": true,
       "error": "",
       "content_preview": "📊 每日复盘报告（2026-03-14）- 补发    统计周期：2026-03-13 00:00 - 23:59  📅 昨日动态（2026-03-13）   • 新增笔记：已自动归档   • Git"
+    },
+    {
+      "fingerprint": "e550ccc8985c4ff1",
+      "time": "2026-03-15T05:00:14.141192",
+      "type": "git_push",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "✅ Git推送成功  提交: auto: 凌晨AI深度整理 - 16条对话(0条AI分析)... 哈希: 4ead2a4"
+    },
+    {
+      "fingerprint": "526221b30e080ee2",
+      "time": "2026-03-15T08:30:08.515197",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📊 每日复盘报告（2026-03-15）  📅 昨日概况（2026-03-14） • 新增对话记录：已自动归档 • 知识库总篇数：81 篇   - 对话记录：66 篇   - 文章剪藏：15 篇  🏥"
+    },
+    {
+      "fingerprint": "4fe8de6ae063f873",
+      "time": "2026-03-15T17:08:29.794000",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：17:08  **任务统计：** - OpenClaw: 13 个任务   - ✅ 正常: 7   - ⚠️ 警告: 3   - ❌ 严重:"
+    },
+    {
+      "fingerprint": "cc2934bedb7ddef4",
+      "time": "2026-03-15T20:35:15.276505",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：20:35  **任务统计：** - OpenClaw: 12 个任务   - ✅ 正常: 7   - ⚠️ 警告: 2   - ❌ 严重:"
+    },
+    {
+      "fingerprint": "00a8689808bb784f",
+      "time": "2026-03-15T20:43:52.635470",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：20:43  **任务统计：** - OpenClaw: 9 个任务   - ✅ 正常: 7   - ⚠️ 警告: 2   - ❌ 严重: "
+    },
+    {
+      "fingerprint": "173737bb5052d151",
+      "time": "2026-03-16T07:50:15.589994",
+      "type": "git_push",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "✅ Git推送成功  提交: auto: 凌晨AI深度整理 - 3条对话(3条AI分析)... 哈希: ac71993"
+    },
+    {
+      "fingerprint": "b7bdff517674845a",
+      "time": "2026-03-16T07:57:01.333231",
+      "type": "git_push",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "✅ Git推送成功  提交: auto: 凌晨AI深度整理 - 3条对话(3条AI分析)... 哈希: 1987fd5"
+    },
+    {
+      "fingerprint": "52881546f4a0bc9f",
+      "time": "2026-03-16T08:04:59.498172",
+      "type": "git_push",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "✅ Git推送成功  提交: auto: 凌晨AI深度整理 - 3条对话(3条AI分析)... 哈希: dafc6d1"
+    },
+    {
+      "fingerprint": "d49813a26de8089f",
+      "time": "2026-03-16T09:10:56.030641",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📊 每日复盘报告（2026-03-16）  📅 昨日概况（2026-03-15） • 新增对话记录：已自动归档 • 知识库总篇数：85 篇   - 对话记录：70 篇   - 文章剪藏：15 篇  🏥"
+    },
+    {
+      "fingerprint": "4b45868ed4ba287c",
+      "time": "2026-03-16T09:13:39.107302",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📊 每日复盘报告（2026-03-15）  📅 昨日动态   • 新增文章：待统计   • 已处理：待统计   • 待处理：待统计  📚 知识库统计   • 对话记录：待统计   • 文章剪藏：待统计"
+    },
+    {
+      "fingerprint": "bdbb11ffe831e4bd",
+      "time": "2026-03-16T09:17:44.832427",
+      "type": "git_push",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "✅ Git推送成功  提交: auto: 凌晨AI深度整理 - 3条对话(3条AI分析)... 哈希: 00b9070"
+    },
+    {
+      "fingerprint": "9f8ad9214a3cec81",
+      "time": "2026-03-16T14:20:34.834099",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：14:20  **任务统计：** - OpenClaw: 8 个任务   - ✅ 正常: 7   - ⚠️ 警告: 1   - ❌ 严重: "
+    },
+    {
+      "fingerprint": "f7da553995579c87",
+      "time": "2026-03-16T15:00:41.606573",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：15:00  **任务统计：** - OpenClaw: 9 个任务   - ✅ 正常: 7   - ⚠️ 警告: 2   - ❌ 严重: "
+    },
+    {
+      "fingerprint": "4a96d9b5d636a5e7",
+      "time": "2026-03-17T08:08:50.452218",
+      "type": "⚠️ **凌晨 5:00 任务执行告警**\n\n检查时间：2026-03-17 08:08\n状态：**未找到执行记录**\n详情：日志文件不存在\n\n可能原因：\n1. 定时任务未触发\n2. 脚本执行失败\n3. 日志文件丢失\n\n建议操作：\n1. 检查 cron 任务状态\n2. 手动执行验证脚本\n3. 查看系统日志\n",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ 凌晨 5:00 任务执行告警"
+    },
+    {
+      "fingerprint": "dc569dd66987b8e4",
+      "time": "2026-03-17T08:30:29.278621",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📊 每日复盘报告（2026-03-16）  📅 昨日动态   • 新增文章：待统计   • 已处理：待统计   • 待处理：待统计  📚 知识库统计   • 对话记录：待统计   • 文章剪藏：待统计"
+    },
+    {
+      "fingerprint": "042d5b8af5fe789c",
+      "time": "2026-03-17T08:36:50.283242",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "📊 每日复盘报告（2026-03-16）  📅 昨日动态   • 新增文章：1 篇   • 已处理：0 条   • 待处理：0 条  📚 知识库统计   • 对话记录：1 篇（昨日）/ 13 篇（总计"
+    },
+    {
+      "fingerprint": "7937f68ef7f28a70",
+      "time": "2026-03-17T13:28:04.919614",
+      "type": "default",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": " # 🌙 每日复盘报告（补发 - 2026-03-16）  **生成时间**: 2026-03-17 13:27  ## ✅ 完成事项  1. **定时任务流程重构** - 完成 3 个脚本    -"
+    },
+    {
+      "fingerprint": "4da1af9cc720d6af",
+      "time": "2026-03-18T08:38:52.836758",
+      "type": "daily_report",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": false,
+      "error": "Error: Channel is required when multiple channels are configured: feishu, kimi-claw\n",
+      "content_preview": "📊 每日复盘报告 (2026-03-18)  📅 昨日动态   • 对话记录：✅ 已整理 2个文件 3862字   • 新增文章：0篇 (微信0 + 知乎0)  💡 系统进化   • 新增错误：0个 "
     }
   ],
   "last_cleanup": "2026-03-09T08:30:58.142073"
