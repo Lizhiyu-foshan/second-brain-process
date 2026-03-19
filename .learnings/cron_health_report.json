@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-19T10:03:03.425243",
+  "timestamp": "2026-03-19T12:00:21.596975",
   "overall_status": "issues_found",
   "openclaw": {
     "total": 12,
@@ -31,8 +31,8 @@
         "id": "e4e8ac84-2553-4d48-a32d-2c2a0a190e4a",
         "name": "动态上下文压缩守护",
         "schedule": "cron */30 0,8-23 * * * @ Asia...",
-        "next": "in 27m",
-        "last": "33m ago",
+        "next": "in 30m",
+        "last": "30m ago",
         "status": "running",
         "target": "main",
         "agent": "main"
@@ -41,8 +41,8 @@
         "id": "dfaa8ed7-9b0b-4f26-b7fc-2950d2267f61",
         "name": "定时任务健康监控",
         "schedule": "cron 0 * * * * @ Asia/Shanghai",
-        "next": "in 57m",
-        "last": "1h ago",
+        "next": "in 60m",
+        "last": "58m ago",
         "status": "running",
         "target": "main",
         "agent": "main"
@@ -51,9 +51,9 @@
         "id": "b049120f-ba36-4abd-b769-af8964028120",
         "name": "飞书发送链路监控",
         "schedule": "cron 0 8,12,16,20 * * * @ Asi...",
-        "next": "in 2h",
-        "last": "2h ago",
-        "status": "ok",
+        "next": "in 4h",
+        "last": "4h ago",
+        "status": "running",
         "target": "main",
         "agent": "main"
       },
@@ -61,8 +61,8 @@
         "id": "9838f4d1-f506-4d04-8e95-afbfef1996f5",
         "name": "evolution_scan",
         "schedule": "cron 0 23 * * *",
-        "next": "in 13h",
-        "last": "11h ago",
+        "next": "in 11h",
+        "last": "13h ago",
         "status": "ok",
         "target": "isolated",
         "agent": "main"
@@ -71,8 +71,8 @@
         "id": "50da2483-1c35-4959-8f25-68d763478999",
         "name": "配置自动备份",
         "schedule": "cron 0 2 * * *",
-        "next": "in 16h",
-        "last": "8h ago",
+        "next": "in 14h",
+        "last": "10h ago",
         "status": "ok",
         "target": "isolated",
         "agent": "main"
@@ -81,8 +81,8 @@
         "id": "1e419240-630e-446d-a43b-7371ce392b77",
         "name": "清理旧会话文件",
         "schedule": "cron 0 4 * * * @ Asia/Shanghai",
-        "next": "in 18h",
-        "last": "6h ago",
+        "next": "in 16h",
+        "last": "8h ago",
         "status": "ok",
         "target": "main",
         "agent": "main"
@@ -91,8 +91,8 @@
         "id": "7df3087c-1492-4b4c-874e-cf07ab874c25",
         "name": "对话整理（原始）",
         "schedule": "cron 0 5 * * * @ Asia/Shanghai",
-        "next": "in 19h",
-        "last": "5h ago",
+        "next": "in 17h",
+        "last": "7h ago",
         "status": "ok",
         "target": "main",
         "agent": "main"
@@ -101,8 +101,8 @@
         "id": "d8768f8f-5df3-43ed-bcff-a7f418d6eab8",
         "name": "OpenClaw版本每日检查",
         "schedule": "cron 0 8 * * * @ Asia/Shanghai",
-        "next": "in 22h",
-        "last": "2h ago",
+        "next": "in 20h",
+        "last": "4h ago",
         "status": "ok",
         "target": "main",
         "agent": "main"
@@ -111,8 +111,8 @@
         "id": "35ff007b-d995-4650-a90f-f3c973a386ca",
         "name": "每日复盘报告推送",
         "schedule": "cron 30 8 * * * @ Asia/Shanghai",
-        "next": "in 22h",
-        "last": "2h ago",
+        "next": "in 20h",
+        "last": "4h ago",
         "status": "ok",
         "target": "main",
         "agent": "main"
@@ -121,9 +121,9 @@
         "id": "24b9df89-f3c5-4adc-9a49-fdd9bd1124e4",
         "name": "主题讨论激发器-自动检查",
         "schedule": "cron 0 10 * * 1,2,4,5 @ Asia/...",
-        "next": "in 24h",
-        "last": "2d ago",
-        "status": "running",
+        "next": "in 22h",
+        "last": "2h ago",
+        "status": "ok",
         "target": "main",
         "agent": "main"
       }
