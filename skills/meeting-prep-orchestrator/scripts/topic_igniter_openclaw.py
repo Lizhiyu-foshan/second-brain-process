@@ -31,10 +31,80 @@ def log(message: str):
     print(f"[{timestamp}] {message}")
 
 
+def load_recently_discussed_topics(hours: int = 24) -> set:
+    """加载最近已经讨论过的主题"""
+    discussed = set()
+    cutoff_time = datetime.now() - timedelta(hours=hours)
+    
+    # 1. 检查对话记录（Conversations目录）
+    conversations_dir = VAULT_DIR / "02-Conversations"
+    if conversations_dir.exists():
+        for conv_file in conversations_dir.glob("*.md"):
+            try:
+                mtime = datetime.fromtimestamp(conv_file.stat().st_mtime)
+                if mtime >= cutoff_time:
+                    content = conv_file.read_text(encoding='utf-8')
+                    # 提取讨论过的主题关键词
+                    if "主题讨论" in content or "💡" in content:
+                        # 提取主题标题
+                        for line in content.split('\n'):
+                            if '主题讨论：' in line or '💡 **主题' in line:
+                                topic = line.split('：')[-1].split('**')[0].strip()
+                                if topic:
+                                    discussed.add(topic.lower())
+            except:
+                continue
+    
+    return discussed
+
+
+def load_development_scheduled_topics() -> set:
+    """加载已安排开发的主题（从PROJECT_LOG）"""
+    scheduled = set()
+    
+    # 检查PROJECT_LOG.md
+    project_log = WORKSPACE / "PROJECT_LOG.md"
+    if project_log.exists():
+        try:
+            content = project_log.read_text(encoding='utf-8')
+            # 提取活跃项目和待办事项
+            for line in content.split('\n'):
+                # 匹配 "正在开发"、"待开发"、"计划中"等状态
+                if any(status in line for status in ['正在开发', '待开发', '计划中', '安排开发']):
+                    # 提取项目名称（通常是行首的标题）
+                    project = line.strip().lstrip('- ').lstrip('#').split(':')[0].split('（')[0].strip()
+                    if project and len(project) > 3:
+                        scheduled.add(project.lower())
+        except:
+            pass
+    
+    # 检查 .learnings/daily_report.md 中的待办
+    daily_report = LEARNINGS_DIR / "daily_report.md"
+    if daily_report.exists():
+        try:
+            content = daily_report.read_text(encoding='utf-8')
+            if "待办" in content or "TODO" in content:
+                for line in content.split('\n'):
+                    if any(marker in line for marker in ['- [ ]', '待办', 'TODO']):
+                        task = line.strip().lstrip('- [ ]').lstrip('-').strip()
+                        if task and len(task) > 3:
+                            scheduled.add(task.lower())
+        except:
+            pass
+    
+    return scheduled
+
+
 def discover_topics_from_recent_notes(days: int = 3) -> list:
-    """从近期笔记中发现潜在讨论主题"""
+    """从近期笔记中发现潜在讨论主题（带过滤）"""
     topics = []
     cutoff_date = datetime.now() - timedelta(days=days)
+    
+    # 加载过滤列表
+    discussed_topics = load_recently_discussed_topics(hours=24)
+    scheduled_topics = load_development_scheduled_topics()
+    
+    log(f"过滤条件: {len(discussed_topics)}个已讨论主题, {len(scheduled_topics)}个已安排主题")
     
     # 收集近期笔记
     recent_notes = []
@@ -55,25 +125,72 @@ def discover_topics_from_recent_notes(days: int = 3) -> list:
                         recent_notes.append({
                             'file': md_file.name,
                             'path': str(md_file),
-                            'content': content[:3000]
+                            'content': content[:3000],
+                            'mtime': mtime
                         })
             except:
                 continue
     
     # 按时间排序
-    recent_notes.sort(key=lambda x: x['mtime'] if hasattr(x, 'mtime') else x['file'], reverse=True)
+    recent_notes.sort(key=lambda x: x['mtime'], reverse=True)
     
-    # 提取候选主题
-    for note in recent_notes[:5]:
-        lines = note['content'].split('\n')
-        title = lines[0].replace('#', '').strip()[:50] if lines else note['file']
+    # 提取候选主题（带过滤）
+    for note in recent_notes:
+        content = note['content']
+        lines = content.split('\n')
+        
+        # 找到第一个非空的标题行（跳过 frontmatter）
+        title = None
+        in_frontmatter = False
+        for line in lines:
+            stripped = line.strip()
+            
+            # 检测 frontmatter 开始/结束
+            if stripped == '---':
+                in_frontmatter = not in_frontmatter
+                continue
+            
+            # 跳过 frontmatter 内部的行
+            if in_frontmatter:
+                continue
+            
+            # 跳过空行和元数据行
+            if not stripped or stripped.startswith('date:') or stripped.startswith('type:') or stripped.startswith('tags:'):
+                continue
+            
+            # 找到标题
+            if stripped.startswith('#'):
+                title = stripped.lstrip('#').strip()[:50]
+                break
+            elif stripped and not title:
+                title = stripped[:50]
+                break
+        
+        if not title:
+            title = note['file'].replace('.md', '')
+        
+        title_lower = title.lower()
+        
+        # 过滤1: 排除最近24小时已讨论的
+        if any(discussed in title_lower or title_lower in discussed for discussed in discussed_topics):
+            log(f"过滤（已讨论）: {title}")
+            continue
+        
+        # 过滤2: 排除已安排开发的
+        if any(scheduled in title_lower or title_lower in scheduled for scheduled in scheduled_topics):
+            log(f"过滤（已安排）: {title}")
+            continue
+        
         topics.append({
             'title': title,
             'file': note['file'],
             'preview': note['content'][:500]
         })
+        
+        if len(topics) >= 3:
+            break
     
-    return topics[:3]
+    return topics
 
 
 def analyze_with_openclaw(topic_title: str, topic_preview: str) -> str:
