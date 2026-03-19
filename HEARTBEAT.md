@@ -17,6 +17,44 @@
 - [ ] 压缩或重置会话
 - [ ] 通知用户系统已恢复
 
+## 每周记忆维护（周日自动执行）
+
+每周检查一次记忆系统健康度：
+
+```markdown
+### 维护检查项
+- [ ] 检查 memory/ 目录文件大小
+- [ ] 清理超过30天的临时备份
+- [ ] 检查 lessons.md 是否需要更新
+- [ ] 验证 infra.md 配置是否最新
+- [ ] 生成本周记忆统计报告
+
+### 维护脚本
+```bash
+#!/bin/bash
+# /root/.openclaw/workspace/memory-maintenance.sh
+
+echo "=== 记忆系统维护 $(date) ==="
+
+# 读取上次维护时间
+LAST_MAINTENANCE=$(cat /root/.openclaw/workspace/memory/.last_maintenance 2>/dev/null || echo "1970-01-01")
+DAYS_SINCE=$(( ($(date +%s) - $(date -d "$LAST_MAINTENANCE" +%s)) / 86400 ))
+
+if [ $DAYS_SINCE -ge 7 ]; then
+    echo "距离上次维护 $DAYS_SINCE 天，执行维护..."
+    
+    # 清理旧备份（保留7天）
+    find /root/.openclaw/workspace -name "*.backup.*" -mtime +7 -delete
+    
+    # 更新维护时间
+    date +%Y-%m-%d > /root/.openclaw/workspace/memory/.last_maintenance
+    
+    echo "✅ 维护完成"
+else
+    echo "距离上次维护 $DAYS_SINCE 天，跳过"
+fi
+```
+
 ## 执行方式
 
 通过 OpenClaw 的 heartbeat 机制定期执行（每 30 分钟）。
