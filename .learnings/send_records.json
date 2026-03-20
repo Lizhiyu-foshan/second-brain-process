@@ -395,6 +395,24 @@
       "success": false,
       "error": "Error: Channel is required when multiple channels are configured: feishu, kimi-claw\n",
       "content_preview": "📊 每日复盘报告 (2026-03-18)  📅 昨日动态   • 对话记录：✅ 已整理 2个文件 3862字   • 新增文章：0篇 (微信0 + 知乎0)  💡 系统进化   • 新增错误：0个 "
+    },
+    {
+      "fingerprint": "caf02e8f3687061b",
+      "time": "2026-03-19T16:45:18.813990",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：16:45  **任务统计：** - OpenClaw: 12 个任务   - ✅ 正常: 9   - ⚠️ 警告: 2   - ❌ 严重:"
+    },
+    {
+      "fingerprint": "c9f163b59f228381",
+      "time": "2026-03-20T04:02:19.866856",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：04:02  **任务统计：** - OpenClaw: 12 个任务   - ✅ 正常: 9   - ⚠️ 警告: 2   - ❌ 严重:"
     }
   ],
   "last_cleanup": "2026-03-09T08:30:58.142073"
