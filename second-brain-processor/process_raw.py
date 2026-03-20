@@ -50,23 +50,9 @@ def load_sessions():
         print(f"[ERROR] 读取会话文件失败: {e}")
         return {}
 
-def load_session_messages(session_key, session_data, start_ts, end_ts):
-    """从 jsonl 文件加载会话消息"""
+def load_messages_from_file(jsonl_path, start_ts, end_ts):
+    """从 jsonl 文件加载指定时间范围内的消息"""
     messages = []
-    
-    # 从 session_data 获取真正的 sessionId（文件名）
-    session_id = session_data.get("sessionId", "")
-    if not session_id:
-        # 兼容旧逻辑：从 session_key 提取
-        parts = session_key.split(':')
-        if len(parts) >= 3:
-            session_id = parts[2]
-    
-    if not session_id:
-        return messages
-    
-    # 构建 jsonl 文件路径
-    jsonl_path = Path(f"/root/.openclaw/agents/main/sessions/{session_id}.jsonl")
     
     if not jsonl_path.exists():
         return messages
@@ -110,14 +96,14 @@ def load_session_messages(session_key, session_data, start_ts, end_ts):
                             content = str(content_parts)
                         
                         # 跳过系统消息和心跳
-                        if role == "system" or "HEARTBEAT_OK" in content:
+                        if role == "system" or "HEARTBEAT_OK" in content or "Read HEARTBEAT.md" in content:
                             continue
                         
                         messages.append({
                             "timestamp": msg_ts,
                             "role": role,
                             "content": content,
-                            "session": session_key
+                            "file": jsonl_path.name
                         })
                 except json.JSONDecodeError:
                     continue
@@ -129,21 +115,54 @@ def load_session_messages(session_key, session_data, start_ts, end_ts):
     return messages
 
 def extract_last_24h_messages(sessions, start_ts, end_ts):
-    """提取过去24小时的消息"""
+    """提取过去24小时的消息（从所有近3天的会话文件中扫描）"""
     messages = []
     
-    for session_key, session_data in sessions.items():
-        # 只处理主会话
-        if not session_key.startswith("agent:main:main"):
+    # 获取近3天的所有会话文件
+    sessions_dir = Path("/root/.openclaw/agents/main/sessions/")
+    cutoff_time = datetime.now(timezone.utc) - timedelta(days=3)
+    
+    scanned_files = 0
+    matched_files = 0
+    
+    for jsonl_file in sessions_dir.glob("*.jsonl"):
+        # 跳过已删除的文件
+        if "deleted" in jsonl_file.name:
             continue
         
-        # 从 jsonl 文件读取消息
-        session_messages = load_session_messages(session_key, session_data, start_ts, end_ts)
-        messages.extend(session_messages)
+        # 检查文件修改时间（近3天）
+        try:
+            mtime = datetime.fromtimestamp(jsonl_file.stat().st_mtime, tz=timezone.utc)
+            if mtime < cutoff_time:
+                continue
+            scanned_files += 1
+        except Exception:
+            continue
+        
+        # 从文件加载消息
+        file_messages = load_messages_from_file(jsonl_file, start_ts, end_ts)
+        if file_messages:
+            matched_files += 1
+            messages.extend(file_messages)
+    
+    print(f"[INFO] 扫描近3天会话文件: {scanned_files} 个, 匹配 {matched_files} 个")
     
     # 按时间排序
     messages.sort(key=lambda x: x["timestamp"])
-    return messages
+    
+    # 去重（同一消息可能出现在多个会话中）
+    seen_ids = set()
+    unique_messages = []
+    for msg in messages:
+        msg_id = f"{msg['timestamp']}_{msg.get('content', '')[:50]}"
+        if msg_id not in seen_ids:
+            seen_ids.add(msg_id)
+            unique_messages.append(msg)
+    
+    if len(unique_messages) < len(messages):
+        print(f"[INFO] 去重: {len(messages)} → {len(unique_messages)} 条")
+    
+    return unique_messages
 
 def format_message(msg):
     """格式化单条消息"""
