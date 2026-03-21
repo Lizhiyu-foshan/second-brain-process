@@ -184,6 +184,7 @@ def discover_topics_from_recent_notes(days: int = 3) -> list:
         topics.append({
             'title': title,
             'file': note['file'],
+            'path': note['path'],  # 保存完整路径供子Agent读取
             'preview': note['content'][:500]
         })
         
@@ -193,17 +194,27 @@ def discover_topics_from_recent_notes(days: int = 3) -> list:
     return topics
 
 
-def analyze_with_openclaw(topic_title: str, topic_preview: str) -> str:
-    """使用OpenClaw框架调用AI分析"""
+def analyze_with_subagent(topic_title: str, topic_preview: str, topic_file: str = "") -> str:
+    """使用子Agent进行深度分析"""
     
-    # 构建prompt
-    prompt = f"""作为主题讨论引导者，分析以下内容，设计激发用户思考的讨论路径。
+    # 如果preview太短，尝试读取完整文件
+    full_content = topic_preview
+    if topic_file and len(topic_preview) < 1000:
+        try:
+            file_path = Path(topic_file)
+            if file_path.exists():
+                full_content = file_path.read_text(encoding='utf-8')[:5000]
+        except:
+            pass
+    
+    # 构建子Agent任务
+    task = f"""请作为主题讨论引导者，基于以下内容设计激发用户思考的讨论路径。
 
 **主题**: {topic_title}
 
-**材料预览**:
+**内容材料**:
 ```
-{topic_preview}
+{full_content[:3000]}
 ```
 
 请生成以下格式的讨论引导（用中文）：
@@ -213,40 +224,79 @@ def analyze_with_openclaw(topic_title: str, topic_preview: str) -> str:
 [用一句话引发兴趣，点出核心矛盾或价值]
 
 💭 **启动问题**：
-[一个开放式问题，能激发深入思考，不是简单的是/否]
+[一个开放式问题，能激发深入思考]
 
 （回复你的想法，我们继续深入）
 
 要求：
-1. 基于材料中的具体内容
-2. 问题要开放式
-3. 要激发用户自己的思考
-4. 不要一次性抛出所有内容"""
+1. 基于材料中的具体内容提炼
+2. 问题要开放式、有深度
+3. 激发用户自己的思考
+4. 直接输出格式内容，不要解释过程
 
-    # 使用阿里云API直接调用AI
+注意：输出必须包含💡和💭标记。"""
+
     try:
-        import openai
-        
-        client = openai.OpenAI(
-            api_key=os.environ.get("ALICLOUD_API_KEY"),
-            base_url="https://coding.dashscope.aliyuncs.com/v1"
-        )
-        
-        response = client.chat.completions.create(
-            model="kimi-k2.5",
-            messages=[
-                {"role": "system", "content": "你是主题讨论引导者，善于从材料中发现值得深入探讨的角度，设计能激发用户思考的问题。"},
-                {"role": "user", "content": prompt}
+        # 使用openclaw CLI启动子Agent
+        result = subprocess.run(
+            [
+                "openclaw", "sessions", "spawn",
+                "--task", task,
+                "--label", "topic-discuss",
+                "--run-timeout-seconds", "90"
             ],
-            temperature=0.7,
-            max_tokens=800
+            capture_output=True,
+            text=True,
+            timeout=120
         )
         
-        return response.choices[0].message.content
+        if result.returncode == 0:
+            output = result.stdout.strip()
+            log(f"子Agent返回长度: {len(output)}")
+            
+            # 解析输出 - 查找💡标记开始的位置
+            if "💡" in output:
+                # 找到最后一个💡（通常讨论引导在输出末尾）
+                last_idea = output.rfind("💡")
+                if last_idea != -1:
+                    content = output[last_idea:].strip()
+                    # 清理NO_REPLY等标记
+                    content = content.replace("NO_REPLY", "").strip()
+                    if len(content) > 100:
+                        log("成功提取子Agent生成的讨论引导")
+                        return content
+            
+            # 备用：查找包含"主题讨论"的行
+            lines = output.split('\n')
+            for i, line in enumerate(lines):
+                if "主题讨论" in line or "💡" in line:
+                    # 从这里开始到结束
+                    content = '\n'.join(lines[i:]).strip()
+                    content = content.replace("NO_REPLY", "").strip()
+                    if len(content) > 100:
+                        return content
+                        
+        log(f"子Agent输出解析失败，使用降级方案")
         
     except Exception as e:
-        log(f"API调用失败: {e}")
-        return generate_fallback_message(topic_title)
+        log(f"子Agent调用异常: {e}")
+    
+    # 降级处理 - 基于内容生成稍微好一点的降级消息
+    if full_content and len(full_content) > 100:
+        # 提取内容的关键点
+        keywords = ["修复", "优化", "问题", "解决", "系统", "规则"]
+        found_keywords = [k for k in keywords if k in full_content]
+        if found_keywords:
+            return f"""💡 **主题讨论：{topic_title}**
+
+你在处理{ '、'.join(found_keywords[:3]) }相关内容，有一个深层角度可能值得探讨...
+
+💭 **启动问题**：
+如果把这个{found_keywords[0]}放在更大的系统视角来看，可能会发现什么新的关联或矛盾？
+
+（回复你的想法，我们继续深入）"""
+    
+    return generate_fallback_message(topic_title)
 
 
 def generate_fallback_message(topic_title: str) -> str:
@@ -295,7 +345,7 @@ def main():
     if args.topic:
         # 分析指定主题
         log(f"分析指定主题: {args.topic}")
-        message = analyze_with_openclaw(args.topic, "")
+        message = analyze_with_subagent(args.topic, "", "")
         if args.test:
             print("\n【测试模式】生成的消息：")
             print("=" * 60)
@@ -323,7 +373,7 @@ def main():
         selected = topics[0]
         log(f"选择主题: {selected['title']}")
         
-        message = analyze_with_openclaw(selected['title'], selected['preview'])
+        message = analyze_with_subagent(selected['title'], selected['preview'], selected.get('path', ''))
         
         if args.test:
             print("\n【测试模式】生成的消息：")

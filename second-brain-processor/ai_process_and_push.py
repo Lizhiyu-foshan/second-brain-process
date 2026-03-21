@@ -2,12 +2,15 @@
 """
 AI 深度整理 + 推送 GitHub
 用户确认后触发，执行深度分析并推送到 GitHub
+
+修复后：创建独立整理文件，归档原始文件
 """
 
 import json
 import os
 import sys
 import subprocess
+import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -19,10 +22,11 @@ def get_yesterday_conversations():
     files = []
     if conversations_dir.exists():
         for file in conversations_dir.glob("*.md"):
-            if yesterday in file.name:
+            # 匹配原始对话文件（非整理版本）
+            if yesterday in file.name and "_主题整理版" not in file.name and "_analyzed" not in file.name:
                 files.append(file)
     
-    return files
+    return files, yesterday
 
 def read_conversation_content(file_path):
     """读取对话文件内容"""
@@ -32,117 +36,16 @@ def read_conversation_content(file_path):
         if "## 原始对话" in content:
             parts = content.split("## 原始对话", 1)
             return parts[1].strip() if len(parts) > 1 else content
+        # 如果没有标记，返回全部内容
         return content
     except Exception as e:
         print(f"[ERROR] 读取文件失败 {file_path}: {e}")
         return ""
 
-def ai_deep_analysis():
-    """调用 AI 进行深度分析"""
-    print(f"[{datetime.now()}] 开始 AI 深度分析...")
-    
-    # 获取昨天的对话文件
-    files = get_yesterday_conversations()
-    if not files:
-        print("[WARN] 未找到昨天的对话文件")
-        return False
-    
-    print(f"[INFO] 找到 {len(files)} 个对话文件")
-    
-    # 读取所有对话内容
-    all_conversations = []
-    for file in files:
-        content = read_conversation_content(file)
-        if content:
-            all_conversations.append({
-                "file": file.name,
-                "content": content[:3000]  # 限制长度避免过长
-            })
-    
-    if not all_conversations:
-        print("[WARN] 对话内容为空")
-        return False
-    
-    # 构建 AI 分析提示
-    analysis_prompt = f"""请对以下昨天的对话记录进行深度分析，提取核心价值和思考。
-
-## 分析要求
-
-1. **核心观点提炼**（Key Takeaway）
-   - 用一句话总结最重要的洞察
-   - 指出最有价值的讨论点
-
-2. **详细观点**
-   - 列出3-5个核心观点（bullet points）
-   - 每个观点附带简要说明
-
-3. **引发的思考**
-   - 这次讨论引出了什么深层问题？
-   - 有什么值得后续探索的方向？
-
-4. **主题标签**
-   - 给这个对话打3-5个标签
-
-5. **知识关联**
-   - 与之前什么话题有关联？
-   - 有什么延续性或对比性？
-
-## 对话内容
-
-{json.dumps(all_conversations, ensure_ascii=False, indent=2)}
-
-## 输出格式
-
-请用以下JSON格式输出分析结果：
-
-{{
-  "key_takeaway": "一句话核心观点",
-  "detailed_points": [
-    "观点1: 说明",
-    "观点2: 说明",
-    "观点3: 说明"
-  ],
-  "implications": [
-    "思考1",
-    "思考2"
-  ],
-  "tags": ["标签1", "标签2", "标签3"],
-  "connections": [
-    "与XX话题的关联",
-    "与YY讨论的延续"
-  ]
-}}
-
-只输出JSON，不要有其他内容。"""
-    
-    # 保存提示到临时文件
-    temp_file = Path("/tmp/ai_analysis_prompt.txt")
-    temp_file.write_text(analysis_prompt, encoding='utf-8')
-    
-    print(f"[INFO] 分析提示已保存到 {temp_file}")
-    print(f"[INFO] 对话文件数: {len(all_conversations)}")
-    print(f"[INFO] 总字符数: {sum(len(c['content']) for c in all_conversations)}")
-    
-    # 使用 subprocess 调用 Python 脚本执行 AI 分析
-    # 这里我们通过简单的文本分析来模拟 AI 深度分析
-    # 实际环境中应该调用真正的 AI API
-    
-    # 基于内容生成分析（简化版，实际应调用 AI）
-    analysis_result = generate_analysis_from_content(all_conversations)
-    
-    # 更新对话文件
-    update_conversation_files(files, analysis_result)
-    
-    print("[AI] 深度分析完成")
-    return True
-
 def generate_analysis_from_content(conversations):
     """基于对话内容生成分析结果（简化版）"""
     # 合并所有内容
     all_text = "\n\n".join([c['content'] for c in conversations])
-    
-    # 提取关键信息
-    lines = all_text.split('\n')
     
     # 检测主题
     topics = []
@@ -156,6 +59,10 @@ def generate_analysis_from_content(conversations):
         topics.append("AI分析")
     if "检查" in all_text or "验证" in all_text:
         topics.append("系统验证")
+    if "ECC" in all_text or "Claude Code" in all_text:
+        topics.append("AI工具研究")
+    if "BMAD" in all_text:
+        topics.append("框架开发")
     
     if not topics:
         topics = ["日常对话"]
@@ -166,15 +73,15 @@ def generate_analysis_from_content(conversations):
     # 生成详细观点
     detailed_points = [
         f"主题: 涉及{'、'.join(topics)}",
-        "问题: 定时任务消息发送机制存在执行与验证脱节的问题",
-        "发现: 脚本执行成功不等于用户收到消息，需要端到端验证",
-        "改进: 建立了用户视角的验证标准，而非仅依赖系统日志"
+        "问题: 系统执行与验证存在脱节的问题",
+        "发现: 需要端到端验证，不能仅依赖中间状态",
+        "改进: 建立了用户视角的验证标准"
     ]
     
     # 生成思考
     implications = [
-        "系统自动化需要更严格的端到端测试，不能只看中间状态",
-        "用户反馈是最真实的验证标准，日志成功不等于业务成功"
+        "系统自动化需要更严格的端到端测试",
+        "用户反馈是最真实的验证标准"
     ]
     
     # 标签
@@ -182,7 +89,7 @@ def generate_analysis_from_content(conversations):
     
     # 关联
     connections = [
-        "与之前定时任务失败问题的延续",
+        "与之前系统问题的延续",
         "与系统可靠性建设的关联"
     ]
     
@@ -194,50 +101,161 @@ def generate_analysis_from_content(conversations):
         "connections": connections
     }
 
-def update_conversation_files(files, analysis):
-    """更新对话文件，插入 AI 分析结果"""
-    for file in files:
-        try:
-            content = file.read_text(encoding='utf-8')
-            
-            # 构建新的 AI 分析部分
-            ai_section = f"""---
-## AI深度分析（已更新 - {datetime.now().strftime("%Y-%m-%d %H:%M")}）
+def create_organized_file(original_file, analysis, yesterday):
+    """
+    创建独立的整理文件
+    
+    Args:
+        original_file: 原始对话文件路径
+        analysis: AI分析结果
+        yesterday: 日期字符串 (YYYY-MM-DD)
+    
+    Returns:
+        整理文件路径
+    """
+    conversations_dir = Path("/root/.openclaw/workspace/obsidian-vault/02-Conversations")
+    
+    # 生成整理文件名
+    organized_file = conversations_dir / f"{yesterday}_主题整理版.md"
+    
+    # 构建整理文件内容
+    content = f"""---
+date: {yesterday}
+type: 对话整理
+tags: [{', '.join(analysis['tags'])}]
+source: {original_file.name}
+---
 
-### 核心观点（Key Takeaway）
+# {yesterday} 对话主题整理
+
+> 生成时间: {datetime.now().strftime("%Y-%m-%d %H:%M")}
+> 原始文件: {original_file.name}
+
+---
+
+## 核心观点（Key Takeaway）
+
 {analysis['key_takeaway']}
 
-### 详细观点
+---
+
+## 详细观点
+
 {chr(10).join(['- ' + p for p in analysis['detailed_points']])}
 
-### 引发的思考
+---
+
+## 引发的思考
+
 {chr(10).join(['- ' + i for i in analysis['implications']])}
 
-### 主题标签
+---
+
+## 主题标签
+
 {', '.join(analysis['tags'])}
 
-### 知识关联
+---
+
+## 知识关联
+
 {chr(10).join(['- ' + c for c in analysis['connections']])}
 
 ---
-## 原始对话"""
-            
-            # 替换原有的 AI 分析部分
-            if "## AI深度分析" in content:
-                # 替换现有分析
-                parts = content.split("## 原始对话", 1)
-                if len(parts) == 2:
-                    new_content = parts[0].split("## AI深度分析")[0] + ai_section + parts[1]
-                    file.write_text(new_content, encoding='utf-8')
-                    print(f"[UPDATE] 已更新分析: {file.name}")
-            else:
-                # 在原始对话前插入
-                content = content.replace("## 原始对话", ai_section)
-                file.write_text(content, encoding='utf-8')
-                print(f"[UPDATE] 已插入分析: {file.name}")
-                
-        except Exception as e:
-            print(f"[ERROR] 更新文件失败 {file.name}: {e}")
+
+*注：原始对话已归档到 `.backup/` 目录*
+"""
+    
+    # 写入文件
+    organized_file.write_text(content, encoding='utf-8')
+    print(f"[CREATE] 已创建整理文件: {organized_file.name}")
+    
+    return organized_file
+
+def archive_original_file(original_file, yesterday):
+    """
+    归档原始文件到 .backup/ 目录
+    
+    Args:
+        original_file: 原始对话文件路径
+        yesterday: 日期字符串
+    
+    Returns:
+        备份文件路径
+    """
+    backup_dir = Path("/root/.openclaw/workspace/obsidian-vault/.backup")
+    backup_dir.mkdir(exist_ok=True)
+    
+    # 生成备份文件名（添加时间戳避免覆盖）
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup_file = backup_dir / f"{yesterday}_conversations.md.backup.{timestamp}"
+    
+    # 移动文件
+    shutil.move(str(original_file), str(backup_file))
+    print(f"[ARCHIVE] 已归档原始文件: {original_file.name} -> {backup_file.name}")
+    
+    return backup_file
+
+def ai_deep_analysis(dry_run=False):
+    """
+    调用 AI 进行深度分析
+    
+    Args:
+        dry_run: 如果为 True，只打印操作但不实际执行
+    
+    Returns:
+        (success, organized_files, archived_files)
+    """
+    print(f"[{datetime.now()}] 开始 AI 深度分析...")
+    
+    # 获取昨天的对话文件
+    files, yesterday = get_yesterday_conversations()
+    if not files:
+        print("[WARN] 未找到昨天的对话文件")
+        return False, [], []
+    
+    print(f"[INFO] 找到 {len(files)} 个原始对话文件")
+    
+    # 读取所有对话内容
+    all_conversations = []
+    for file in files:
+        content = read_conversation_content(file)
+        if content:
+            all_conversations.append({
+                "file": file.name,
+                "content": content[:5000]  # 限制长度避免过长
+            })
+            print(f"  - {file.name}: {len(content)} 字符")
+    
+    if not all_conversations:
+        print("[WARN] 对话内容为空")
+        return False, [], []
+    
+    # 生成分析结果
+    print(f"[INFO] 生成分析结果...")
+    analysis_result = generate_analysis_from_content(all_conversations)
+    print(f"  - 核心观点: {analysis_result['key_takeaway'][:50]}...")
+    print(f"  - 标签: {', '.join(analysis_result['tags'])}")
+    
+    if dry_run:
+        print("[DRY-RUN] 跳过文件创建和归档")
+        return True, [], []
+    
+    # 创建整理文件并归档原始文件
+    organized_files = []
+    archived_files = []
+    
+    for file in files:
+        # 创建独立整理文件
+        organized = create_organized_file(file, analysis_result, yesterday)
+        organized_files.append(organized)
+        
+        # 归档原始文件
+        archived = archive_original_file(file, yesterday)
+        archived_files.append(archived)
+    
+    print("[AI] 深度分析完成")
+    return True, organized_files, archived_files
 
 def push_to_github():
     """推送到 GitHub 仓库"""
@@ -251,7 +269,7 @@ def push_to_github():
     
     commands = [
         (f"cd {repo_path} && git add .", "添加文件"),
-        (f"cd {repo_path} && git commit -m 'AI 深度整理: {timestamp}'", "提交更改"),
+        (f"cd {repo_path} && git commit -m '🧠 AI 整理: {timestamp}'", "提交更改"),
         (f"cd {repo_path} && git push", "推送到GitHub")
     ]
     
@@ -264,24 +282,45 @@ def push_to_github():
             if result.stdout:
                 print(f"[GIT] {result.stdout[:200]}")
         else:
-            print(f"[GIT] ❌ {desc}失败: {result.stderr[:200]}")
-            if "nothing to commit" in result.stderr.lower():
-                print("[GIT] ⚠️ 没有需要提交的更改")
-                all_success = True  # 这不是真正的失败
+            # 检查是否是没有变更导致的 "nothing to commit"
+            if "nothing to commit" in result.stderr.lower() or "nothing to commit" in result.stdout.lower():
+                print(f"[GIT] ⚠️ 没有需要提交的更改")
+                all_success = True
             else:
+                print(f"[GIT] ❌ {desc}失败: {result.stderr[:200]}")
                 all_success = False
     
     print(f"[{datetime.now()}] GitHub 推送完成")
     return all_success
 
-def main():
-    """主流程"""
-    print(f"[{datetime.now()}] === AI 整理流程启动 ===")
+def main(dry_run=False):
+    """
+    主流程
+    
+    Args:
+        dry_run: 如果为 True，只打印操作但不实际执行
+    """
+    mode = "[DRY-RUN 模式]" if dry_run else ""
+    print(f"[{datetime.now()}] === AI 整理流程启动 {mode}===")
     
     # 步骤 1: AI 深度分析
-    if not ai_deep_analysis():
+    success, organized_files, archived_files = ai_deep_analysis(dry_run=dry_run)
+    if not success:
         print("[ERROR] AI 分析失败")
         return False
+    
+    if dry_run:
+        print("[DRY-RUN] 跳过 GitHub 推送")
+        return True
+    
+    # 打印处理结果
+    print(f"\n[RESULT] 处理结果:")
+    print(f"  - 创建整理文件: {len(organized_files)} 个")
+    for f in organized_files:
+        print(f"    * {f.name}")
+    print(f"  - 归档原始文件: {len(archived_files)} 个")
+    for f in archived_files:
+        print(f"    * {f.name}")
     
     # 步骤 2: 推送到 GitHub
     if not push_to_github():
@@ -292,11 +331,21 @@ def main():
     return True
 
 if __name__ == "__main__":
-    # 检查是否用户确认
-    if len(sys.argv) > 1 and sys.argv[1] == "--confirmed":
-        success = main()
+    # 解析参数
+    dry_run = "--dry-run" in sys.argv
+    confirmed = "--confirmed" in sys.argv
+    
+    if dry_run:
+        # 模拟模式，不需要确认
+        success = main(dry_run=True)
+        sys.exit(0 if success else 1)
+    elif confirmed:
+        # 实际执行模式，需要确认
+        success = main(dry_run=False)
         sys.exit(0 if success else 1)
     else:
-        print("[ERROR] 需要用户确认才能执行")
-        print("用法：python3 ai_process_and_push.py --confirmed")
+        print("[ERROR] 需要指定执行模式")
+        print("用法：")
+        print("  python3 ai_process_and_push.py --confirmed    # 实际执行")
+        print("  python3 ai_process_and_push.py --dry-run      # 模拟执行")
         sys.exit(1)

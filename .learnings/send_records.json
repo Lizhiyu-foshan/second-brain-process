@@ -413,6 +413,51 @@
       "success": true,
       "error": "",
       "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：04:02  **任务统计：** - OpenClaw: 12 个任务   - ✅ 正常: 9   - ⚠️ 警告: 2   - ❌ 严重:"
+    },
+    {
+      "fingerprint": "ff70e66d81537a06",
+      "time": "2026-03-20T11:03:17.568075",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：11:03  **任务统计：** - OpenClaw: 12 个任务   - ✅ 正常: 8   - ⚠️ 警告: 2   - ❌ 严重:"
+    },
+    {
+      "fingerprint": "ecd108756180a950",
+      "time": "2026-03-20T12:04:18.767737",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：12:04  **任务统计：** - OpenClaw: 12 个任务   - ✅ 正常: 8   - ⚠️ 警告: 2   - ❌ 严重:"
+    },
+    {
+      "fingerprint": "d23859daac486ecc",
+      "time": "2026-03-20T20:05:05.438029",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：20:05  **任务统计：** - OpenClaw: 12 个任务   - ✅ 正常: 8   - ⚠️ 警告: 2   - ❌ 严重:"
+    },
+    {
+      "fingerprint": "3a1b5f149bc8126f",
+      "time": "2026-03-21T15:02:01.291810",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：15:01  **任务统计：** - OpenClaw: 12 个任务   - ✅ 正常: 9   - ⚠️ 警告: 2   - ❌ 严重:"
+    },
+    {
+      "fingerprint": "6ca2f48faa645b00",
+      "time": "2026-03-21T16:03:14.603199",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：16:03  **任务统计：** - OpenClaw: 12 个任务   - ✅ 正常: 9   - ⚠️ 警告: 2   - ❌ 严重:"
     }
   ],
   "last_cleanup": "2026-03-09T08:30:58.142073"

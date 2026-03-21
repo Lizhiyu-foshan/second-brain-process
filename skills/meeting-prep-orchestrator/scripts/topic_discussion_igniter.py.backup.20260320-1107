@@ -41,19 +41,22 @@ class TopicDiscussionIgniter:
         self.base_url = self._get_base_url()
         
     def _get_api_key(self) -> str:
-        """获取API密钥 - 使用阿里云DashScope"""
+        """获取API密钥 - 优先使用Kimi Coding Plan"""
         import os
-        # 使用阿里云DashScope (当前环境KIMI_API_KEY不兼容Moonshot官方API)
-        key = os.environ.get('ALICLOUD_API_KEY', '')
+        # 优先尝试Kimi Coding Plan (KIMI_API_KEY)
+        key = os.environ.get('KIMI_API_KEY', '')
         if key:
             return key
-        # 回退到KIMI_API_KEY
-        return os.environ.get('KIMI_API_KEY', '')
+        # 回退到AliCloud
+        return os.environ.get('ALICLOUD_API_KEY', '')
     
     def _get_base_url(self) -> str:
-        """获取API基础URL - 使用阿里云DashScope"""
+        """获取API基础URL - 根据key类型选择"""
         import os
-        # 使用阿里云DashScope
+        # 如果KIMI_API_KEY存在，使用Moonshot官方API
+        if os.environ.get('KIMI_API_KEY', ''):
+            return os.environ.get('KIMI_BASE_URL', 'https://api.moonshot.cn/v1')
+        # 否则使用AliCloud DashScope
         return os.environ.get('ALICLOUD_BASE_URL', 'https://coding.dashscope.aliyuncs.com/v1')
     
     def _load_state(self) -> Dict:
