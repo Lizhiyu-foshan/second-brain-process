@@ -99,3 +99,12 @@ v3.0 - 2026-03-21
 ## License
 
 MIT
+
+---
+
+## 依赖组件
+
+### Incremental Message Index System
+本项目的增量处理功能依赖独立的增量索引系统：
+- 仓库: https://github.com/Lizhiyu-foshan/Incremental-Message-Index-System
+- 功能: 高性能消息索引管理，支持自动重建和完整性验证

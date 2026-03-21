@@ -151,3 +151,7 @@ second-brain-process/
 ## License
 
 MIT
+
+## 依赖
+
+- [Incremental-Message-Index-System](https://github.com/Lizhiyu-foshan/Incremental-Message-Index-System) - 增量索引核心（可选，用于高性能场景）
