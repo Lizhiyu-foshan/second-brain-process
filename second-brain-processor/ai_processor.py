@@ -9,7 +9,6 @@ import re
 import sys
 from pathlib import Path
 from typing import List, Dict, Tuple
-import numpy as np
 
 # 添加脚本目录到路径
 SCRIPT_DIR = Path(__file__).parent
