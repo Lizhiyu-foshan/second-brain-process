@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-队列响应处理器 - Queue Response Handler
+待读笔记队列回复处理器 v2 - 立即响应版
 
 功能：
-1. 检测用户回复是否是进化建议的执行指令
-2. 支持指令：安装1、安装2、全部安装、忽略、详细1等
-3. 自动执行并反馈结果
+1. 检测用户回复是否是待读队列的执行指令
+2. 支持指令：A1(原文)、A2(摘要)、A3(精简)、AI自动整理、推迟
+3. 移除10分钟超时等待，立即响应
 
 使用方法：
     python3 queue_response_handler.py --check "用户输入"
@@ -14,7 +14,8 @@
     {"is_response": true/false, "message": "回复内容", "action": "执行动作"}
 
 作者：Kimi Claw
-创建时间：2026-03-10
+创建时间：2026-03-21
+版本：v2（立即响应版）
 """
 
 import argparse
@@ -22,109 +23,152 @@ import json
 import re
 import subprocess
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
 
 # 路径配置
 WORKSPACE = Path("/root/.openclaw/workspace")
 SCRIPT_DIR = WORKSPACE / "second-brain-processor"
+QUEUE_DIR = SCRIPT_DIR / "queue"
 
+# 状态文件（记录待处理队列和延迟设置）
+STATE_FILE = WORKSPACE / "queue_processor_state.json"
 
-def check_evolution_response(user_input: str) -> dict:
+def load_state():
+    """加载处理器状态"""
+    if STATE_FILE.exists():
+        with open(STATE_FILE, 'r') as f:
+            return json.load(f)
+    return {"queue": [], "delayed_until": None, "auto_process": False}
+
+def save_state(state):
+    """保存处理器状态"""
+    with open(STATE_FILE, 'w') as f:
+        json.dump(state, f, ensure_ascii=False, indent=2)
+
+def get_queue_files():
+    """获取当前队列中的文件列表"""
+    if not QUEUE_DIR.exists():
+        return []
+    return sorted(QUEUE_DIR.glob("*.md"), key=lambda x: x.stat().st_mtime)
+
+def parse_user_input(user_input: str) -> dict:
     """
-    检查用户输入是否是进化建议的响应
+    解析用户输入，判断意图
     
-    返回:
-        {
-            "is_response": bool,
-            "message": str,  # 回复给用户的消息
-            "action": str,   # 执行的动作
-            "executed": bool # 是否已执行
-        }
-    """
-    user_input = user_input.strip().lower()
-    
-    # 匹配"安装" + 数字
-    install_match = re.match(r'^安装\s*(\d+)$', user_input)
-    if install_match:
-        index = int(install_match.group(1))
-        return _execute_install(index)
-    
-    # 匹配"全部安装"
-    if user_input in ['全部安装', '安装全部', '全部', 'all']:
-        return _execute_install_all()
-    
-    # 匹配"忽略"或"跳过"
-    if user_input in ['忽略', '跳过', 'skip', 'ignore', '否', 'no']:
-        return _execute_skip()
-    
-    # 匹配"详细" + 数字
-    detail_match = re.match(r'^详细\s*(\d+)$', user_input)
-    if detail_match:
-        index = int(detail_match.group(1))
-        return _execute_detail(index)
-    
-    # 匹配"修复" + 数字
-    fix_match = re.match(r'^修复\s*(\d+)$', user_input)
-    if fix_match:
-        index = int(fix_match.group(1))
-        return _execute_fix(index)
-    
-    # 匹配"启用" + 数字
-    enable_match = re.match(r'^启用\s*(\d+)$', user_input)
-    if enable_match:
-        index = int(enable_match.group(1))
-        return _execute_enable(index)
-    
-    # 不是进化建议的响应
-    return {
-        "is_response": False,
-        "message": "",
-        "action": "none",
-        "executed": False
+    返回: {
+        "is_response": bool,  # 是否是队列相关响应
+        "action": str,        # 动作类型
+        "mode": str,          # 处理模式
+        "message": str        # 回复给用户的消息
     }
-
-
-def _execute_install(index: int) -> dict:
-    """执行安装指定序号的建议"""
-    try:
-        result = subprocess.run(
-            ["python3", "evolution_executor.py", "--action", "install", "--index", str(index)],
-            cwd=SCRIPT_DIR,
-            capture_output=True,
-            text=True,
-            timeout=120
-        )
+    """
+    user_input = user_input.strip().upper()
+    
+    # 1. 批量处理指令 (A1, A2, A3, A)
+    batch_patterns = {
+        'A1': ('batch', 'full', '原文保存'),
+        'A 1': ('batch', 'full', '原文保存'),
+        'A2': ('batch', 'summary', '主体+核心观点'),
+        'A 2': ('batch', 'summary', '主体+核心观点'),
+        'A3': ('batch', 'brief', '精简摘要'),
+        'A 3': ('batch', 'brief', '精简摘要'),
+        'A': ('batch', 'summary', '主体+核心观点（默认）'),
+    }
+    
+    if user_input in batch_patterns:
+        action, mode, mode_name = batch_patterns[user_input]
+        queue_files = get_queue_files()
+        count = len(queue_files)
         
-        output = result.stdout.strip()
-        
-        if result.returncode == 0:
+        if count == 0:
             return {
                 "is_response": True,
-                "message": f"✅ 建议 #{index} 执行成功！\n\n{output}",
-                "action": f"install_{index}",
-                "executed": True
+                "action": "none",
+                "mode": None,
+                "message": "📭 队列为空，无需处理"
             }
-        else:
-            return {
-                "is_response": True,
-                "message": f"⚠️ 建议 #{index} 执行遇到问题：\n\n{output}\n\n错误信息：{result.stderr}",
-                "action": f"install_{index}_failed",
-                "executed": False
-            }
-    except Exception as e:
+        
         return {
             "is_response": True,
-            "message": f"❌ 执行失败：{str(e)}",
-            "action": f"install_{index}_error",
-            "executed": False
+            "action": action,
+            "mode": mode,
+            "message": f"✅ 已选择批量处理（{mode_name}）\n\n正在处理 {count} 个笔记，请稍候..."
         }
+    
+    # 2. AI自动整理指令
+    ai_patterns = ['AI', 'AI自动', 'AI自动整理', '自动整理', '整理', '处理']
+    if any(user_input == p or user_input.startswith(p) for p in ai_patterns):
+        queue_files = get_queue_files()
+        count = len(queue_files)
+        
+        if count == 0:
+            return {
+                "is_response": True,
+                "action": "none",
+                "mode": None,
+                "message": "📭 队列为空，无需处理"
+            }
+        
+        # 设置自动处理标志
+        state = load_state()
+        state["auto_process"] = True
+        state["auto_mode"] = "summary"  # 默认摘要模式
+        save_state(state)
+        
+        return {
+            "is_response": True,
+            "action": "ai_auto",
+            "mode": "summary",
+            "message": f"🤖 AI自动整理已启动\n\n正在处理 {count} 个笔记（主体+核心观点模式）..."
+        }
+    
+    # 3. 推迟指令
+    delay_patterns = ['推迟', '延迟', '延后', '稍后', '待会', 'DELAY', 'POSTPONE', 'LATER']
+    if any(user_input == p or user_input.startswith(p) for p in delay_patterns):
+        # 计算新的延迟时间（默认推迟2小时）
+        delay_hours = 2
+        
+        # 尝试提取延迟时间（如"推迟3小时"）
+        match = re.search(r'(\d+)\s*小时', user_input)
+        if match:
+            delay_hours = int(match.group(1))
+        
+        new_time = datetime.now() + timedelta(hours=delay_hours)
+        
+        state = load_state()
+        state["delayed_until"] = new_time.isoformat()
+        save_state(state)
+        
+        return {
+            "is_response": True,
+            "action": "delay",
+            "mode": None,
+            "message": f"⏰ 已推迟处理\n\n将在 {new_time.strftime('%H:%M')} 再次提醒你。\n回复「AI自动整理」可立即开始处理。"
+        }
+    
+    # 4. 差异化处理（逐条确认）- 暂时不支持
+    if user_input == 'B':
+        return {
+            "is_response": True,
+            "action": "individual",
+            "mode": None,
+            "message": "📝 逐条处理功能开发中，请使用批量处理（A1/A2/A3）或 AI自动整理"
+        }
+    
+    # 不是队列响应
+    return {
+        "is_response": False,
+        "action": "none",
+        "mode": None,
+        "message": ""
+    }
 
-
-def _execute_install_all() -> dict:
-    """执行安装所有高优先级建议"""
+def execute_batch_process(mode: str) -> dict:
+    """执行批量处理"""
     try:
         result = subprocess.run(
-            ["python3", "evolution_executor.py", "--action", "install-all"],
+            ["python3", "process_all.py", "--batch", mode],
             cwd=SCRIPT_DIR,
             capture_output=True,
             text=True,
@@ -135,120 +179,139 @@ def _execute_install_all() -> dict:
         
         if result.returncode == 0:
             return {
-                "is_response": True,
-                "message": f"✅ 全部高优先级建议执行完成！\n\n{output}",
-                "action": "install_all",
-                "executed": True
+                "success": True,
+                "message": f"✅ 批量处理完成\n\n{output}",
+                "output": output
             }
         else:
             return {
-                "is_response": True,
-                "message": f"⚠️ 部分建议执行遇到问题：\n\n{output}",
-                "action": "install_all_partial",
-                "executed": True
+                "success": False,
+                "message": f"⚠️ 处理遇到问题：\n\n{output}\n\n错误：{result.stderr}",
+                "output": output
             }
+    except subprocess.TimeoutExpired:
+        return {
+            "success": False,
+            "message": "⏱️ 处理超时，但后台可能仍在运行，请稍后检查 Obsidian Vault",
+            "output": ""
+        }
     except Exception as e:
         return {
-            "is_response": True,
+            "success": False,
             "message": f"❌ 执行失败：{str(e)}",
-            "action": "install_all_error",
-            "executed": False
+            "output": ""
         }
 
+def execute_ai_auto_process() -> dict:
+    """执行AI自动整理"""
+    return execute_batch_process("summary")
 
-def _execute_skip() -> dict:
-    """执行忽略/跳过"""
-    try:
-        result = subprocess.run(
-            ["python3", "evolution_executor.py", "--action", "skip"],
-            cwd=SCRIPT_DIR,
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
-        
+def handle_user_input(user_input: str) -> dict:
+    """
+    处理用户输入的主入口
+    
+    返回: {
+        "handled": bool,      # 是否已处理
+        "response": str,      # 给用户的回复
+        "action": str,        # 后续动作
+        "execute": bool       # 是否立即执行
+    }
+    """
+    result = parse_user_input(user_input)
+    
+    if not result["is_response"]:
         return {
-            "is_response": True,
-            "message": "🎯 已忽略今日建议。\n\n这些建议将在明天的报告中再次呈现，你可以随时决定处理。",
-            "action": "skip",
-            "executed": True
+            "handled": False,
+            "response": "",
+            "action": "continue",
+            "execute": False
         }
-    except Exception as e:
+    
+    # 根据动作类型处理
+    if result["action"] == "batch":
         return {
-            "is_response": True,
-            "message": f"⚠️ 操作记录失败，但建议已标记为忽略：{str(e)}",
-            "action": "skip",
-            "executed": True
+            "handled": True,
+            "response": result["message"],
+            "action": "batch_process",
+            "execute": True,
+            "mode": result["mode"]
         }
-
-
-def _execute_detail(index: int) -> dict:
-    """执行显示详细信息"""
-    try:
-        result = subprocess.run(
-            ["python3", "evolution_executor.py", "--action", "detail", "--index", str(index)],
-            cwd=SCRIPT_DIR,
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
-        
-        output = result.stdout.strip()
-        
+    
+    elif result["action"] == "ai_auto":
         return {
-            "is_response": True,
-            "message": f"{output}\n\n💡 回复 `安装{index}` 执行此建议，或回复 `忽略` 跳过",
-            "action": f"detail_{index}",
-            "executed": True
+            "handled": True,
+            "response": result["message"],
+            "action": "ai_auto_process",
+            "execute": True,
+            "mode": result["mode"]
         }
-    except Exception as e:
+    
+    elif result["action"] == "delay":
         return {
-            "is_response": True,
-            "message": f"❌ 获取详细信息失败：{str(e)}",
-            "action": f"detail_{index}_error",
-            "executed": False
+            "handled": True,
+            "response": result["message"],
+            "action": "delayed",
+            "execute": False
         }
-
-
-def _execute_fix(index: int) -> dict:
-    """执行修复"""
-    # 修复和安装使用相同的逻辑
-    return _execute_install(index)
-
-
-def _execute_enable(index: int) -> dict:
-    """执行启用"""
-    # 启用和安装使用相同的逻辑
-    return _execute_install(index)
-
+    
+    elif result["action"] == "individual":
+        return {
+            "handled": True,
+            "response": result["message"],
+            "action": "individual_mode",
+            "execute": False
+        }
+    
+    elif result["action"] == "none":
+        return {
+            "handled": True,
+            "response": result["message"],
+            "action": "none",
+            "execute": False
+        }
+    
+    return {
+        "handled": False,
+        "response": "",
+        "action": "continue",
+        "execute": False
+    }
 
 def main():
     """主函数"""
-    parser = argparse.ArgumentParser(description='队列响应处理器')
+    parser = argparse.ArgumentParser(description='待读队列回复处理器 v2')
     parser.add_argument('--check', required=True, help='用户输入内容')
     parser.add_argument('--json', action='store_true', help='输出JSON格式')
+    parser.add_argument('--execute', action='store_true', help='立即执行处理')
     
     args = parser.parse_args()
     
-    result = check_evolution_response(args.check)
+    result = handle_user_input(args.check)
+    
+    # 如果需要执行
+    if args.execute and result.get("execute"):
+        if result["action"] == "batch_process":
+            exec_result = execute_batch_process(result.get("mode", "summary"))
+            result["execution_result"] = exec_result
+            result["response"] = exec_result["message"]
+        elif result["action"] == "ai_auto_process":
+            exec_result = execute_ai_auto_process()
+            result["execution_result"] = exec_result
+            result["response"] = exec_result["message"]
     
     if args.json:
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
-        # 简化输出，便于shell脚本解析
-        print(f"is_response: {result['is_response']}")
+        print(f"handled: {result['handled']}")
         print(f"action: {result['action']}")
-        print(f"executed: {result['executed']}")
-        print(f"message: {result['message']}")
+        print(f"execute: {result.get('execute', False)}")
+        print(f"response: {result['response']}")
     
-    # 返回退出码：0=是响应且执行成功，1=不是响应或执行失败
-    if result['is_response'] and result['executed']:
+    # 返回退出码
+    if result['handled']:
         sys.exit(0)
-    elif result['is_response']:
-        sys.exit(2)  # 是响应但执行失败
     else:
-        sys.exit(1)  # 不是响应
-
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
