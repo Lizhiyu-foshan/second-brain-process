@@ -1,0 +1,148 @@
+{
+  "project_name": "Incremental Message Index System",
+  "version": "1.0.0",
+  "constraints": {
+    "reliability": {
+      "description": "可靠性约束 - 系统必须可靠运行",
+      "rules": [
+        {
+          "id": "R1",
+          "description": "索引损坏时自动重建，不丢失数据",
+          "severity": "CRITICAL",
+          "check": "index_corruption_recovery"
+        },
+        {
+          "id": "R2",
+          "description": "支持异常恢复，断点续传",
+          "severity": "HIGH",
+          "check": "crash_recovery"
+        },
+        {
+          "id": "R3",
+          "description": "双重验证：索引时间戳 vs 实际消息时间戳",
+          "severity": "HIGH",
+          "check": "dual_verification"
+        },
+        {
+          "id": "R4",
+          "description": "保留7天备份，防止误删除",
+          "severity": "MEDIUM",
+          "check": "backup_retention"
+        }
+      ]
+    },
+    "stability": {
+      "description": "稳定性约束 - 系统必须稳定运行",
+      "rules": [
+        {
+          "id": "S1",
+          "description": "执行时间 < 1秒（无论文件数量多少）",
+          "severity": "CRITICAL",
+          "check": "execution_time"
+        },
+        {
+          "id": "S2",
+          "description": "内存使用 < 100MB",
+          "severity": "HIGH",
+          "check": "memory_usage"
+        },
+        {
+          "id": "S3",
+          "description": "不阻塞定时任务",
+          "severity": "CRITICAL",
+          "check": "non_blocking"
+        },
+        {
+          "id": "S4",
+          "description": "失败时优雅降级到原方案",
+          "severity": "HIGH",
+          "check": "graceful_degradation"
+        }
+      ]
+    },
+    "integrity": {
+      "description": "完整性约束 - 数据必须完整",
+      "rules": [
+        {
+          "id": "I1",
+          "description": "不遗漏任何消息（100%覆盖）",
+          "severity": "CRITICAL",
+          "check": "full_coverage"
+        },
+        {
+          "id": "I2",
+          "description": "正确处理跨天消息",
+          "severity": "HIGH",
+          "check": "cross_day_handling"
+        },
+        {
+          "id": "I3",
+          "description": "正确处理乱序消息",
+          "severity": "HIGH",
+          "check": "out_of_order_handling"
+        },
+        {
+          "id": "I4",
+          "description": "正确处理重复消息",
+          "severity": "MEDIUM",
+          "check": "deduplication"
+        }
+      ]
+    },
+    "code_quality": {
+      "description": "代码质量约束",
+      "rules": [
+        {
+          "id": "Q1",
+          "description": "单元测试覆盖率 > 80%",
+          "severity": "HIGH",
+          "check": "test_coverage"
+        },
+        {
+          "id": "Q2",
+          "description": "所有边界情况有测试用例",
+          "severity": "HIGH",
+          "check": "edge_case_coverage"
+        },
+        {
+          "id": "Q3",
+          "description": "代码通过 AST 审计（无关键问题）",
+          "severity": "CRITICAL",
+          "check": "ast_audit"
+        },
+        {
+          "id": "Q4",
+          "description": "有详细注释和文档",
+          "severity": "MEDIUM",
+          "check": "documentation"
+        }
+      ]
+    }
+  },
+  "phases": [
+    {
+      "name": "design",
+      "description": "架构设计阶段",
+      "roles": ["architect"],
+      "constraints": ["Q3", "Q4"]
+    },
+    {
+      "name": "development",
+      "description": "编码开发阶段",
+      "roles": ["developer"],
+      "constraints": ["R1", "R2", "S1", "S2", "I1", "I2", "Q3", "Q4"]
+    },
+    {
+      "name": "testing",
+      "description": "测试验证阶段",
+      "roles": ["qa"],
+      "constraints": ["Q1", "Q2", "I1", "I2", "I3", "I4"]
+    },
+    {
+      "name": "deployment",
+      "description": "部署上线阶段",
+      "roles": ["devops"],
+      "constraints": ["S3", "S4", "R3", "R4"]
+    }
+  ]
+}
