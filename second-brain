@@ -1,6 +1,6 @@
 #!/bin/bash
-# Second Brain Skill 主入口
-# Usage: second-brain <command>
+# Second Brain Skill 主入口 - v2.1
+# Usage: second-brain <command> [options]
 
 set -e
 
@@ -9,51 +9,57 @@ cd "$SCRIPT_DIR"
 
 show_help() {
     cat << 'EOF'
-Second Brain Processor 🧠 - 自动化知识管理
+Second Brain Processor v2.1 🧠 - 知识整理系统
 
 Usage: second-brain <command> [options]
 
 Commands:
-  process              整理昨日对话
-  incremental          增量处理对话（高性能）
-  queue                处理待读队列
+  collect              收集昨日原始对话（5:00任务）
+  report               生成复盘报告（8:30任务）
+  process              运行四步法深度整理
+  article <url>        处理文章链接
+  queue <input>        处理队列响应
   sync                 同步到GitHub
-  dashboard            更新Dashboard
-  report               生成每日报告
   help                 显示帮助
 
 Examples:
-  second-brain process              # 整理昨日对话
-  second-brain queue --batch summary # 批量处理队列
-  second-brain sync                 # 同步到GitHub
-  second-brain dashboard            # 更新Dashboard
+  second-brain collect              # 收集对话
+  second-brain process              # 运行四步法
+  second-brain article <url>        # 处理文章
+  second-brain sync                 # GitHub同步
 
-Queue Response Commands (for users):
-  A1, A2, A3           批量处理模式
-  AI                   AI自动整理
-  推迟                  延迟处理
+Queue Response Commands:
+  整理                 触发四步法整理
+  AI自动整理           AI自动处理
+  推迟 X小时            推迟处理时间
+  跳过                 跳过当前任务
 EOF
 }
 
 case "${1:-}" in
-    process|raw)
-        python3 process_raw.py
+    collect|raw)
+        python3 collect_raw_conversations.py
         ;;
-    incremental|inc)
-        python3 process_incremental.py
+    report|daily)
+        python3 daily_complete_report.py
         ;;
-    queue|all)
+    process|run)
         shift
-        python3 process_all.py "$@"
+        python3 run_four_step_process.py "$@"
+        ;;
+    article|link)
+        shift
+        python3 article_handler.py "$@"
+        ;;
+    queue|handle)
+        shift
+        python3 queue_response_handler.py "$@"
         ;;
     sync|git)
-        python3 git_sync.py
-        ;;
-    dashboard|dash)
-        python3 update_dashboard.py
-        ;;
-    report)
-        python3 daily_complete_report.py
+        cd /root/.openclaw/workspace/obsidian-vault
+        git add -A
+        git commit -m "sync: $(date '+%Y-%m-%d %H:%M:%S')" || true
+        git push origin main
         ;;
     help|-h|--help)
         show_help
