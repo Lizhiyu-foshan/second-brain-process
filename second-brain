@@ -1,0 +1,66 @@
+#!/bin/bash
+# Second Brain Skill 主入口
+# Usage: second-brain <command>
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+show_help() {
+    cat << 'EOF'
+Second Brain Processor 🧠 - 自动化知识管理
+
+Usage: second-brain <command> [options]
+
+Commands:
+  process              整理昨日对话
+  incremental          增量处理对话（高性能）
+  queue                处理待读队列
+  sync                 同步到GitHub
+  dashboard            更新Dashboard
+  report               生成每日报告
+  help                 显示帮助
+
+Examples:
+  second-brain process              # 整理昨日对话
+  second-brain queue --batch summary # 批量处理队列
+  second-brain sync                 # 同步到GitHub
+  second-brain dashboard            # 更新Dashboard
+
+Queue Response Commands (for users):
+  A1, A2, A3           批量处理模式
+  AI                   AI自动整理
+  推迟                  延迟处理
+EOF
+}
+
+case "${1:-}" in
+    process|raw)
+        python3 process_raw.py
+        ;;
+    incremental|inc)
+        python3 process_incremental.py
+        ;;
+    queue|all)
+        shift
+        python3 process_all.py "$@"
+        ;;
+    sync|git)
+        python3 git_sync.py
+        ;;
+    dashboard|dash)
+        python3 update_dashboard.py
+        ;;
+    report)
+        python3 daily_complete_report.py
+        ;;
+    help|-h|--help)
+        show_help
+        ;;
+    *)
+        echo "Unknown command: ${1:-}"
+        show_help
+        exit 1
+        ;;
+esac
