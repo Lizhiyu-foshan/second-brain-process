@@ -40,7 +40,7 @@ def handle_no_time_response(article_file: str, url: str) -> str:
     # 添加到队列（v2.1: 立即处理，无二次等待）
     from queue_response_handler import add_pending
     task_id = add_pending(
-        type="article_auto_process_immediate",  # v2.1: 立即处理类型
+        task_type="article_auto_process_immediate",  # v2.1: 立即处理类型
         article_file=article_file,
         url=url
     )
