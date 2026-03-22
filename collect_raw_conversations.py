@@ -124,7 +124,11 @@ def collect_raw_conversations():
     seen = set()
     unique_messages = []
     for msg in all_messages:
-        msg_id = msg.get("id") or f"{msg.get('timestamp')}_{msg.get('content', '')[:50]}"
+        # 获取消息内容用于去重
+        msg_data = msg.get("message", {})
+        content_parts = msg_data.get("content", []) if isinstance(msg_data.get("content"), list) else []
+        content_text = content_parts[0].get("text", "") if content_parts else ""
+        msg_id = msg.get("id") or f"{msg.get('timestamp')}_{content_text[:50]}"
         if msg_id not in seen:
             seen.add(msg_id)
             unique_messages.append(msg)
@@ -161,8 +165,17 @@ message_count: {len(unique_messages)}
             current_hour = hour
             md_content += f"\n## {hour:02d}:00-{hour+1:02d}:00\n\n"
         
-        role = "用户" if msg.get("role") == "user" else "AI"
-        content = msg.get("content", "").strip()
+        # 提取角色和内容
+        msg_data = msg.get("message", {})
+        role = "用户" if msg_data.get("role") == "user" else "AI"
+        
+        # 提取内容文本
+        content_parts = msg_data.get("content", []) if isinstance(msg_data.get("content"), list) else []
+        if content_parts and isinstance(content_parts[0], dict):
+            content = content_parts[0].get("text", "").strip()
+        else:
+            content = str(msg_data.get("content", "")).strip()
+        
         if content:
             md_content += f"[{role}] {content}\n\n"
     
