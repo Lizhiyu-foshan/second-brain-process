@@ -105,10 +105,17 @@ def collect_raw_conversations():
                         continue
                     try:
                         msg = json.loads(line)
-                        msg_time = msg.get("timestamp", 0)
+                        ts_str = msg.get("timestamp", "")
+                        if not ts_str:
+                            continue
+                        # 解析ISO时间戳为毫秒时间戳
+                        msg_dt = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
+                        msg_time = int(msg_dt.timestamp() * 1000)
                         if start_time <= msg_time <= end_time:
+                            # 添加解析后的时间戳到消息中
+                            msg["timestamp_ms"] = msg_time
                             all_messages.append(msg)
-                    except json.JSONDecodeError:
+                    except (json.JSONDecodeError, ValueError):
                         continue
         except Exception as e:
             print(f"[WARN] 读取文件失败 {session_file}: {e}")
@@ -130,7 +137,7 @@ def collect_raw_conversations():
         return
     
     # 按时间排序
-    unique_messages.sort(key=lambda x: x.get("timestamp", 0))
+    unique_messages.sort(key=lambda x: x.get("timestamp_ms", 0))
     
     # 生成Markdown
     md_content = f"""---
@@ -146,7 +153,7 @@ message_count: {len(unique_messages)}
     
     current_hour = None
     for msg in unique_messages:
-        msg_time = datetime.fromtimestamp(msg.get("timestamp", 0) / 1000)
+        msg_time = datetime.fromtimestamp(msg.get("timestamp_ms", 0) / 1000)
         hour = msg_time.hour
         
         # 按小时分组
@@ -167,7 +174,7 @@ message_count: {len(unique_messages)}
     
     # 更新索引
     if unique_messages:
-        max_timestamp = max(m.get("timestamp", 0) for m in unique_messages)
+        max_timestamp = max(m.get("timestamp_ms", 0) for m in unique_messages)
         index_manager.update_last_timestamp(max_timestamp, len(unique_messages))
     
     print(f"[{datetime.now()}] === 原始对话收集完成 ===")
