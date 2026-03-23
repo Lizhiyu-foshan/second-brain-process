@@ -367,6 +367,13 @@
           "type": "代码质量问题",
           "severity": "P1",
           "description": "自动修复引入语法错误破坏7个文件"
+        },
+        {
+          "id": "INC-2026-0323-001",
+          "date": "2026-03-23",
+          "type": "影响范围遗漏",
+          "severity": "P1",
+          "description": "删除文件未检查引用关系导致依赖模块报错"
         }
       ],
       "dependencies": ["RULE_003", "RULE_004"],
