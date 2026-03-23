@@ -7,6 +7,7 @@ Incremental Message Processor - 增量消息处理器
 - 提取新增消息
 - 生成对话记录文件
 - 更新索引
+- 【新增】检查缺失的对话文件并自动修复
 
 约束覆盖:
 - S1: 执行时间 < 1秒
@@ -16,9 +17,11 @@ Incremental Message Processor - 增量消息处理器
 - I2: 正确处理跨天消息
 - I3: 正确处理乱序消息
 - I4: 正确处理重复消息
+- I5: 【新增】自动检测并修复缺失的对话文件
 
 作者: Kimi Claw
 创建时间: 2026-03-21
+更新时间: 2026-03-22 (添加文件存在性检查)
 """
 
 import json
@@ -71,11 +74,7 @@ class Message:
 
 
 class IncrementalScanner:
-    """
-    增量扫描器
-    
-    高效扫描会话文件，只提取新增消息。
-    """
+    """增量扫描器 - 高效扫描会话文件，只提取新增消息"""
     
     def __init__(self, index_manager: IndexManager):
         self.index_manager = index_manager
@@ -88,78 +87,48 @@ class IncrementalScanner:
         }
     
     def scan(self) -> List[Message]:
-        """
-        增量扫描所有会话文件
-        
-        Returns:
-            新增消息列表（已去重和排序）
-        """
-        # 获取上次处理时间戳
+        """增量扫描所有会话文件"""
         last_ts = self.index_manager.get_last_timestamp()
         logger.info(f"Scanning for messages after timestamp: {last_ts}")
         
-        # 获取所有会话文件
         all_files = list(SESSIONS_DIR.glob("*.jsonl"))
         logger.info(f"Found {len(all_files)} session files")
         
         messages = []
         
         for jsonl_file in all_files:
-            # 跳过已删除的文件
             if "deleted" in jsonl_file.name:
                 continue
             
             self.stats["files_scanned"] += 1
             
-            # 快速检查是否有新消息
             if not self._quick_check(jsonl_file, last_ts):
                 self.stats["files_skipped"] += 1
                 continue
             
-            # 读取新增消息
             new_messages = self._read_new_messages(jsonl_file, last_ts)
             
             if new_messages:
                 self.stats["files_with_new"] += 1
                 messages.extend(new_messages)
-                logger.debug(f"Found {len(new_messages)} new messages in {jsonl_file.name}")
         
         self.stats["messages_found"] = len(messages)
-        
-        # 去重
         messages = self._deduplicate(messages)
         self.stats["messages_after_dedup"] = len(messages)
-        
-        # 排序（按时间戳）
         messages.sort(key=lambda m: m.timestamp)
         
         logger.info(f"Scan complete: {self.stats}")
-        
         return messages
     
     def _quick_check(self, file_path: Path, last_ts: int) -> bool:
-        """
-        快速检查文件是否有新消息
-        
-        读取文件最后5行，检查是否有消息时间戳 > last_ts
-        
-        Args:
-            file_path: 会话文件路径
-            last_ts: 上次处理时间戳
-            
-        Returns:
-            是否有新消息
-        """
+        """快速检查文件是否有新消息"""
         try:
-            # 读取文件最后几行
             with open(file_path, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
             
-            # 如果文件为空，跳过
             if not lines:
                 return False
             
-            # 检查最后5行
             sample_lines = lines[-5:] if len(lines) >= 5 else lines
             
             for line in sample_lines:
@@ -177,14 +146,11 @@ class IncrementalScanner:
                         dt = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
                         msg_ts = int(dt.timestamp() * 1000)
                         
-                        # 如果有任何消息在last_ts之后，需要处理该文件
                         if msg_ts > last_ts:
                             return True
                 except:
                     continue
             
-            # 检查文件最后修改时间
-            # 如果文件最近被修改，但上面没找到新消息，保守处理（返回True）
             try:
                 mtime = datetime.fromtimestamp(file_path.stat().st_mtime, tz=timezone.utc)
                 if mtime > datetime.fromtimestamp(last_ts / 1000, tz=timezone.utc):
@@ -196,20 +162,10 @@ class IncrementalScanner:
             
         except Exception as e:
             logger.warning(f"Quick check failed for {file_path}: {e}")
-            # 出错时保守处理（假设有新消息）
             return True
     
     def _read_new_messages(self, file_path: Path, last_ts: int) -> List[Message]:
-        """
-        读取文件中的新增消息
-        
-        Args:
-            file_path: 会话文件路径
-            last_ts: 上次处理时间戳
-            
-        Returns:
-            新增消息列表
-        """
+        """读取文件中的新增消息"""
         messages = []
         
         try:
@@ -222,11 +178,9 @@ class IncrementalScanner:
                     try:
                         msg = json.loads(line)
                         
-                        # 只处理消息类型
                         if msg.get("type") != "message":
                             continue
                         
-                        # 解析时间戳
                         ts_str = msg.get("timestamp", "")
                         if not ts_str:
                             continue
@@ -237,11 +191,9 @@ class IncrementalScanner:
                         except:
                             continue
                         
-                        # 只保留新增消息
                         if msg_ts <= last_ts:
                             continue
                         
-                        # 解析消息内容
                         message_data = msg.get("message", {})
                         role = message_data.get("role", "unknown")
                         
@@ -251,7 +203,6 @@ class IncrementalScanner:
                         else:
                             content = str(content_parts)
                         
-                        # 跳过系统消息和心跳
                         if role == "system" or "HEARTBEAT_OK" in content or "Read HEARTBEAT.md" in content:
                             continue
                         
@@ -273,17 +224,7 @@ class IncrementalScanner:
         return messages
     
     def _deduplicate(self, messages: List[Message]) -> List[Message]:
-        """
-        消息去重
-        
-        基于时间戳和内容哈希去重。
-        
-        Args:
-            messages: 消息列表
-            
-        Returns:
-            去重后的消息列表
-        """
+        """消息去重"""
         seen_hashes = set()
         unique_messages = []
         
@@ -300,11 +241,7 @@ class IncrementalScanner:
 
 
 class ConversationWriter:
-    """
-    对话记录写入器
-    
-    将消息格式化为Markdown并保存。
-    """
+    """对话记录写入器"""
     
     def __init__(self, output_dir: Path = None):
         if output_dir is None:
@@ -315,21 +252,11 @@ class ConversationWriter:
         self.output_dir.mkdir(parents=True, exist_ok=True)
     
     def write(self, messages: List[Message], date_str: str) -> Tuple[bool, str]:
-        """
-        写入对话记录
-        
-        Args:
-            messages: 消息列表
-            date_str: 日期字符串（YYYY-MM-DD）
-            
-        Returns:
-            (是否成功, 输出文件路径)
-        """
+        """写入对话记录"""
         if not messages:
             logger.info(f"No messages to write for {date_str}")
             return False, ""
         
-        # 生成文件内容
         content_lines = [
             f"---",
             f"date: {date_str}",
@@ -352,11 +279,9 @@ class ConversationWriter:
             f"",
         ]
         
-        # 添加消息
         for msg in messages:
             content_lines.append(self._format_message(msg))
         
-        # 写入文件
         content = "\n".join(content_lines)
         output_file = self.output_dir / f"{date_str}_conversations.md"
         
@@ -374,7 +299,6 @@ class ConversationWriter:
         role = msg.role
         content = msg.content
         
-        # 截断过长的内容
         if len(content) > 2000:
             content = content[:2000] + "\n... [内容过长，已截断]"
         
@@ -386,12 +310,78 @@ class ConversationWriter:
             return f"**[{ts}] {role}**\n{content}\n\n---\n\n"
 
 
-def process_incremental():
+def check_missing_conversations(days: int = 7) -> Tuple[bool, str, int]:
     """
-    增量处理主函数
+    检查过去N天的对话文件是否存在
+    只要有任意 .md 文件就认为该日期已处理（兼容旧格式）
+    """
+    today = datetime.now(timezone.utc)
+    missing_dates = []
     
-    完整的增量处理流程。
-    """
+    for i in range(days):
+        check_date = today - timedelta(days=i+1)
+        date_str = check_date.strftime("%Y-%m-%d")
+        
+        has_any_file = False
+        for file in CONVERSATIONS_DIR.glob(f"{date_str}*.md"):
+            if file.is_file():
+                has_any_file = True
+                break
+        
+        if not has_any_file:
+            missing_dates.append(date_str)
+            logger.warning(f"Missing conversation file for date: {date_str}")
+    
+    if not missing_dates:
+        return False, "", 0
+    
+    missing_dates.sort()
+    earliest_missing = missing_dates[0]
+    
+    missing_date = datetime.strptime(earliest_missing, "%Y-%m-%d")
+    missing_date = missing_date.replace(tzinfo=timezone.utc)
+    timestamp_ms = int(missing_date.timestamp() * 1000)
+    
+    logger.warning(f"Found {len(missing_dates)} missing conversation dates: {missing_dates}")
+    logger.warning(f"Earliest missing: {earliest_missing}, timestamp: {timestamp_ms}")
+    
+    return True, earliest_missing, timestamp_ms
+
+
+def reset_index_to_date(index_manager: IndexManager, timestamp_ms: int, date_str: str) -> bool:
+    """重置索引到指定日期之前"""
+    try:
+        logger.info(f"Resetting index to before {date_str} (timestamp: {timestamp_ms})")
+        
+        index = index_manager.load()
+        
+        index['last_processed'] = {
+            "timestamp_ms": timestamp_ms,
+            "iso_time": datetime.fromtimestamp(timestamp_ms / 1000, tz=timezone.utc).isoformat(),
+            "date_str": date_str
+        }
+        
+        if 'resets' not in index:
+            index['resets'] = []
+        
+        index['resets'].append({
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "reason": f"Missing conversation files, reset to {date_str}",
+            "target_date": date_str
+        })
+        
+        index_manager.save(index)
+        
+        logger.info(f"Index reset successful: now at {date_str}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Failed to reset index: {e}")
+        return False
+
+
+def process_incremental():
+    """增量处理主函数"""
     import time
     start_time = time.time()
     
@@ -400,32 +390,35 @@ def process_incremental():
     logger.info("=" * 50)
     
     try:
-        # 1. 初始化索引管理器
         index_manager = IndexManager()
-        
-        # 2. 加载索引（会自动重建如果不存在）
         index = index_manager.load()
         last_ts = index_manager.get_last_timestamp()
         
-        # 3. 增量扫描
+        # 检查缺失的对话文件
+        has_missing, missing_date, missing_ts = check_missing_conversations(days=7)
+        if has_missing:
+            logger.warning(f"Detected missing conversation file for {missing_date}")
+            if reset_index_to_date(index_manager, missing_ts, missing_date):
+                logger.info(f"Index reset to {missing_date}, will reprocess")
+                index = index_manager.load()
+                last_ts = index_manager.get_last_timestamp()
+            else:
+                logger.error("Failed to reset index, continuing with current timestamp")
+        
         scanner = IncrementalScanner(index_manager)
         messages = scanner.scan()
         
         if not messages:
             logger.info("No new messages found")
-            # 仍然更新索引时间（记录本次运行）
             index_manager.update_last_timestamp(
                 int(datetime.now(timezone.utc).timestamp() * 1000),
                 0
             )
             return True
         
-        # 4. 获取日期（用于文件名）
-        # 使用消息的最大时间戳作为日期
         max_ts = max(m.timestamp for m in messages)
         date_str = datetime.fromtimestamp(max_ts / 1000, tz=timezone.utc).strftime("%Y-%m-%d")
         
-        # 5. 写入对话记录
         writer = ConversationWriter()
         success, output_file = writer.write(messages, date_str)
         
@@ -433,17 +426,12 @@ def process_incremental():
             logger.error("Failed to write conversation")
             return False
         
-        # 6. 更新索引
         index_manager.update_last_timestamp(max_ts, len(messages))
-        
-        # 7. 创建备份
         index_manager.backup()
         
-        # 8. 记录执行时间
         duration_ms = int((time.time() - start_time) * 1000)
         logger.info(f"Processing completed in {duration_ms}ms")
         
-        # 更新统计
         index = index_manager.load()
         if 'statistics' in index:
             index['statistics']['last_run_duration_ms'] = duration_ms

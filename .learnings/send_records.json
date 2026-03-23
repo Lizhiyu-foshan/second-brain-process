@@ -458,6 +458,42 @@
       "success": true,
       "error": "",
       "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：16:03  **任务统计：** - OpenClaw: 12 个任务   - ✅ 正常: 9   - ⚠️ 警告: 2   - ❌ 严重:"
+    },
+    {
+      "fingerprint": "b915e64fd0da1ba7",
+      "time": "2026-03-22T00:02:19.873422",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：00:02  **任务统计：** - OpenClaw: 12 个任务   - ✅ 正常: 9   - ⚠️ 警告: 2   - ❌ 严重:"
+    },
+    {
+      "fingerprint": "7d69decc59bba3fc",
+      "time": "2026-03-22T01:00:26.870275",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：01:00  **任务统计：** - OpenClaw: 12 个任务   - ✅ 正常: 9   - ⚠️ 警告: 2   - ❌ 严重:"
+    },
+    {
+      "fingerprint": "c6875fa82387b7f6",
+      "time": "2026-03-22T03:00:21.878053",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：03:00  **任务统计：** - OpenClaw: 12 个任务   - ✅ 正常: 9   - ⚠️ 警告: 2   - ❌ 严重:"
+    },
+    {
+      "fingerprint": "09557768703becdf",
+      "time": "2026-03-22T04:01:17.725762",
+      "type": "cron_health_check",
+      "target": "ou_363105a68ee112f714ed44e12c802051",
+      "success": true,
+      "error": "",
+      "content_preview": "⚠️ **Cron 健康检查 - 发现问题**  检测时间：04:01  **任务统计：** - OpenClaw: 12 个任务   - ✅ 正常: 8   - ⚠️ 警告: 2   - ❌ 严重:"
     }
   ],
   "last_cleanup": "2026-03-09T08:30:58.142073"

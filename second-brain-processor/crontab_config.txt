@@ -1,8 +1,0 @@
-# 凌晨5:00可靠任务 - Linux Cron配置
-# 添加到系统crontab: sudo crontab -e
-
-# 凌晨5:00执行可靠任务（纯脚本，不依赖OpenClaw）
-0 5 * * * /root/.openclaw/workspace/second-brain-processor/morning_reliable.sh >> /tmp/morning_reliable_cron.log 2>&1
-
-# 可选：7:30执行验证脚本
-30 7 * * * /usr/bin/python3 /root/.openclaw/workspace/scripts/verify_morning_reliable.py >> /tmp/morning_verify.log 2>&1
