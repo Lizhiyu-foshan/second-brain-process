@@ -1,0 +1,457 @@
+{
+  "version": "2.0",
+  "last_updated": "2026-03-23T19:30:00Z",
+  "metadata": {
+    "total_rules": 8,
+    "active_rules": 8,
+    "deprecated_rules": 0,
+    "avg_health_score": 88.5
+  },
+  "rules": [
+    {
+      "id": "RULE_001",
+      "name": "消息接收去重检查",
+      "priority": "high",
+      "status": "active",
+      "created_at": "2026-03-12",
+      "last_updated": "2026-03-12",
+      "version": "1.0",
+      "triggers": {
+        "keywords": ["消息", "重复", "去重", "Feishu", "飞书"],
+        "regex_patterns": [
+          "queue_response_handler",
+          "is_response"
+        ],
+        "context_indicators": ["收到消息时", "消息处理"]
+      },
+      "linked_files": [
+        "AGENTS_DETAILS.md#规则1消息接收去重检查",
+        "memory/2026-03-12.md"
+      ],
+      "health_metrics": {
+        "trigger_count_30d": null,
+        "error_prevented_30d": null,
+        "false_positive_30d": 0,
+        "success_rate": null,
+        "health_score": 90,
+        "last_triggered": null,
+        "assessment": "healthy"
+      },
+      "incidents": [
+        {
+          "id": "INC-2026-0312-001",
+          "date": "2026-03-12",
+          "type": "消息重复",
+          "severity": "P2",
+          "description": "Feishu消息重试导致重复回复"
+        }
+      ],
+      "dependencies": [],
+      "dependents": ["RULE_005"],
+      "changelog": [
+        {
+          "date": "2026-03-12",
+          "version": "1.0",
+          "change": "初版：增加消息去重机制"
+        }
+      ]
+    },
+    {
+      "id": "RULE_002",
+      "name": "高风险操作审查",
+      "priority": "critical",
+      "status": "active",
+      "created_at": "2026-03-08",
+      "last_updated": "2026-03-19",
+      "version": "1.1",
+      "triggers": {
+        "keywords": ["模型切换", "网关重启", "插件安装", "配置修改", "高风险"],
+        "regex_patterns": [],
+        "context_indicators": ["切换模型", "重启网关", "安装插件"]
+      },
+      "linked_files": [
+        "AGENTS_DETAILS.md#规则2高风险操作审查",
+        "memory/2026-03-08.md"
+      ],
+      "health_metrics": {
+        "trigger_count_30d": null,
+        "error_prevented_30d": null,
+        "false_positive_30d": 0,
+        "success_rate": null,
+        "health_score": 92,
+        "last_triggered": null,
+        "assessment": "healthy"
+      },
+      "incidents": [
+        {
+          "id": "INC-2026-0308-001",
+          "date": "2026-03-08",
+          "type": "系统不稳定",
+          "severity": "P1",
+          "description": "模型切换未做上下文检查导致系统中断"
+        }
+      ],
+      "dependencies": [],
+      "dependents": ["RULE_003", "RULE_006"],
+      "changelog": [
+        {
+          "date": "2026-03-08",
+          "version": "1.0",
+          "change": "初版：高风险操作审查"
+        },
+        {
+          "date": "2026-03-19",
+          "version": "1.1",
+          "change": "整合到AGENTS.md v2.0重构"
+        }
+      ]
+    },
+    {
+      "id": "RULE_003",
+      "name": "GitHub推送与凭据处理",
+      "priority": "critical",
+      "status": "active",
+      "created_at": "2026-03-10",
+      "last_updated": "2026-03-20",
+      "version": "1.2",
+      "triggers": {
+        "keywords": ["git push", "GITHUB_TOKEN", "凭据", "备份", "SSH", "force"],
+        "regex_patterns": [
+          "git push.*--force(?!-with-lease)",
+          "rm.*GITHUB_TOKEN",
+          "git remote get-url"
+        ],
+        "context_indicators": ["推送", "GitHub", "Token", "凭据"]
+      },
+      "linked_files": [
+        "AGENTS_DETAILS.md#规则3github推送与凭据处理",
+        "memory/2026-03-18.md",
+        "memory/2026-03-20.md"
+      ],
+      "health_metrics": {
+        "trigger_count_30d": 5,
+        "error_prevented_30d": 5,
+        "false_positive_30d": 0,
+        "success_rate": 1.0,
+        "health_score": 95,
+        "last_triggered": "2026-03-22T14:30:00Z",
+        "assessment": "excellent"
+      },
+      "incidents": [
+        {
+          "id": "INC-2026-0318-001",
+          "date": "2026-03-18",
+          "type": "数据丢失",
+          "severity": "P0",
+          "description": "误删GITHUB_TOKEN未备份导致永久丢失"
+        },
+        {
+          "id": "INC-2026-0320-001",
+          "date": "2026-03-20",
+          "type": "代码丢失",
+          "severity": "P1",
+          "description": "强制推送导致仓库历史丢失"
+        }
+      ],
+      "dependencies": ["RULE_002"],
+      "dependents": ["RULE_004", "RULE_007"],
+      "changelog": [
+        {
+          "date": "2026-03-10",
+          "version": "1.0",
+          "change": "初版：GitHub推送规范"
+        },
+        {
+          "date": "2026-03-18",
+          "version": "1.1",
+          "change": "增加凭据处理禁令"
+        },
+        {
+          "date": "2026-03-20",
+          "version": "1.2",
+          "change": "增加--force-with-lease限制"
+        }
+      ]
+    },
+    {
+      "id": "RULE_004",
+      "name": "系统问题根因分析",
+      "priority": "high",
+      "status": "active",
+      "created_at": "2026-03-19",
+      "last_updated": "2026-03-19",
+      "version": "1.0",
+      "triggers": {
+        "keywords": ["根因分析", "系统问题", "故障", "监控告警", "异常"],
+        "regex_patterns": [],
+        "context_indicators": ["出错了", "失败了", "异常", "故障"]
+      },
+      "linked_files": [
+        "AGENTS_DETAILS.md#规则4系统问题根因分析",
+        "memory/2026-03-17.md"
+      ],
+      "health_metrics": {
+        "trigger_count_30d": null,
+        "error_prevented_30d": null,
+        "false_positive_30d": 0,
+        "success_rate": null,
+        "health_score": 88,
+        "last_triggered": null,
+        "assessment": "healthy"
+      },
+      "incidents": [
+        {
+          "id": "INC-2026-0317-001",
+          "date": "2026-03-17",
+          "type": "系统故障",
+          "severity": "P1",
+          "description": "定时任务超时未做根因分析直接改配置"
+        }
+      ],
+      "dependencies": [],
+      "dependents": ["RULE_003", "RULE_007"],
+      "changelog": [
+        {
+          "date": "2026-03-19",
+          "version": "1.0",
+          "change": "初版：根因分析流程"
+        }
+      ]
+    },
+    {
+      "id": "RULE_005",
+      "name": "定时任务配置与监控",
+      "priority": "critical",
+      "status": "active",
+      "created_at": "2026-03-18",
+      "last_updated": "2026-03-19",
+      "version": "1.1",
+      "triggers": {
+        "keywords": ["定时任务", "cron", "监控", "告警", "静默任务", "主动任务"],
+        "regex_patterns": [
+          "cron.*add",
+          "定时任务.*配置"
+        ],
+        "context_indicators": ["定时", "cron", "任务配置", "调度"]
+      },
+      "linked_files": [
+        "AGENTS_DETAILS.md#规则5定时任务配置与监控",
+        "memory/2026-03-18.md"
+      ],
+      "health_metrics": {
+        "trigger_count_30d": null,
+        "error_prevented_30d": null,
+        "false_positive_30d": 0,
+        "success_rate": null,
+        "health_score": 90,
+        "last_triggered": null,
+        "assessment": "healthy"
+      },
+      "incidents": [
+        {
+          "id": "INC-2026-0318-002",
+          "date": "2026-03-18",
+          "type": "消息骚扰",
+          "severity": "P2",
+          "description": "静默任务发送过多通知消息打扰用户"
+        }
+      ],
+      "dependencies": ["RULE_001"],
+      "dependents": [],
+      "changelog": [
+        {
+          "date": "2026-03-18",
+          "version": "1.0",
+          "change": "初版：定时任务分类与监控"
+        },
+        {
+          "date": "2026-03-19",
+          "version": "1.1",
+          "change": "细化验证流程"
+        }
+      ]
+    },
+    {
+      "id": "RULE_006",
+      "name": "模型切换检查",
+      "priority": "high",
+      "status": "active",
+      "created_at": "2026-03-08",
+      "last_updated": "2026-03-08",
+      "version": "1.0",
+      "triggers": {
+        "keywords": ["模型切换", "session_status", "k2p5", "GLM-5", "上下文"],
+        "regex_patterns": [
+          "session_status.*model",
+          "切换到.*模型"
+        ],
+        "context_indicators": ["切换模型", "换模型", "模型选择"]
+      },
+      "linked_files": [
+        "AGENTS_DETAILS.md#规则6模型切换检查",
+        "memory/2026-03-08.md"
+      ],
+      "health_metrics": {
+        "trigger_count_30d": null,
+        "error_prevented_30d": null,
+        "false_positive_30d": 0,
+        "success_rate": null,
+        "health_score": 85,
+        "last_triggered": null,
+        "assessment": "healthy"
+      },
+      "incidents": [
+        {
+          "id": "INC-2026-0308-002",
+          "date": "2026-03-08",
+          "type": "上下文超限",
+          "severity": "P1",
+          "description": "k2p5切换到GLM-5时上下文配置未更新导致超限"
+        }
+      ],
+      "dependencies": ["RULE_002"],
+      "dependents": ["RULE_007"],
+      "changelog": [
+        {
+          "date": "2026-03-08",
+          "version": "1.0",
+          "change": "初版：模型切换检查"
+        }
+      ]
+    },
+    {
+      "id": "RULE_007",
+      "name": "代码部署全流程",
+      "priority": "critical",
+      "status": "active",
+      "created_at": "2026-03-05",
+      "last_updated": "2026-03-19",
+      "version": "1.2",
+      "triggers": {
+        "keywords": ["部署", "git commit", "git push", "AI审计", "代码修改", "新建文件"],
+        "regex_patterns": [
+          "部署.*代码",
+          "修改.*脚本",
+          "git add.*",
+          "git commit.*"
+        ],
+        "context_indicators": ["部署", "提交", "推送", "修改代码"]
+      },
+      "linked_files": [
+        "AGENTS_DETAILS.md#规则7代码部署全流程",
+        "memory/2026-03-05.md",
+        "memory/2026-03-17.md"
+      ],
+      "health_metrics": {
+        "trigger_count_30d": null,
+        "ai_audit_triggered": null,
+        "audit_blocked": null,
+        "false_positive_30d": 3,
+        "success_rate": null,
+        "health_score": 72,
+        "last_triggered": null,
+        "assessment": "needs_optimization",
+        "issues": ["近7天误报3次，需优化验证逻辑"]
+      },
+      "incidents": [
+        {
+          "id": "INC-2026-0305-001",
+          "date": "2026-03-05",
+          "type": "部署事故",
+          "severity": "P1",
+          "description": "无测试无备份直接部署导致系统故障"
+        },
+        {
+          "id": "INC-2026-0317-002",
+          "date": "2026-03-17",
+          "type": "代码质量问题",
+          "severity": "P1",
+          "description": "自动修复引入语法错误破坏7个文件"
+        }
+      ],
+      "dependencies": ["RULE_003", "RULE_004"],
+      "dependents": [],
+      "changelog": [
+        {
+          "date": "2026-03-05",
+          "version": "1.0",
+          "change": "初版：代码部署全流程"
+        },
+        {
+          "date": "2026-03-17",
+          "version": "1.1",
+          "change": "增加AI深度审计环节"
+        },
+        {
+          "date": "2026-03-19",
+          "version": "1.2",
+          "change": "整合到AGENTS.md v2.0"
+        }
+      ]
+    },
+    {
+      "id": "RULE_008",
+      "name": "复杂问题并行处理",
+      "priority": "high",
+      "status": "active",
+      "created_at": "2026-03-19",
+      "last_updated": "2026-03-19",
+      "version": "1.0",
+      "triggers": {
+        "keywords": ["并行", "多模型", "子Agent", "复杂问题", "多角度"],
+        "regex_patterns": [
+          "sessions spawn",
+          "并行.*分析"
+        ],
+        "context_indicators": ["复杂", "多角度", "并行", "子任务"]
+      },
+      "linked_files": [
+        "AGENTS_DETAILS.md#规则8复杂问题并行处理"
+      ],
+      "health_metrics": {
+        "trigger_count_30d": null,
+        "error_prevented_30d": null,
+        "false_positive_30d": 0,
+        "success_rate": null,
+        "health_score": 88,
+        "last_triggered": null,
+        "assessment": "healthy"
+      },
+      "incidents": [
+        {
+          "id": "INC-2026-0319-001",
+          "date": "2026-03-19",
+          "type": "效率优化",
+          "severity": "P3",
+          "description": "复杂问题单模型串行处理效率低下"
+        }
+      ],
+      "dependencies": ["RULE_004"],
+      "dependents": [],
+      "changelog": [
+        {
+          "date": "2026-03-19",
+          "version": "1.0",
+          "change": "初版：复杂问题并行处理"
+        }
+      ]
+    }
+  ],
+  "health_summary": {
+    "total_rules": 8,
+    "active_rules": 8,
+    "deprecated_rules": 0,
+    "healthy_rules": 7,
+    "needs_optimization": 1,
+    "avg_health_score": 88.5,
+    "critical_rules": 4,
+    "high_priority_rules": 4
+  },
+  "incidents_summary": {
+    "total_incidents": 8,
+    "p0_incidents": 1,
+    "p1_incidents": 5,
+    "p2_incidents": 2,
+    "p3_incidents": 1
+  }
+}
