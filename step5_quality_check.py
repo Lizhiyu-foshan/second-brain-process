@@ -244,6 +244,68 @@ class EssenceQualityChecker:
         return '\n'.join(lines)
 
 
+def send_quality_notification(reports: List[QualityReport]) -> Dict:
+    """
+    发送质量检查报告到飞书
+    """
+    import subprocess
+    import json
+    
+    # 构建飞书消息
+    lines = ["📊 精华文档质量检查报告\n"]
+    
+    # 统计
+    total = len(reports)
+    passed = sum(1 for r in reports if r.passed)
+    failed = total - passed
+    
+    lines.append(f"检查文件: {total}个 | ✅通过: {passed} | ❌需修复: {failed}\n")
+    
+    # 通过的文档
+    passed_reports = [r for r in reports if r.passed]
+    if passed_reports:
+        lines.append("✅ 高质量文档:")
+        for r in passed_reports:
+            lines.append(f"  • {r.file} ({r.score}分)")
+        lines.append("")
+    
+    # 失败的文档
+    failed_reports = [r for r in reports if not r.passed]
+    if failed_reports:
+        lines.append("❌ 需优化文档:")
+        for r in failed_reports:
+            lines.append(f"  • {r.file} ({r.score}分)")
+            # 显示前2个问题
+            for issue in r.issues[:2]:
+                lines.append(f"    - {issue.check_item}")
+        lines.append("")
+        lines.append("💡 建议: 查看 .learnings/quality_report_*.md 获取详细报告")
+    
+    message = "\n".join(lines)
+    
+    # 尝试导入飞书发送模块
+    try:
+        sys.path.insert(0, '/root/.openclaw/workspace/skills/feishu-deduplication/scripts')
+        from feishu_guardian import send_feishu_safe
+        
+        result = send_feishu_safe(
+            content=message,
+            target="ou_363105a68ee112f714ed44e12c802051",
+            msg_type="quality_check"
+        )
+        
+        if result.get('success'):
+            print(f"\n✅ 飞书通知已发送")
+        else:
+            print(f"\n⚠️ 飞书通知发送失败: {result.get('message', '未知错误')}")
+        
+        return result
+        
+    except Exception as e:
+        print(f"\n⚠️ 飞书通知发送异常: {e}")
+        return {"success": False, "message": str(e)}
+
+
 def main():
     """命令行入口"""
     import argparse
@@ -253,7 +315,7 @@ def main():
     parser.add_argument('--date', help='检查指定日期 (YYYY-MM-DD)')
     parser.add_argument('--latest', type=int, default=5, help='检查最新的N个文件')
     parser.add_argument('--file', help='检查指定文件')
-    parser.add_argument('--notify', action='store_true', help='发送通知')
+    parser.add_argument('--notify', action='store_true', help='发送飞书通知')
     
     args = parser.parse_args()
     
@@ -276,6 +338,10 @@ def main():
     
     # 记录日志
     checker.log_quality_check(reports)
+    
+    # 发送飞书通知
+    if args.notify:
+        send_quality_notification(reports)
     
     # 如果有失败的，返回非0退出码
     failed = [r for r in reports if not r.passed]

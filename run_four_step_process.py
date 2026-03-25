@@ -15,7 +15,7 @@ from step1_identify_essence import identify_essence
 from step2_generate_essence import generate_essence_doc
 from step3_organize_remainder import organize_remainder
 from step4_push_to_github import push_to_github, send_completion_notification
-from step5_quality_check import EssenceQualityChecker
+from step5_quality_check import EssenceQualityChecker, send_quality_notification
 
 VAULT_DIR = Path("/root/.openclaw/workspace/obsidian-vault")
 DISCUSSIONS_DIR = VAULT_DIR / "01-Discussions"
@@ -118,6 +118,11 @@ def run_four_step_process(
     # 记录质量日志
     if quality_reports:
         checker.log_quality_check(quality_reports)
+    
+    # 自动发送飞书通知
+    if quality_reports:
+        print("[Step 5] 发送飞书质量通知...")
+        send_quality_notification(quality_reports)
     
     # 生成质量报告
     failed_reports = [r for r in quality_reports if not r.passed]
