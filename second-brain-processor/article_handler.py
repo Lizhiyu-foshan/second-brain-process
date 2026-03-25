@@ -28,14 +28,100 @@ def identify_source(url: str) -> str:
 
 def fetch_or_wait_content(url: str) -> str:
     """
-    获取文章内容
-    v2.1: 简化版本，提示用户手动复制内容
+    获取文章内容 - v2.2: 真实实现
+    尝试使用web_fetch获取内容，失败时返回模板
     """
+    import subprocess
+    import json
+    
+    try:
+        # 尝试使用OpenClaw的web_fetch工具
+        result = subprocess.run(
+            ["python3", "-c", f"""
+import sys
+sys.path.insert(0, '/usr/lib/node_modules/openclaw/extensions/kimi-cli')
+from kimi_fetch import kimi_fetch
+try:
+    content = kimi_fetch('{url}')
+    print(content[:5000] if content else '')
+except Exception as e:
+    print(f'FETCH_ERROR: {{e}}')
+"""],
+            capture_output=True,
+            text=True,
+            timeout=15
+        )
+        
+        if result.returncode == 0 and result.stdout.strip() and not result.stdout.startswith('FETCH_ERROR'):
+            content = result.stdout.strip()
+            if content and len(content) > 100:
+                return f"""# 文章内容
+
+URL: {url}
+
+{content}
+
+---
+*内容由AI自动获取*
+"""
+    except Exception:
+        pass
+    
+    # 降级方案：使用requests
+    try:
+        import requests
+        from bs4 import BeautifulSoup
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+        
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # 移除script和style标签
+        for tag in soup(['script', 'style', 'nav', 'header', 'footer']):
+            tag.decompose()
+        
+        # 尝试提取文章正文
+        article = None
+        for selector in ['article', 'main', '[class*="content"]', '[class*="article"]', '#content', '.post']:
+            article = soup.select_one(selector)
+            if article:
+                break
+        
+        if not article:
+            article = soup.find('body')
+        
+        if article:
+            text = article.get_text(separator='\n', strip=True)
+            # 清理空行
+            lines = [line.strip() for line in text.split('\n') if line.strip()]
+            content = '\n\n'.join(lines[:100])  # 限制长度
+            
+            if len(content) > 200:
+                return f"""# 文章内容
+
+URL: {url}
+
+{content}
+
+---
+*内容由AI自动获取（可能包含HTML解析痕迹）*
+"""
+    except Exception as e:
+        pass
+    
+    # 最终降级：返回模板让用户手动复制
     return f"""# 待获取文章
 
 URL: {url}
 
-> 请复制文章内容到这里
+⚠️ 自动获取失败，请手动复制文章内容到这里
+
+> 错误信息：无法自动获取内容（网络限制或页面结构复杂）
 """
 
 

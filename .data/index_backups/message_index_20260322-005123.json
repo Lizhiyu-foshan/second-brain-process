@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "last_processed": {
+    "timestamp_ms": 1774140682737,
+    "iso_time": "2026-03-22T00:51:22.737000+00:00",
+    "date_str": "2026-03-22"
+  },
+  "statistics": {
+    "total_messages_processed": 17831,
+    "total_files_scanned": 194,
+    "total_files_with_new_messages": 194,
+    "last_run_duration_ms": 0,
+    "last_run_date": "2026-03-22",
+    "rebuilt_at": "2026-03-22T00:51:23.569365+00:00"
+  },
+  "daily_history": [],
+  "_meta": {
+    "saved_at": "2026-03-22T00:51:23.569552+00:00",
+    "version": "1.0"
+  },
+  "checksum": "61d9dfbf03607eab"
+}

@@ -1,0 +1,44 @@
+{
+  "version": "1.0",
+  "last_processed": {
+    "timestamp_ms": 1774140734173,
+    "iso_time": "2026-03-22T00:52:14.173000+00:00",
+    "date_str": "2026-03-22"
+  },
+  "statistics": {
+    "total_messages_processed": 40321,
+    "total_files_scanned": 194,
+    "total_files_with_new_messages": 194,
+    "last_run_duration_ms": 481,
+    "last_run_date": "2026-03-22",
+    "rebuilt_at": "2026-03-22T00:51:52.007720+00:00"
+  },
+  "daily_history": [],
+  "_meta": {
+    "saved_at": "2026-03-22T00:52:14.691031+00:00",
+    "version": "1.0"
+  },
+  "checksum": "5a90958ce66b3e39",
+  "resets": [
+    {
+      "timestamp": "2026-03-22T00:51:52.008211+00:00",
+      "reason": "Missing conversation files, reset to 2026-03-15",
+      "target_date": "2026-03-15"
+    },
+    {
+      "timestamp": "2026-03-22T00:51:56.390472+00:00",
+      "reason": "Missing conversation files, reset to 2026-03-15",
+      "target_date": "2026-03-15"
+    },
+    {
+      "timestamp": "2026-03-22T00:52:14.209018+00:00",
+      "reason": "Missing conversation files, reset to 2026-03-15",
+      "target_date": "2026-03-15"
+    },
+    {
+      "timestamp": "2026-03-22T00:52:14.209933+00:00",
+      "reason": "Missing conversation files, reset to 2026-03-15",
+      "target_date": "2026-03-15"
+    }
+  ]
+}

@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-03-23T08:04:32.190311",
+  "timestamp": "2026-03-25T22:04:45.083824",
   "overall_status": "issues_found",
   "openclaw": {
-    "total": 12,
-    "healthy": 7,
-    "warning": 3,
-    "critical": 2,
+    "total": 14,
+    "healthy": 12,
+    "warning": 2,
+    "critical": 0,
     "tasks": [
       {
         "id": "│",
@@ -28,21 +28,11 @@
         "agent": "Agent"
       },
       {
-        "id": "35ff007b-d995-4650-a90f-f3c973a386ca",
-        "name": "每日复盘报告推送",
-        "schedule": "cron 30 8 * * * @ Asia/Shanghai",
-        "next": "in 25m",
-        "last": "24h ago",
-        "status": "ok",
-        "target": "main",
-        "agent": "main"
-      },
-      {
         "id": "e4e8ac84-2553-4d48-a32d-2c2a0a190e4a",
         "name": "动态上下文压缩守护",
         "schedule": "cron */30 0,8-23 * * * @ Asia...",
         "next": "in 25m",
-        "last": "8h ago",
+        "last": "35m ago",
         "status": "running",
         "target": "isolated",
         "agent": "main"
@@ -58,31 +48,21 @@
         "agent": "main"
       },
       {
-        "id": "24b9df89-f3c5-4adc-9a49-fdd9bd1124e4",
-        "name": "主题讨论激发器-自动检查",
-        "schedule": "cron 0 10 * * 1,2,4,5 @ Asia/...",
-        "next": "in 2h",
-        "last": "3d ago",
-        "status": "ok",
-        "target": "main",
-        "agent": "main"
-      },
-      {
-        "id": "b049120f-ba36-4abd-b769-af8964028120",
-        "name": "飞书发送链路监控",
-        "schedule": "cron 0 8,12,16,20 * * * @ Asi...",
-        "next": "in 4h",
-        "last": "12h ago",
-        "status": "running",
-        "target": "main",
-        "agent": "main"
-      },
-      {
         "id": "9838f4d1-f506-4d04-8e95-afbfef1996f5",
         "name": "evolution_scan",
         "schedule": "cron 0 23 * * *",
-        "next": "in 15h",
-        "last": "9h ago",
+        "next": "in 55m",
+        "last": "23h ago",
+        "status": "ok",
+        "target": "isolated",
+        "agent": "main"
+      },
+      {
+        "id": "df052fe4-6283-4d2f-96a3-55a3a2d017d1",
+        "name": "AGENTS.md自进化触发器",
+        "schedule": "cron 0 23 * * * @ Asia/Shanghai",
+        "next": "in 55m",
+        "last": "23h ago",
         "status": "ok",
         "target": "isolated",
         "agent": "main"
@@ -91,9 +71,9 @@
         "id": "50da2483-1c35-4959-8f25-68d763478999",
         "name": "配置自动备份",
         "schedule": "cron 0 2 * * *",
-        "next": "in 18h",
-        "last": "6h ago",
-        "status": "error",
+        "next": "in 4h",
+        "last": "20h ago",
+        "status": "ok",
         "target": "isolated",
         "agent": "main"
       },
@@ -101,9 +81,9 @@
         "id": "1e419240-630e-446d-a43b-7371ce392b77",
         "name": "清理旧会话文件",
         "schedule": "cron 0 4 * * * @ Asia/Shanghai",
-        "next": "in 20h",
-        "last": "4h ago",
-        "status": "error",
+        "next": "in 6h",
+        "last": "17h ago",
+        "status": "ok",
         "target": "isolated",
         "agent": "main"
       },
@@ -111,8 +91,8 @@
         "id": "7df3087c-1492-4b4c-874e-cf07ab874c25",
         "name": "对话整理（原始）",
         "schedule": "cron 0 5 * * * @ Asia/Shanghai",
-        "next": "in 21h",
-        "last": "3h ago",
+        "next": "in 7h",
+        "last": "17h ago",
         "status": "ok",
         "target": "isolated",
         "agent": "main"
@@ -121,9 +101,49 @@
         "id": "d8768f8f-5df3-43ed-bcff-a7f418d6eab8",
         "name": "OpenClaw版本每日检查",
         "schedule": "cron 0 8 * * * @ Asia/Shanghai",
-        "next": "in 24h",
-        "last": "1d ago",
-        "status": "running",
+        "next": "in 10h",
+        "last": "14h ago",
+        "status": "ok",
+        "target": "isolated",
+        "agent": "main"
+      },
+      {
+        "id": "b049120f-ba36-4abd-b769-af8964028120",
+        "name": "飞书发送链路监控",
+        "schedule": "cron 0 8,12,16,20 * * * @ Asi...",
+        "next": "in 10h",
+        "last": "2h ago",
+        "status": "ok",
+        "target": "main",
+        "agent": "main"
+      },
+      {
+        "id": "35ff007b-d995-4650-a90f-f3c973a386ca",
+        "name": "每日复盘报告推送",
+        "schedule": "cron 30 8 * * * @ Asia/Shanghai",
+        "next": "in 10h",
+        "last": "14h ago",
+        "status": "ok",
+        "target": "main",
+        "agent": "main"
+      },
+      {
+        "id": "24b9df89-f3c5-4adc-9a49-fdd9bd1124e4",
+        "name": "主题讨论激发器-自动检查",
+        "schedule": "cron 0 10 * * 1,2,4,5 @ Asia/...",
+        "next": "in 12h",
+        "last": "2d ago",
+        "status": "ok",
+        "target": "main",
+        "agent": "main"
+      },
+      {
+        "id": "db9b50e7-69ab-42d0-8f9d-331d248ae5c7",
+        "name": "AGENTS.md熵管理",
+        "schedule": "cron 0 9 1 * * @ Asia/Shanghai",
+        "next": "in 6d",
+        "last": "2d ago",
+        "status": "ok",
         "target": "isolated",
         "agent": "main"
       }
@@ -134,71 +154,6 @@
     "healthy": 0,
     "tasks": []
   },
-  "issues": [
-    {
-      "type": "long_idle",
-      "system": "openclaw",
-      "task_id": "24b9df89-f3c5-4adc-9a49-fdd9bd1124e4",
-      "task_name": "主题讨论激发器-自动检查",
-      "message": "72小时未执行",
-      "severity": "warning"
-    },
-    {
-      "type": "error_status",
-      "system": "openclaw",
-      "task_id": "50da2483-1c35-4959-8f25-68d763478999",
-      "task_name": "配置自动备份",
-      "message": "任务状态为 error",
-      "severity": "critical"
-    },
-    {
-      "type": "error_status",
-      "system": "openclaw",
-      "task_id": "1e419240-630e-446d-a43b-7371ce392b77",
-      "task_name": "清理旧会话文件",
-      "message": "任务状态为 error",
-      "severity": "critical"
-    }
-  ],
-  "recommendations": [
-    {
-      "priority": "medium",
-      "action": "检查长期未执行的任务: 主题讨论激发器-自动检查",
-      "command": "openclaw cron logs 24b9df89-f3c5-4adc-9a49-fdd9bd1124e4",
-      "issue": {
-        "type": "long_idle",
-        "system": "openclaw",
-        "task_id": "24b9df89-f3c5-4adc-9a49-fdd9bd1124e4",
-        "task_name": "主题讨论激发器-自动检查",
-        "message": "72小时未执行",
-        "severity": "warning"
-      }
-    },
-    {
-      "priority": "high",
-      "action": "重启失败任务: 配置自动备份",
-      "command": "openclaw cron restart 50da2483-1c35-4959-8f25-68d763478999",
-      "issue": {
-        "type": "error_status",
-        "system": "openclaw",
-        "task_id": "50da2483-1c35-4959-8f25-68d763478999",
-        "task_name": "配置自动备份",
-        "message": "任务状态为 error",
-        "severity": "critical"
-      }
-    },
-    {
-      "priority": "high",
-      "action": "重启失败任务: 清理旧会话文件",
-      "command": "openclaw cron restart 1e419240-630e-446d-a43b-7371ce392b77",
-      "issue": {
-        "type": "error_status",
-        "system": "openclaw",
-        "task_id": "1e419240-630e-446d-a43b-7371ce392b77",
-        "task_name": "清理旧会话文件",
-        "message": "任务状态为 error",
-        "severity": "critical"
-      }
-    }
-  ]
+  "issues": [],
+  "recommendations": []
 }

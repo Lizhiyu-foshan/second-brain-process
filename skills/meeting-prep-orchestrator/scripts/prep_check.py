@@ -188,10 +188,93 @@ def record_prep(topic: str, meeting_time: datetime, notes_count: int):
 
 
 def check_upcoming_meetings(config: Dict) -> List[Dict]:
-    """检查即将到来的会议（简化版 - 从配置文件读取）"""
-    # TODO: 未来可以从日历API或特定文件读取日程
-    # 目前支持手动配置或对话触发
-    return []
+    """检查即将到来的会议 - v2.2: 真实实现
+    
+    从以下源检查:
+    1. 配置文件中的预设会议
+    2. 历史记录中的重复会议
+    3. 文件系统中的会议标记文件
+    """
+    upcoming = []
+    now = datetime.now()
+    
+    try:
+        # 1. 检查配置文件中的预设会议
+        meetings = config.get('meetings', [])
+        for meeting in meetings:
+            meeting_time = datetime.fromisoformat(meeting.get('time', '1970-01-01'))
+            time_until = meeting_time - now
+            
+            # 检查24小时内即将开始的会议
+            if timedelta(0) < time_until <= timedelta(hours=24):
+                upcoming.append({
+                    'topic': meeting.get('topic', '未命名会议'),
+                    'time': meeting_time,
+                    'time_until_minutes': int(time_until.total_seconds() / 60),
+                    'source': 'config'
+                })
+        
+        # 2. 检查历史记录中的重复会议
+        history_file = Path(__file__).parent / '.prep_history.json'
+        if history_file.exists():
+            history = json.loads(history_file.read_text(encoding='utf-8'))
+            
+            # 分析历史模式，检测周期性会议
+            from collections import defaultdict
+            topic_times = defaultdict(list)
+            
+            for record in history.get('history', []):
+                topic = record.get('topic', '')
+                if topic:
+                    topic_times[topic].append(datetime.fromisoformat(record.get('time', '1970-01-01')))
+            
+            # 检测周期（简单启发式：同一主题多次出现在相似时间）
+            for topic, times in topic_times.items():
+                if len(times) >= 2:
+                    times.sort()
+                    intervals = [(times[i+1] - times[i]).days for i in range(len(times)-1)]
+                    avg_interval = sum(intervals) / len(intervals)
+                    
+                    # 如果上次会议后接近平均周期，预测下次会议
+                    last_time = times[-1]
+                    next_predicted = last_time + timedelta(days=avg_interval)
+                    time_until = next_predicted - now
+                    
+                    if timedelta(hours=-12) < time_until <= timedelta(hours=24):
+                        upcoming.append({
+                            'topic': topic,
+                            'time': next_predicted,
+                            'time_until_minutes': int(time_until.total_seconds() / 60),
+                            'source': 'pattern_prediction',
+                            'confidence': min(len(times) * 0.2, 0.8)  # 历史越多，置信度越高
+                        })
+        
+        # 3. 检查文件系统中的会议标记
+        marker_dir = Path(__file__).parent / '.meeting_markers'
+        if marker_dir.exists():
+            for marker_file in marker_dir.glob('*.json'):
+                try:
+                    marker = json.loads(marker_file.read_text(encoding='utf-8'))
+                    meeting_time = datetime.fromisoformat(marker.get('scheduled_time', '1970-01-01'))
+                    time_until = meeting_time - now
+                    
+                    if timedelta(0) < time_until <= timedelta(hours=24):
+                        upcoming.append({
+                            'topic': marker.get('topic', '未命名会议'),
+                            'time': meeting_time,
+                            'time_until_minutes': int(time_until.total_seconds() / 60),
+                            'source': 'marker_file'
+                        })
+                except Exception:
+                    continue
+        
+        # 按时间排序
+        upcoming.sort(key=lambda x: x['time'])
+        
+    except Exception as e:
+        log(f"[WARN] 检查会议时出错: {e}")
+    
+    return upcoming
 
 
 def main():
@@ -235,10 +318,27 @@ def main():
         record_prep(args.topic, meeting_time, len(related_notes))
     
     elif args.check:
-        # 检查即将到来的会议（简化版）
+        # 检查即将到来的会议 - v2.2: 真实实现
         log("检查即将到来的会议...")
-        # TODO: 实现自动检查逻辑
-        log("当前版本仅支持手动触发")
+        config = load_config()
+        upcoming = check_upcoming_meetings(config)
+        
+        if upcoming:
+            log(f"发现 {len(upcoming)} 个即将开始的会议:")
+            for meeting in upcoming:
+                source_tag = f"[{meeting.get('source', 'unknown')}]"
+                minutes = meeting.get('time_until_minutes', 0)
+                time_str = f"{minutes//60}小时{minutes%60}分钟" if minutes > 60 else f"{minutes}分钟"
+                log(f"  • {meeting['topic']} - 还有{time_str} {source_tag}")
+                
+                # 自动触发准备流程
+                if minutes <= 60:  # 1小时内自动触发
+                    log(f"    自动触发准备流程...")
+                    related_notes = search_related_notes(meeting['topic'], config.get('max_related_notes', 5))
+                    summary = generate_prep_summary(meeting['topic'], meeting['time'], related_notes)
+                    send_feishu_notification(summary)
+        else:
+            log("未来24小时内没有即将开始的会议")
     
     else:
         parser.print_help()
