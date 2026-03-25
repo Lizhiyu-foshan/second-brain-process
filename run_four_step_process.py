@@ -15,6 +15,7 @@ from step1_identify_essence import identify_essence
 from step2_generate_essence import generate_essence_doc
 from step3_organize_remainder import organize_remainder
 from step4_push_to_github import push_to_github, send_completion_notification
+from step5_quality_check import EssenceQualityChecker
 
 VAULT_DIR = Path("/root/.openclaw/workspace/obsidian-vault")
 DISCUSSIONS_DIR = VAULT_DIR / "01-Discussions"
@@ -96,15 +97,55 @@ def run_four_step_process(
         files_to_push.append((remainder_file, remainder_file.read_text()))
     
     # Step 4: 推送GitHub
-    print("\n[Step 4/4] 推送GitHub...")
+    print("\n[Step 4/5] 推送GitHub...")
     success = push_to_github(files_to_push, str(input_file))
     
-    if success:
-        msg = send_completion_notification(files_to_push)
-        print(f"\n[{datetime.now()}] === 四步法完成 ===")
-        return msg
-    else:
+    if not success:
         return "❌ 推送失败"
+    
+    # Step 5: 质量检查闭环
+    print("\n[Step 5/5] 质量检查闭环...")
+    checker = EssenceQualityChecker(VAULT_DIR)
+    quality_reports = []
+    
+    for file_path, _ in files_to_push:
+        if "01-Discussions" in str(file_path):
+            report = checker.check_file(file_path)
+            quality_reports.append(report)
+            status = "✅" if report.passed else "❌"
+            print(f"  {status} {file_path.name}: {report.score}分")
+    
+    # 记录质量日志
+    if quality_reports:
+        checker.log_quality_check(quality_reports)
+    
+    # 生成质量报告
+    failed_reports = [r for r in quality_reports if not r.passed]
+    
+    if failed_reports:
+        print(f"\n⚠️ 发现 {len(failed_reports)} 个文件质量不通过，需要修复:")
+        for r in failed_reports:
+            print(f"  - {r.file} ({r.score}分)")
+            for issue in r.issues[:2]:  # 只显示前2个问题
+                print(f"    • {issue.check_item}: {issue.description}")
+        
+        # 生成详细报告供参考
+        quality_report_text = checker.generate_quality_report(quality_reports)
+        report_file = VAULT_DIR / ".learnings" / f"quality_report_{date_str}.md"
+        report_file.parent.mkdir(parents=True, exist_ok=True)
+        report_file.write_text(quality_report_text, encoding='utf-8')
+        print(f"\n详细质量报告: {report_file}")
+    else:
+        print(f"\n✅ 所有精华文档质量检查通过")
+    
+    msg = send_completion_notification(files_to_push)
+    print(f"\n[{datetime.now()}] === 四步法完成 (含质量检查) ===")
+    
+    # 如果有质量问题，在消息中提示
+    if failed_reports:
+        msg += f"\n\n⚠️ 注意: {len(failed_reports)} 个精华文档质量需要优化，详见 .learnings/quality_report_{date_str}.md"
+    
+    return msg
 
 
 if __name__ == "__main__":
