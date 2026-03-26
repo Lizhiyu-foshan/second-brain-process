@@ -40,7 +40,24 @@
 
 ---
 
-## 备份策略
+## 模型配置参考
+
+### 成功率排名（2026-03-08）
+| 排名 | 模型 | 成功率 |
+|------|------|--------|
+| 1 | google/gemini-3-flash-preview | 高 |
+| 2 | minimax/minimax-m2.1 | 高 |
+| 3 | moonshotai/kimi-k2.5 | 高 |
+| 4 | anthropic/claude-sonnet-4.5 | 高 |
+| 5 | google/gemini-3-pro-preview | 高 |
+
+**注意**: MiniMax M2.5 成功率仅35.5%，避免使用
+
+### 版本升级注意事项
+
+**OpenClaw 2026.2.13 已知问题**:
+- `agentTurn` + `isolated` session 模式下，子 Agent 工具调用会出现 `35 validation errors`
+- **解决方案**: 定时任务改用 `systemEvent` + `sessionTarget: main`
 
 - **自动备份**: Git提交前自动创建 `.backup.YYYYMMDD-HHMMSS`
 - **保留时间**: 至少1周
