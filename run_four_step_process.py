@@ -15,7 +15,7 @@ from step1_identify_essence import identify_essence
 from step2_generate_essence import generate_essence_doc
 from step3_organize_remainder import organize_remainder
 from step4_push_to_github import push_to_github, send_completion_notification
-from step5_quality_check import EssenceQualityChecker, send_quality_notification
+from step5_integrity_check import run_integrity_and_quality_check
 
 VAULT_DIR = Path("/root/.openclaw/workspace/obsidian-vault")
 DISCUSSIONS_DIR = VAULT_DIR / "01-Discussions"
@@ -103,52 +103,71 @@ def run_four_step_process(
     if not success:
         return "❌ 推送失败"
     
-    # Step 5: 质量检查闭环
-    print("\n[Step 5/5] 质量检查闭环...")
-    checker = EssenceQualityChecker(VAULT_DIR)
-    quality_reports = []
+    # Step 5: 质量检查 + 推送完整性验证（增强版）
+    print("\n[Step 5/5] 质量检查 + 推送完整性验证...")
+    quality_reports, integrity_reports = run_integrity_and_quality_check(
+        files_to_push, 
+        VAULT_DIR
+    )
     
-    for file_path, _ in files_to_push:
-        if "01-Discussions" in str(file_path):
-            report = checker.check_file(file_path)
-            quality_reports.append(report)
-            status = "✅" if report.passed else "❌"
-            print(f"  {status} {file_path.name}: {report.score}分")
+    # 汇总结果
+    failed_quality = [r for r in quality_reports if not r.passed]
+    failed_integrity = [r for r in integrity_reports if not r.all_passed]
     
-    # 记录质量日志
-    if quality_reports:
-        checker.log_quality_check(quality_reports)
-    
-    # 自动发送飞书通知
-    if quality_reports:
-        print("[Step 5] 发送飞书质量通知...")
-        send_quality_notification(quality_reports)
-    
-    # 生成质量报告
-    failed_reports = [r for r in quality_reports if not r.passed]
-    
-    if failed_reports:
-        print(f"\n⚠️ 发现 {len(failed_reports)} 个文件质量不通过，需要修复:")
-        for r in failed_reports:
+    if failed_quality:
+        print(f"\n⚠️ 发现 {len(failed_quality)} 个文件质量不通过")
+        for r in failed_quality[:3]:  # 只显示前3个
             print(f"  - {r.file} ({r.score}分)")
-            for issue in r.issues[:2]:  # 只显示前2个问题
-                print(f"    • {issue.check_item}: {issue.description}")
-        
-        # 生成详细报告供参考
-        quality_report_text = checker.generate_quality_report(quality_reports)
-        report_file = VAULT_DIR / ".learnings" / f"quality_report_{date_str}.md"
-        report_file.parent.mkdir(parents=True, exist_ok=True)
-        report_file.write_text(quality_report_text, encoding='utf-8')
-        print(f"\n详细质量报告: {report_file}")
-    else:
-        print(f"\n✅ 所有精华文档质量检查通过")
     
-    msg = send_completion_notification(files_to_push)
-    print(f"\n[{datetime.now()}] === 四步法完成 (含质量检查) ===")
+    if failed_integrity:
+        print(f"\n⚠️ 发现 {len(failed_integrity)} 个文件完整性检查存在问题")
+        for r in failed_integrity[:3]:
+            issues = [c.name for c in r.checks if not c.passed]
+            print(f"  - {r.file}: {', '.join(issues)}")
     
-    # 如果有质量问题，在消息中提示
-    if failed_reports:
-        msg += f"\n\n⚠️ 注意: {len(failed_reports)} 个精华文档质量需要优化，详见 .learnings/quality_report_{date_str}.md"
+    if not failed_quality and not failed_integrity:
+        print(f"\n✅ 所有文件质量检查和完整性验证通过")
+
+    # 生成完成通知消息
+    msg_lines = ["✅ 四步法深度整理完成\n"]
+    
+    # 文件列表
+    msg_lines.append("📁 生成文件:")
+    for file_path, _ in files_to_push:
+        msg_lines.append(f"  • {file_path.name}")
+    
+    msg_lines.append("")
+    
+    # 质量检查摘要
+    if quality_reports:
+        passed_q = sum(1 for r in quality_reports if r.passed)
+        msg_lines.append(f"📊 质量检查: {passed_q}/{len(quality_reports)} 通过")
+    
+    # 完整性检查摘要
+    if integrity_reports:
+        passed_i = sum(1 for r in integrity_reports if r.all_passed)
+        msg_lines.append(f"🔍 完整性验证: {passed_i}/{len(integrity_reports)} 通过")
+    
+    # 如果有问题，添加提示
+    if failed_quality or failed_integrity:
+        msg_lines.append("")
+        msg_lines.append("⚠️ 注意:")
+        if failed_quality:
+            msg_lines.append(f"  - {len(failed_quality)} 个文件质量需要优化")
+        if failed_integrity:
+            critical = sum(
+                1 for r in failed_integrity 
+                if any(c.severity == "critical" for c in r.checks)
+            )
+            if critical > 0:
+                msg_lines.append(f"  - {critical} 个文件存在严重完整性问题（需立即处理）")
+            else:
+                msg_lines.append(f"  - {len(failed_integrity)} 个文件存在轻微完整性问题")
+        msg_lines.append("  查看 .learnings/*_report_*.md 获取详细信息")
+    
+    msg = "\n".join(msg_lines)
+    
+    print(f"\n[{datetime.now()}] === 四步法完成 (含质量检查+完整性验证) ===")
     
     return msg
 
