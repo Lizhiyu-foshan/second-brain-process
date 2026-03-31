@@ -27,6 +27,7 @@ Incremental Message Processor - 增量消息处理器
 import json
 import hashlib
 import sys
+import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import List, Dict, Tuple
@@ -48,6 +49,32 @@ logger = logging.getLogger(__name__)
 VAULT_DIR = Path("/root/.openclaw/workspace/obsidian-vault")
 CONVERSATIONS_DIR = VAULT_DIR / "02-Conversations"
 SESSIONS_DIR = Path("/root/.openclaw/agents/main/sessions/")
+
+# 需要过滤的消息模式
+SKIP_PATTERNS = [
+    r"^\s*$",  # 纯空白
+    r"^HEARTBEAT_OK\s*$",  # 心跳确认
+    r"^Read HEARTBEAT\.md",  # 心跳指令
+    r"^\[object Object\]",  # 对象序列化错误
+    r"^\[\s*\]$",  # 空数组
+    r"^\{\s*\}$",  # 空对象
+    r"^<.*>.*</.*>$",  # XML/HTML 标签
+]
+
+SKIP_ROLES = ["system", "tool"]
+SKIP_TYPES = ["tool_call", "tool_result", "function_call"]
+
+
+def should_skip_content(content: str) -> bool:
+    """判断内容是否应该跳过"""
+    if not content or not content.strip():
+        return True
+    
+    for pattern in SKIP_PATTERNS:
+        if re.match(pattern, content, re.IGNORECASE):
+            return True
+    
+    return False
 
 
 class Message:
@@ -83,7 +110,8 @@ class IncrementalScanner:
             "files_with_new": 0,
             "files_skipped": 0,
             "messages_found": 0,
-            "messages_after_dedup": 0
+            "messages_after_dedup": 0,
+            "messages_filtered": 0
         }
     
     def scan(self) -> List[Message]:
@@ -95,6 +123,7 @@ class IncrementalScanner:
         logger.info(f"Found {len(all_files)} session files")
         
         messages = []
+        total_skipped = 0
         
         for jsonl_file in all_files:
             if "deleted" in jsonl_file.name:
@@ -165,8 +194,9 @@ class IncrementalScanner:
             return True
     
     def _read_new_messages(self, file_path: Path, last_ts: int) -> List[Message]:
-        """读取文件中的新增消息"""
+        """读取文件中的新增消息，带过滤"""
         messages = []
+        skipped = 0
         
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -179,31 +209,49 @@ class IncrementalScanner:
                         msg = json.loads(line)
                         
                         if msg.get("type") != "message":
+                            skipped += 1
                             continue
                         
                         ts_str = msg.get("timestamp", "")
                         if not ts_str:
+                            skipped += 1
                             continue
                         
                         try:
                             dt = datetime.fromisoformat(ts_str.replace('Z', '+00:00'))
                             msg_ts = int(dt.timestamp() * 1000)
                         except:
+                            skipped += 1
                             continue
                         
                         if msg_ts <= last_ts:
                             continue
                         
                         message_data = msg.get("message", {})
-                        role = message_data.get("role", "unknown")
+                        role = message_data.get("role", "")
                         
+                        # 跳过系统角色
+                        if role in SKIP_ROLES:
+                            skipped += 1
+                            continue
+                        
+                        # 提取内容
                         content_parts = message_data.get("content", [])
+                        content = ""
+                        
                         if isinstance(content_parts, list) and len(content_parts) > 0:
-                            content = content_parts[0].get("text", "")
+                            if isinstance(content_parts[0], dict):
+                                content = content_parts[0].get("text", "")
+                            else:
+                                content = str(content_parts[0])
+                        elif isinstance(content_parts, str):
+                            content = content_parts
                         else:
                             content = str(content_parts)
                         
-                        if role == "system" or "HEARTBEAT_OK" in content or "Read HEARTBEAT.md" in content:
+                        # 过滤无效内容
+                        if should_skip_content(content):
+                            skipped += 1
                             continue
                         
                         messages.append(Message(
@@ -214,12 +262,17 @@ class IncrementalScanner:
                         ))
                         
                     except json.JSONDecodeError:
+                        skipped += 1
                         continue
                     except Exception:
+                        skipped += 1
                         continue
                         
         except Exception as e:
             logger.warning(f"Error reading {file_path}: {e}")
+        
+        if skipped > 0:
+            logger.debug(f"Skipped {skipped} messages from {file_path.name}")
         
         return messages
     
