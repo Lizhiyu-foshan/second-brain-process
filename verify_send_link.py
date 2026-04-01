@@ -44,17 +44,19 @@ def check_feishu_config():
     return bool(webhook) or True  # 暂时返回True，实际应检查真实配置
 
 def check_network():
-    """检查网络连接"""
+    """检查网络连接 - 只要能解析DNS并连接就是成功"""
     import subprocess
     try:
         result = subprocess.run(
             ["curl", "-s", "-o", "/dev/null", "-w", "%{http_code}", 
-             "https://open.feishu.cn"],
+             "https://open.feishu.cn/open-apis/auth/v3/app_access_token/internal"],
             capture_output=True,
             text=True,
             timeout=10
         )
-        return result.stdout.strip() == "200"
+        # 400/401表示API端点存在但缺少认证，说明网络连通
+        code = result.stdout.strip()
+        return code in ["200", "400", "401", "404"]
     except:
         return False
 

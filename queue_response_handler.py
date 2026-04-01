@@ -118,13 +118,20 @@ def handle_article_discussion(user_input: str, pending: Dict) -> str:
         return f"📄 开始讨论文章: {article_file}\n\n请发送您的想法，讨论结束后回复'整理'"
     
     elif user_input.startswith("稍后"):
-        # 解析小时数
+        # v2.2: 实际设置定时任务
         match = re.search(r'(\d+)', user_input)
         hours = int(match.group(1)) if match else 2
         
-        # 这里应该设置定时任务，简化版本
+        article_file = pending.get("article_file", "")
+        url = pending.get("url", "")
+        
+        # 导入scheduled_discussion_handler的schedule_discussion函数
+        from scheduled_discussion_handler import schedule_discussion
+        
+        result = schedule_discussion(article_file, hours)
         complete_pending(pending.get("id", ""))
-        return f"⏰ 已推迟 {hours} 小时，将在之后提醒您讨论"
+        
+        return result
     
     elif user_input == "AI自动整理":
         # 直接调用四步法

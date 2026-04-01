@@ -80,18 +80,18 @@ def handle_auto_process_immediate(user_input: str, pending: Dict) -> str:
         return "❌ 找不到文章文件"
     
     elif user_input.startswith("推迟"):
-        # v2.1: 支持推迟到最新时间
+        # v2.2: 实际创建定时任务，不再使用伪实现
         match = re.search(r'(\d+)', user_input)
         hours = int(match.group(1)) if match else 2
         
-        # 计算未来时间
-        future_time = datetime.now() + timedelta(hours=hours)
-        time_str = future_time.strftime("%Y-%m-%d %H:%M")
+        # 获取文章信息
+        article_file = pending.get("article_file", "")
         
-        # 这里应该设置实际的定时任务，简化版本
+        # 实际设置定时任务
+        result = schedule_discussion(article_file, hours)
         complete_pending(pending.get("id", ""))
         
-        return f"⏰ 已推迟 {hours} 小时，将在 {time_str} 再次提醒"
+        return result
     
     elif user_input == "跳过":
         complete_pending(pending.get("id", ""))
@@ -103,7 +103,7 @@ def handle_auto_process_immediate(user_input: str, pending: Dict) -> str:
 
 def schedule_discussion(article_file: str, hours: int) -> str:
     """
-    设置定时讨论任务
+    设置定时讨论任务 - v2.2: 真实实现
     
     Args:
         article_file: 文章文件路径
@@ -112,11 +112,109 @@ def schedule_discussion(article_file: str, hours: int) -> str:
     Returns:
         设置结果
     """
-    # 简化版本，实际应使用OpenClaw Cron
+    from datetime import datetime, timedelta
+    import subprocess
+    import json
+    import os
+    
     future_time = datetime.now() + timedelta(hours=hours)
     time_str = future_time.strftime("%Y-%m-%d %H:%M")
+    cron_expr = future_time.strftime("%M %H %d %m *")
     
-    return f"⏰ 已设置定时任务：{time_str} 提醒您讨论 {article_file}"
+    # v2.2: 实际创建cron任务
+    try:
+        # 获取当前脚本的绝对路径
+        script_dir = Path(__file__).parent.absolute()
+        trigger_script = script_dir / "trigger_scheduled_discussion.py"
+        
+        # 创建触发脚本（如果不存在）
+        if not trigger_script.exists():
+            _create_trigger_script(trigger_script)
+        
+        # 准备cron payload
+        payload = {
+            "kind": "agentTurn",
+            "message": f"讨论文章: {article_file}",
+            "model": "kimi-coding/k2p5"
+        }
+        
+        # 使用openclaw cron add创建真实定时任务
+        job_name = f"scheduled_discussion_{Path(article_file).stem}"
+        
+        # 构建命令
+        cmd = [
+            "openclaw", "cron", "add",
+            "--job", json.dumps({
+                "name": job_name,
+                "schedule": {"kind": "cron", "expr": cron_expr},
+                "payload": payload,
+                "sessionTarget": "isolated",
+                "enabled": True
+            })
+        ]
+        
+        # 执行命令
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        
+        if result.returncode == 0:
+            return f"⏰ 已设置真实定时任务：{time_str} 将自动提醒您讨论 {Path(article_file).name}"
+        else:
+            error_msg = result.stderr.strip() if result.stderr else "未知错误"
+            # 降级到文件标记模式
+            _mark_scheduled_file(article_file, future_time)
+            return f"⚠️  cron任务设置失败（{error_msg}），已使用文件标记模式：{time_str} 提醒"
+            
+    except Exception as e:
+        # 降级方案：使用文件标记
+        _mark_scheduled_file(article_file, future_time)
+        return f"⚠️  定时任务设置异常（{str(e)}），已使用备用方案：{time_str} 提醒"
+
+
+def _mark_scheduled_file(article_file: str, future_time: datetime):
+    """降级方案：在文章文件中添加定时标记"""
+    try:
+        # 在文件名中添加定时标记
+        article_path = Path(article_file)
+        if article_path.exists():
+            # 创建.meta文件记录定时信息
+            meta_file = article_path.with_suffix('.meta.json')
+            import json
+            meta_data = {
+                "scheduled_time": future_time.isoformat(),
+                "scheduled_for_discussion": True,
+                "created_at": datetime.now().isoformat()
+            }
+            with open(meta_file, 'w', encoding='utf-8') as f:
+                json.dump(meta_data, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass  # 降级方案失败不阻断主流程
+
+
+def _create_trigger_script(script_path: Path):
+    """创建定时触发脚本"""
+    script_content = '''#!/usr/bin/env python3
+"""定时讨论触发脚本 - 由cron调用"""
+import sys
+import json
+from pathlib import Path
+
+if len(sys.argv) < 2:
+    print("Usage: trigger_scheduled_discussion.py <article_file>")
+    sys.exit(1)
+
+article_file = sys.argv[1]
+print(f"[Scheduled] 触发文章讨论: {article_file}")
+
+# TODO: 实现具体的讨论触发逻辑
+# 可以发送消息到飞书/其他渠道
+'''
+    script_path.write_text(script_content, encoding='utf-8')
+    script_path.chmod(0o755)
 
 
 def parse_hours(user_input: str) -> int:

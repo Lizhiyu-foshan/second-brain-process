@@ -103,8 +103,8 @@ class Message:
 class IncrementalScanner:
     """增量扫描器 - 高效扫描会话文件，只提取新增消息"""
     
-    def __init__(self, index_manager: IndexManager):
-        self.index_manager = index_manager
+    def __init__(self, last_ts: int):
+        self.last_ts = last_ts
         self.stats = {
             "files_scanned": 0,
             "files_with_new": 0,
@@ -116,8 +116,7 @@ class IncrementalScanner:
     
     def scan(self) -> List[Message]:
         """增量扫描所有会话文件"""
-        last_ts = self.index_manager.get_last_timestamp()
-        logger.info(f"Scanning for messages after timestamp: {last_ts}")
+        logger.info(f"Scanning for messages after timestamp: {self.last_ts}")
         
         all_files = list(SESSIONS_DIR.glob("*.jsonl"))
         logger.info(f"Found {len(all_files)} session files")
@@ -131,11 +130,11 @@ class IncrementalScanner:
             
             self.stats["files_scanned"] += 1
             
-            if not self._quick_check(jsonl_file, last_ts):
+            if not self._quick_check(jsonl_file, self.last_ts):
                 self.stats["files_skipped"] += 1
                 continue
             
-            new_messages = self._read_new_messages(jsonl_file, last_ts)
+            new_messages = self._read_new_messages(jsonl_file, self.last_ts)
             
             if new_messages:
                 self.stats["files_with_new"] += 1
@@ -401,36 +400,57 @@ def check_missing_conversations(days: int = 7) -> Tuple[bool, str, int]:
     return True, earliest_missing, timestamp_ms
 
 
-def reset_index_to_date(index_manager: IndexManager, timestamp_ms: int, date_str: str) -> bool:
-    """重置索引到指定日期之前"""
+def reset_index_to_date(index_manager: IndexManager, timestamp_ms: int, date_str: str) -> Tuple[bool, Dict]:
+    """
+    重置索引到指定日期之前
+    
+    Returns:
+        (是否成功, 重置后的索引数据)
+    """
     try:
         logger.info(f"Resetting index to before {date_str} (timestamp: {timestamp_ms})")
         
-        index = index_manager.load()
-        
-        index['last_processed'] = {
-            "timestamp_ms": timestamp_ms,
-            "iso_time": datetime.fromtimestamp(timestamp_ms / 1000, tz=timezone.utc).isoformat(),
-            "date_str": date_str
+        # 构建新的索引数据结构
+        new_index = {
+            'version': '1.0',
+            'last_processed': {
+                'timestamp_ms': timestamp_ms,
+                'iso_time': datetime.fromtimestamp(timestamp_ms / 1000, tz=timezone.utc).isoformat(),
+                'date_str': date_str
+            },
+            'statistics': {
+                'total_messages_processed': 0,
+                'total_files_scanned': 0,
+                'total_files_with_new_messages': 0,
+                'last_run_duration_ms': 0,
+                'last_run_date': datetime.now(timezone.utc).strftime('%Y-%m-%d')
+            },
+            'daily_history': [],
+            '_meta': {
+                'saved_at': datetime.now(timezone.utc).isoformat(),
+                'version': '1.0'
+            },
+            'resets': [{
+                'timestamp': datetime.now(timezone.utc).isoformat(),
+                'reason': f'Missing conversation files, reset to {date_str}',
+                'target_date': date_str,
+                'target_timestamp': timestamp_ms
+            }]
         }
         
-        if 'resets' not in index:
-            index['resets'] = []
-        
-        index['resets'].append({
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "reason": f"Missing conversation files, reset to {date_str}",
-            "target_date": date_str
-        })
-        
-        index_manager.save(index)
-        
-        logger.info(f"Index reset successful: now at {date_str}")
-        return True
+        # 使用 IndexManager 的 save 方法保存（会自动计算正确的校验和）
+        if index_manager.save(new_index):
+            logger.info(f"Index reset successful: now at {date_str}")
+            return True, new_index
+        else:
+            logger.error("Failed to save reset index")
+            return False, {}
         
     except Exception as e:
         logger.error(f"Failed to reset index: {e}")
-        return False
+        import traceback
+        traceback.print_exc()
+        return False, {}
 
 
 def process_incremental():
@@ -444,29 +464,45 @@ def process_incremental():
     
     try:
         index_manager = IndexManager()
-        index = index_manager.load()
-        last_ts = index_manager.get_last_timestamp()
         
-        # 检查缺失的对话文件
+        # 【改进】先检查是否需要补全历史，如果需要则重置索引
         has_missing, missing_date, missing_ts = check_missing_conversations(days=7)
+        
         if has_missing:
             logger.warning(f"Detected missing conversation file for {missing_date}")
-            if reset_index_to_date(index_manager, missing_ts, missing_date):
-                logger.info(f"Index reset to {missing_date}, will reprocess")
+            reset_success, reset_index = reset_index_to_date(index_manager, missing_ts, missing_date)
+            
+            if reset_success:
+                logger.info(f"Index reset to {missing_date}, will reprocess from this date")
+                # 使用重置后的索引，不再调用 load() 避免触发重建
+                index = reset_index
+                last_ts = missing_ts
+            else:
+                logger.error("Failed to reset index, falling back to load()")
                 index = index_manager.load()
                 last_ts = index_manager.get_last_timestamp()
-            else:
-                logger.error("Failed to reset index, continuing with current timestamp")
+        else:
+            # 正常加载索引
+            index = index_manager.load()
+            last_ts = index_manager.get_last_timestamp()
         
-        scanner = IncrementalScanner(index_manager)
+        logger.info(f"Scanning for messages after timestamp: {last_ts} ({datetime.fromtimestamp(last_ts/1000, tz=timezone.utc).strftime('%Y-%m-%d %H:%M')} UTC)")
+        
+        scanner = IncrementalScanner(last_ts)
         messages = scanner.scan()
         
         if not messages:
             logger.info("No new messages found")
-            index_manager.update_last_timestamp(
-                int(datetime.now(timezone.utc).timestamp() * 1000),
-                0
-            )
+            # 【改进】手动更新索引，避免调用 update_last_timestamp 触发重建
+            index['last_processed'] = {
+                "timestamp_ms": int(datetime.now(timezone.utc).timestamp() * 1000),
+                "iso_time": datetime.now(timezone.utc).isoformat(),
+                "date_str": datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            }
+            if 'statistics' not in index:
+                index['statistics'] = {}
+            index['statistics']['last_run_date'] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            index_manager.save(index)
             return True
         
         max_ts = max(m.timestamp for m in messages)
@@ -479,16 +515,43 @@ def process_incremental():
             logger.error("Failed to write conversation")
             return False
         
-        index_manager.update_last_timestamp(max_ts, len(messages))
+        # 【改进】手动更新索引，避免调用 update_last_timestamp 触发重建
+        duration_ms = int((time.time() - start_time) * 1000)
+        
+        # 直接使用当前索引对象更新，不再加载
+        index['last_processed'] = {
+            "timestamp_ms": max_ts,
+            "iso_time": datetime.fromtimestamp(max_ts / 1000, tz=timezone.utc).isoformat(),
+            "date_str": datetime.fromtimestamp(max_ts / 1000, tz=timezone.utc).strftime("%Y-%m-%d")
+        }
+        
+        if 'statistics' not in index:
+            index['statistics'] = {}
+        
+        index['statistics']['total_messages_processed'] = \
+            index['statistics'].get('total_messages_processed', 0) + len(messages)
+        index['statistics']['last_run_date'] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        index['statistics']['last_run_duration_ms'] = duration_ms
+        
+        # 添加历史记录
+        if 'daily_history' not in index:
+            index['daily_history'] = []
+        
+        index['daily_history'].append({
+            'date': date_str,
+            'message_count': len(messages),
+            'timestamp': datetime.now(timezone.utc).isoformat()
+        })
+        
+        # 限制历史记录长度（保留最近30天）
+        if len(index['daily_history']) > 30:
+            index['daily_history'] = index['daily_history'][-30:]
+        
+        # 保存索引
+        index_manager.save(index)
         index_manager.backup()
         
-        duration_ms = int((time.time() - start_time) * 1000)
         logger.info(f"Processing completed in {duration_ms}ms")
-        
-        index = index_manager.load()
-        if 'statistics' in index:
-            index['statistics']['last_run_duration_ms'] = duration_ms
-            index_manager.save(index)
         
         logger.info("=" * 50)
         logger.info(f"Success: {len(messages)} messages saved to {output_file}")
