@@ -126,8 +126,20 @@ class IndexManager:
             
             # 原子写入（先写临时文件，再重命名）
             temp_path = self.index_path.with_suffix('.tmp')
+            
+            # 先序列化为字符串（不含校验和）
+            index_copy = {k: v for k, v in index.items() if k != 'checksum'}
+            json_str = json.dumps(index_copy, sort_keys=True, indent=2, ensure_ascii=False)
+            
+            # 计算校验和
+            index['checksum'] = hashlib.sha256(json_str.encode('utf-8')).hexdigest()[:16]
+            
+            # 重新序列化完整数据（带校验和）
+            final_json_str = json.dumps(index, sort_keys=True, indent=2, ensure_ascii=False)
+            
+            # 写入文件
             with open(temp_path, 'w', encoding='utf-8') as f:
-                json.dump(index, f, ensure_ascii=False, indent=2)
+                f.write(final_json_str)
             
             # 重命名（原子操作）
             temp_path.rename(self.index_path)
@@ -167,9 +179,10 @@ class IndexManager:
         # 验证校验和（如果存在）
         if 'checksum' in index:
             stored_checksum = index['checksum']
-            # 创建副本（去掉checksum字段）
+            # 创建副本并序列化（与save使用相同的序列化逻辑）
             index_copy = {k: v for k, v in index.items() if k != 'checksum'}
-            calculated_checksum = self._calculate_checksum(index_copy)
+            json_str = json.dumps(index_copy, sort_keys=True, indent=2, ensure_ascii=False)
+            calculated_checksum = hashlib.sha256(json_str.encode('utf-8')).hexdigest()[:16]
             
             if stored_checksum != calculated_checksum:
                 logger.warning(f"Checksum mismatch: stored={stored_checksum}, calculated={calculated_checksum}")
@@ -327,8 +340,8 @@ class IndexManager:
         Returns:
             校验和字符串
         """
-        # 序列化为JSON字符串
-        json_str = json.dumps(data, sort_keys=True, ensure_ascii=False)
+        # 序列化为JSON字符串（使用与save相同的格式）
+        json_str = json.dumps(data, sort_keys=True, indent=2, ensure_ascii=False, separators=(', ', ': '))
         
         # 计算SHA256
         return hashlib.sha256(json_str.encode('utf-8')).hexdigest()[:16]
